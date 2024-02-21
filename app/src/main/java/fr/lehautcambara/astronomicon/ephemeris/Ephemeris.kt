@@ -1,5 +1,6 @@
-package fr.lehautcambara.astronomicon.keplerianElements
+package fr.lehautcambara.astronomicon.ephemeris
 
+import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.lang.Math.*
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -17,7 +18,7 @@ import kotlin.math.tan
 
 
 data class Coords(val x: Double, val y: Double, val z: Double)
-class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Calendar): Ephemeris() {
+class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeris() {
     private var a: Double = 0.0
     private var e: Double =  0.0
     private var I : Double = 0.0
@@ -28,7 +29,9 @@ class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Ca
     private var M: Double = 0.0
     private var E: Double = 0.0
     private var t: Double = 0.0
-    init {
+
+
+    private fun calculateOrbit(dateTime: Calendar): Ephemeris {
         t = dateTime.convertToJulianCentury()
         with(keplerianElements) {
             a = ft(a0, dadt, t)
@@ -53,6 +56,7 @@ class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Ca
             }
             E = En
         }
+        return this
     }
     private fun xp(): Double {
         return a * (cosd(Math.E) - e)
@@ -62,7 +66,7 @@ class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Ca
         return a * Math.sqrt(1 - e * e) * sind(Math.E)
     }
 
-    fun xecl(): Double {
+     fun xecl(): Double {
         return ((cosd(w) * cosd(omega) - sind(w) * sind(
             omega
         ) * cosd(I)) * xp()
@@ -71,7 +75,7 @@ class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Ca
         ) * cosd(I)) * yp())
     }
 
-    fun yecl(): Double {
+     fun yecl(): Double {
         return ((cosd(w) * sind(omega) + sind(w) * cosd(
             omega
         ) * cosd(I)) * xp()
@@ -80,78 +84,37 @@ class SolarEphemeris(val keplerianElements: KeplerianElements, val  dateTime: Ca
         ) * cosd(I)) * yp())
     }
 
-    fun zecl(): Double {
+     fun zecl(): Double {
         return sind(w) * sind(I) * xp() + cosd(w) * sind(I) * yp()
     }
 
-    fun xeq(): Double {
+    private fun xeq(): Double {
         return xecl()
     }
 
-    fun yeq(): Double {
+    private fun yeq(): Double {
         return cosd(obliquityJ2000) * yecl() - sind(obliquityJ2000) * zecl()
     }
 
-    fun zeq(): Double {
+    private fun zeq(): Double {
         return sind(obliquityJ2000) * yecl() + cosd(obliquityJ2000) * zecl()
     }
 
-    fun xRelativeToEarth(): Double {
-       return xecl() - SolarEphemeris(KeplerianElements.EmBary(), dateTime).xecl()
-    }
 
-    fun yRelativeToEarth(): Double {
-        return yecl() - SolarEphemeris(KeplerianElements.EmBary(), dateTime).yecl()
-    }
     companion object {
         private val obliquityJ2000 = 23.43928
         fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
         fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)
 
-        fun cosd(degrees: Double): Double {
-            return cos(degrees * PI / 180.0)
-        }
-
-        fun sind(degrees: Double): Double {
-            return sin(degrees * PI / 180.0)
-        }
-
-        fun tand(degrees: Double): Double {
-            return tan(degrees * PI / 180.0)
-        }
-
-        fun atand(tan: Double): Double {
-            return atan(tan) * PI / 180.0
-        }
-
-        fun asind(sin: Double): Double {
-            return asin(sin) * PI / 180.0
-        }
-
-        fun angle(x: Double, y: Double): Double {
-            val tan = atan2(y, x)
-            return tan * 180.0 / PI
-        }
-
-        fun elevation(x: Double, y: Double, z: Double): Double {
-            // [x y z] . [x y 0]/|[x y 0]||[x y z]|
-            return sign(z) * (180.0 / PI) * acos(
-                (x * x + y * y) / (sqrt(
-                    x * x + y * y
-                ) * sqrt(x * x + y * y + z * z))
-            )
-        }
-
-        fun r(x: Double, y: Double): Double {
-            return sqrt(x * x + y * y)
-        }
     }
 
     override fun eclipticCoords(dateTime: Calendar): Coords {
+        calculateOrbit(dateTime)
         return Coords(xecl(), yecl(), zecl())
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {
+        calculateOrbit(dateTime)
         return Coords(xeq(), yeq(), zeq())
     }
 }
@@ -175,4 +138,43 @@ abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords
 
     abstract fun equatorialCoords(dateTime: Calendar): Coords
+
+    fun sind(degrees: Double): Double {
+        return sin(degrees * PI / 180.0)
+    }
+    fun cosd(degrees: Double): Double {
+        return cos(degrees * PI / 180.0)
+    }
+
+
+    fun tand(degrees: Double): Double {
+        return tan(degrees * PI / 180.0)
+    }
+
+    fun atand(tan: Double): Double {
+        return atan(tan) * PI / 180.0
+    }
+
+    fun asind(sin: Double): Double {
+        return asin(sin) * PI / 180.0
+    }
+
+    fun angle(x: Double, y: Double): Double {
+        val tan = atan2(y, x)
+        return tan * 180.0 / PI
+    }
+
+    fun elevation(x: Double, y: Double, z: Double): Double {
+        // [x y z] . [x y 0]/|[x y 0]||[x y z]|
+        return sign(z) * (180.0 / PI) * acos(
+            (x * x + y * y) / (sqrt(
+                x * x + y * y
+            ) * sqrt(x * x + y * y + z * z))
+        )
+    }
+
+    fun r(x: Double, y: Double): Double {
+        return sqrt(x * x + y * y)
+    }
+
 }

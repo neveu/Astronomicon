@@ -1,4 +1,4 @@
-package fr.lehautcambara.astronomicon.keplerianElements
+package fr.lehautcambara.astronomicon.ephemeris.keplerianElements
 
 class KeplerianElements(
     val body: String = "Sun",
