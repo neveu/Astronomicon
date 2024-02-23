@@ -4,10 +4,12 @@ import android.icu.util.GregorianCalendar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import fr.lehautcambara.astronomicon.ui.theme.AstronomiconTheme
@@ -80,11 +83,13 @@ private fun OrreryDate(date: String) {
 fun OrreryBox(orreryBackground: Int) {
     Box(modifier = Modifier
         .fillMaxWidth()
+        .padding(Dp(16f))
         .paint(
             painterResource(id = orreryBackground),
             contentScale = ContentScale.FillWidth
-
-        ))
+        )){
+        Image(painterResource(id = R.drawable.sun1), "Sun", modifier = Modifier.align(Alignment.Center))
+    }
 }
 
 @Preview
