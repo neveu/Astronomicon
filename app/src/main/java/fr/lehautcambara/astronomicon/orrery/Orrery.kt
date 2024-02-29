@@ -11,17 +11,17 @@ import kotlin.math.atan2
 
 class Orrery(var dateTime: GregorianCalendar = GregorianCalendar()) {
 
-    private val mercury =  SolarEphemeris( KeplerianElements.Mercury())
-    private val venus = SolarEphemeris( KeplerianElements.Venus())
-    private val earth  = SolarEphemeris( KeplerianElements.EmBary())
-    private val mars = SolarEphemeris( KeplerianElements.Mars())
-    private val jupiter = SolarEphemeris( KeplerianElements.Jupiter())
-    private val saturn  = SolarEphemeris( KeplerianElements.Saturn())
-    private val sun= SolarEphemeris( KeplerianElements.Sun())
-    private val moon  = LunarEphemeris()
+     val mercury =  SolarEphemeris( KeplerianElements.Mercury())
+     val venus = SolarEphemeris( KeplerianElements.Venus())
+     val earth  = SolarEphemeris( KeplerianElements.EmBary())
+     val mars = SolarEphemeris( KeplerianElements.Mars())
+     val jupiter = SolarEphemeris( KeplerianElements.Jupiter())
+     val saturn  = SolarEphemeris( KeplerianElements.Saturn())
+     val sun= SolarEphemeris( KeplerianElements.Sun())
+     val moon  = LunarEphemeris()
 
-    private val geocentricList = listOf<Ephemeris>(mercury, venus, moon, sun, mars, jupiter, saturn)
-    private val heliocentricList = listOf<Ephemeris>(mercury, venus, earth, sun, mars, jupiter, saturn)
+    val heliocentricList = listOf<Ephemeris>( sun,mercury, venus, earth, mars, jupiter, saturn)
+    val geocentricList = listOf<Ephemeris>(earth, moon, mercury, venus, sun, mars, jupiter, saturn)
 
 
     fun fromTo(from: Ephemeris?, to: Ephemeris?): Coords? {

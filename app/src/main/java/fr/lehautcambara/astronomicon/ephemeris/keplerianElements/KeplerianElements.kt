@@ -3,16 +3,16 @@ package fr.lehautcambara.astronomicon.ephemeris.keplerianElements
 class KeplerianElements(
     val body: String = "Sun",
     val a0: Double = 0.0,
-    val dadt: Double = 0.0, // semi-major axis (au) da/dt (au/century)
     val e0: Double = 0.0,
-    val dedt: Double = 0.0, // eccentricity (unitless), /century
     val I0: Double = 0.0,
-    val dIdt: Double = 0.0, //  inclination (degrees, degrees/century
     val L0: Double = 0.0,
-    val dLdt: Double = 0.0, //  mean longitude (degrees, degrees/century
     val wbar0: Double = 0.0,
-    val dwbardt: Double = 0.0, //  longitude of perihelion (degrees, degrees/century)
     val omega0: Double = 0.0,
+    val dadt: Double = 0.0, // semi-major axis (au) da/dt (au/century)
+    val dedt: Double = 0.0, // eccentricity (unitless), /century
+    val dIdt: Double = 0.0, //  inclination (degrees, degrees/century
+    val dLdt: Double = 0.0, //  mean longitude (degrees, degrees/century
+    val dwbardt: Double = 0.0, //  longitude of perihelion (degrees, degrees/century)
     val domegadt: Double = 0.0, // longitude of the ascending node (degrees, degrees/century)
 )  {
 

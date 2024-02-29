@@ -59,20 +59,16 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         return this
     }
     private fun xp(): Double {
-        return a * (cosd(Math.E) - e)
+        return a * (cosd(E) - e)
     }
 
     private fun yp(): Double {
-        return a * Math.sqrt(1 - e * e) * sind(Math.E)
+        return a * sqrt(1 - e * e) * sind(E)
     }
 
      fun xecl(): Double {
-        return ((cosd(w) * cosd(omega) - sind(w) * sind(
-            omega
-        ) * cosd(I)) * xp()
-                + (-sind(w) * cosd(omega) - cosd(w) * sind(
-            omega
-        ) * cosd(I)) * yp())
+        return ((cosd(w) * cosd(omega) - sind(w) * sind(omega) * cosd(I)) * xp()
+                + (-sind(w) * cosd(omega) - cosd(w) * sind(omega) * cosd(I)) * yp())
     }
 
      fun yecl(): Double {
@@ -159,9 +155,8 @@ abstract class Ephemeris {
         return asin(sin) * PI / 180.0
     }
 
-    fun angle(x: Double, y: Double): Double {
-        val tan = atan2(y, x)
-        return tan * 180.0 / PI
+    fun angled(x: Double, y: Double): Double {
+        return atan2(y, x) * 180.0 / PI
     }
 
     fun elevation(x: Double, y: Double, z: Double): Double {
