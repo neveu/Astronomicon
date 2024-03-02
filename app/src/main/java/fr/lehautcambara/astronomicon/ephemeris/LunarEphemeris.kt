@@ -2,8 +2,10 @@ package fr.lehautcambara.astronomicon.ephemeris
 
 import java.util.Calendar
 import java.util.GregorianCalendar
-import kotlin.math.floor
 import kotlin.math.roundToInt
+import cosd
+import sind
+import tand
 
 class LunarEphemeris(): Ephemeris() {
     override fun eclipticCoords(dateTime: Calendar): Coords {
