@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,6 +36,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -63,7 +69,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    //color = MaterialTheme.colorScheme.background
                 ) {
                     Screen(R.drawable.milkyway, R.drawable.acsquare4, orrery)
                 }
@@ -112,27 +118,30 @@ fun Screen(bg: Int, orreryBackground: Int, orrery: Orrery) {
 
 @Composable
 private fun OrreryDate(date: Date) {
+    val UglyQuaFamily = FontFamily(
+        Font(R.font.uglyqua, FontWeight.Normal),
+        Font(R.font.uglyqua_italic, FontWeight.Normal, FontStyle.Italic))
     Text(
         text = DateFormat.getDateInstance().format(date),
         color = Color.White,
+        fontFamily = UglyQuaFamily,
         fontSize = TextUnit(32.0F, TextUnitType.Sp),
     )
 }
 
 @Composable
-fun OrreryBox(orrery: Orrery, orreryBackground: Int, orbitIncrement: Int = 45) {
+fun OrreryBox(orrery: Orrery, orreryBackground: Int, orbitIncrement: Int = 55) {
     var size by remember { mutableStateOf(Size.Zero)}
 
     Box(modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = Dp(16F))
+        //.padding(horizontal = Dp(16F))
         .paint(
             painterResource(id = orreryBackground),
             contentScale = ContentScale.FillWidth
         )
         .onGloballyPositioned { coordinates ->
             size = coordinates.size.toSize()
-            Log.d("Size", "$size")
         }
         .pointerInput(Unit) {
             detectDragGestures { change: PointerInputChange, dragAmount: Offset ->
@@ -140,15 +149,17 @@ fun OrreryBox(orrery: Orrery, orreryBackground: Int, orbitIncrement: Int = 45) {
             }
         }
     ) {
-
         val date = orrery.dateTime
-        DrawPlanetAndOrbit(r = orbitIncrement, orrery.mercury.eclipticCoords(date),  id = R.drawable.mercury, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = 0, orrery.sun.eclipticCoords(date), id = R.drawable.sun1, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = orbitIncrement*2, orrery.venus.eclipticCoords(date), id = R.drawable.venus40, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = orbitIncrement*3, orrery.earth.eclipticCoords(date),  id = R.drawable.earthjpg40, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = orbitIncrement*4, orrery.mars.eclipticCoords(date), id = R.drawable.mars, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = orbitIncrement*5, orrery.jupiter.eclipticCoords(date), id = R.drawable.jupiter, modifier = Modifier.align(Alignment.Center))
-        DrawPlanetAndOrbit(r = orbitIncrement*6, orrery.saturn.eclipticCoords(date), id = R.drawable.saturn30, modifier = Modifier.align(Alignment.Center))
+        val modifier = Modifier.align(Alignment.Center)
+        with(orrery) {
+            DrawPlanetAndOrbit(r = orbitIncrement, mercury.eclipticCoords(date),  id = R.drawable.mercury, modifier = modifier.size(15.dp))
+            DrawPlanetAndOrbit(r = 0, sun.eclipticCoords(date), id = R.drawable.sun2, modifier = modifier.size(20.dp))
+            DrawPlanetAndOrbit(r = orbitIncrement*2, venus.eclipticCoords(date), id = R.drawable.venus40, modifier = modifier.size(18.dp))
+            DrawPlanetAndOrbit(r = orbitIncrement*3, earth.eclipticCoords(date),  id = R.drawable.earthjpg40, modifier = modifier.size(18.dp))
+            DrawPlanetAndOrbit(r = orbitIncrement*4, mars.eclipticCoords(date), id = R.drawable.mars, modifier = modifier.size(17.dp))
+            DrawPlanetAndOrbit(r = orbitIncrement*5, jupiter.eclipticCoords(date), id = R.drawable.jupiter, modifier = modifier.size(20.dp))
+            DrawPlanetAndOrbit(r = orbitIncrement*6, saturn.eclipticCoords(date), id = R.drawable.saturn30, modifier = modifier.size(35.dp))
+        }
     }
 }
 
@@ -181,13 +192,12 @@ fun DrawPlanet(r: Int, a: Double, id: Int, modifier: Modifier){
 @Composable
 fun DrawPlanet(x: Int, y: Int, id: Int, modifier: Modifier) {
     // shadow
-    Image(painterResource(id = R.drawable.shadow30x30), "shadow",
-        modifier=modifier
-            .absoluteOffset {IntOffset(x+20, -(y - 20) ) })
+    Image(painterResource(id = R.drawable.shadow), "shadow",
+        modifier=modifier.absoluteOffset {IntOffset(x+20, -(y - 20) ) }
+
+    )
     Image(painterResource(id = id), "Planet",
-        modifier = modifier
-            .absoluteOffset { IntOffset(x, -y) }
-            //.shadow(elevation = 20.dp, shape = CircleShape, clip = false, spotColor = Color.Red)
+        modifier = modifier.absoluteOffset { IntOffset(x, -y) }
     )
 }
 
