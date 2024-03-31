@@ -3,6 +3,11 @@ package fr.lehautcambara.astronomicon.ephemeris
 import cosd
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import sind
+import java.time.Duration
+import java.time.Period
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.Calendar
 import java.util.GregorianCalendar
 import kotlin.math.IEEErem
@@ -10,7 +15,11 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-data class Coords(val x: Double, val y: Double, val z: Double)
+data class Coords(val x: Double, val y: Double, val z: Double) {
+    override fun toString(): String {
+        return "($x, $y)"
+    }
+}
 class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeris() {
     private var a: Double = 0.0
     private var e: Double =  0.0
@@ -24,8 +33,8 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     private var t: Double = 0.0
 
 
-    private fun calculateOrbit(dateTime: Calendar): Ephemeris {
-        t = dateTime.convertToJulianCentury()
+    private fun calculateOrbit(julianCenturies: Double) : Ephemeris {
+        t = julianCenturies
         with(keplerianElements) {
             a = ft(a0, dadt, t)
             e = ft(e0, dedt, t)
@@ -45,7 +54,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
             while (abs(dE) > tol) {
                 val dM: Double = M - (En - estar * sind(En))
                 dE = dM / (1 - e * cosd(En))
-                En = En + dE
+                En += dE
             }
             E = En
         }
@@ -59,22 +68,22 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         return a * sqrt(1 - e * e) * sind(E)
     }
 
-     fun xecl(): Double {
-        return ((cosd(w) * cosd(omega) - sind(w) * sind(omega) * cosd(I)) * xp()
-                + (-sind(w) * cosd(omega) - cosd(w) * sind(omega) * cosd(I)) * yp())
+     private fun xecl(): Double {
+        return ((cosd(w) * cosd(omega)
+                    - sind(w) * sind(omega) * cosd(I)) * xp()
+                + (-sind(w) * cosd(omega)
+                    - cosd(w) * sind(omega) * cosd(I)) * yp())
     }
 
-     fun yecl(): Double {
-        return ((cosd(w) * sind(omega) + sind(w) * cosd(
-            omega
-        ) * cosd(I)) * xp()
-                + (-sind(w) * sind(omega) + cosd(w) * cosd(
-            omega
-        ) * cosd(I)) * yp())
+     private fun yecl(): Double {
+        return ((cosd(w) * sind(omega)
+                    + sind(w) * cosd(omega) * cosd(I)) * xp()
+                + (-sind(w) * sind(omega)
+                    + cosd(w) * cosd(omega) * cosd(I)) * yp())
     }
 
-     fun zecl(): Double {
-        return sind(w) * sind(I) * xp() + cosd(w) * sind(I) * yp()
+     private fun zecl(): Double {
+        return (sind(w) * sind(I) * xp()) + (cosd(w) * sind(I) * yp())
     }
 
     private fun xeq(): Double {
@@ -98,17 +107,22 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     }
 
     override fun eclipticCoords(dateTime: Calendar): Coords {
-        calculateOrbit(dateTime)
-        return Coords(xecl(), yecl(), zecl())
+       return  eclipticCoords(dateTime.convertToJulianCentury())
+    }
+
+    override fun eclipticCoords(julianCentury: Double) : Coords{
+        calculateOrbit(julianCentury)
+        return Coords(xeq(), yeq(), zeq())
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {
-        calculateOrbit(dateTime)
+        return equatorialCoords(dateTime.convertToJulianCentury())
+    }
+    override fun equatorialCoords(julianCentury: Double): Coords {
+        calculateOrbit(julianCentury)
         return Coords(xeq(), yeq(), zeq())
     }
 }
-
-
 
 fun Calendar.convertToJulianCentury(): Double {
     val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 0, 0, 0)
@@ -119,15 +133,24 @@ fun Calendar.convertToJulianCentury(): Double {
     return Tyear / 100.0 // time in julian centuries
 }
 
-fun Calendar.addDays(days: Int): Calendar {
-    this.add(GregorianCalendar.DATE, days)
-    return this
+fun ZonedDateTime.convertToJulianCentury(): Double {
+    val zoneID = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
+    val j2000 = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, zoneID)
+    val now = this
+    val duration = Duration.between(j2000, now)
+    val period = Period.between(j2000.toLocalDate(), now.toLocalDate())
+    val secs: Double = duration.toMillis() / 1000.0
+    val days = secs /  (60 * 60 * 24)
+    val years = days / 365.242
+    return years/100.0
 }
+
 abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords
 
     abstract fun equatorialCoords(dateTime: Calendar): Coords
 
 
-
+    abstract fun eclipticCoords(julianCentury: Double): Coords
+    abstract fun equatorialCoords(julianCentury: Double): Coords
 }

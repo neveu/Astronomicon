@@ -27,6 +27,9 @@ fun atand(tan: Double): Double {
 fun asind(sin: Double): Double {
     return asin(sin) * Math.PI / 180.0
 }
+fun angle(x: Double, y: Double): Double {
+    return  atan2(y, x)
+}
 
 fun angled(x: Double, y: Double): Double {
     return atan2(y, x) * 180.0 / Math.PI

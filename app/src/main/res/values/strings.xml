@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Astronomicon</string>
+
+    <string name="reset_button">Reset</string>
+    <string name="title">Astronomicum Dumbledorum</string>
+    <string name="default_date">IANVARIVS 1 anno DOMINI 2013</string>
+
+    <string name="january">JANVARIVS</string>
+    <string name="february">FEBRVARIVS</string>
+    <string name="march">MARTES</string>
+    <string name="april">APRILVS</string>
+    <string name="may">MAIVS</string>
+    <string name="june">JVNIVS</string>
+    <string name="july">JVLIVS</string>
+    <string name="august">AVGVSTVS</string>
+    <string name="september">SEPTEMBER</string>
+    <string name="october">OCTOBER</string>
+    <string name="november">NOVEMBER</string>
+    <string name="december">DECEMBER</string>
+    <string name="anno_domini">" anno DOMINI "</string>
+    <string name="ecliptic">E C L I P T I C AE</string>
+    <string name="degrees"> G R A D U S</string>
+
+
+
 </resources>

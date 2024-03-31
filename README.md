@@ -1,4 +1,4 @@
-Work in progress: Orrery (Solar system model). Re-written from Java/XML to Kotlin and Compose. Implements radial scrolling to change orrery date. 
+Work in progress: Orrery (Solar system model). Re-written from Java/XML to Kotlin and Compose. Implements radial scrolling to change orreryVM date. 
 Planet positions are determined by solving Keplerian elements differential equations. 
 
 Next: Moon phases; Geocentric display, zodiac pointers, retrograde motion indicator, elevation display

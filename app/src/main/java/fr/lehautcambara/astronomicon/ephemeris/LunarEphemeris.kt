@@ -9,24 +9,31 @@ import tand
 
 class LunarEphemeris(): Ephemeris() {
     override fun eclipticCoords(dateTime: Calendar): Coords {
-        calculateOrbit(dateTime)
+        return eclipticCoords(dateTime.convertToJulianCentury())
+    }
+
+    override fun eclipticCoords(julianCentury: Double): Coords {
+        calculateOrbit(julianCentury)
         return Coords(xecl(), yecl(), zecl() )
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {
-        calculateOrbit(dateTime)
+       return equatorialCoords(dateTime.convertToJulianCentury())
+    }
+
+    override fun equatorialCoords(julianCentury: Double): Coords {
+        calculateOrbit(julianCentury)
         return Coords(xeq(), yeq(), zeq() )
     }
 
-    private var tGregorian: Calendar? = null
     private var t:Double = 0.0
     private var beta0 = 0.0
     private var lambda0 = 0.0
     private val obliquityJ2000 = 23.43928
 
-    private fun calculateOrbit(dateTime: Calendar) {
-        tGregorian = dateTime
-        t = dateTime.convertToJulianCentury()
+
+    private fun calculateOrbit(julianCentury: Double) {
+        t = julianCentury
         beta0 = beta(t) - b(t) * sind(
             lambda(t) + c(t)
         )
