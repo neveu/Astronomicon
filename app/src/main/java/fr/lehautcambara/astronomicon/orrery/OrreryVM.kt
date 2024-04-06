@@ -58,7 +58,7 @@ class OrreryVM( ) : ViewModel() {
 
 }
 
-private operator fun Coords.unaryMinus(): Coords? {
+private operator fun Coords.unaryMinus(): Coords {
     return Coords(-x, -y, -z)
 }
 
