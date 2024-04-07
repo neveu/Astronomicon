@@ -60,43 +60,50 @@ private fun DrawAll(
     orbitIncrement: Int,
     modifier: Modifier
 ) {
+    val pointerRadius = orbitIncrement * 9
     with(uiState) {
         DrawPlanetAndOrbit(
             r = orbitIncrement,
             mercury,
             id = R.drawable.mercury,
-            modifier = modifier.size(15.dp)
+            pointerRadius,
+            modifier = modifier
         )
-        DrawPlanetAndOrbit(r = 0, sun, id = R.drawable.sun2, modifier = modifier.size(20.dp))
+        DrawPlanetAndOrbit(r = 0, sun, id = R.drawable.sun2,0, modifier = modifier)
         DrawPlanetAndOrbit(
             r = orbitIncrement * 2,
             venus,
             id = R.drawable.venus40,
-            modifier = modifier.size(18.dp)
+            pointerRadius,
+            modifier = modifier
         )
         DrawPlanetAndOrbit(
             r = orbitIncrement * 3,
             earth,
             id = R.drawable.earthjpg40,
-            modifier = modifier.size(18.dp)
+            pointerRadius,
+            modifier = modifier
         )
         DrawPlanetAndOrbit(
             r = orbitIncrement * 4,
             mars,
             id = R.drawable.mars,
-            modifier = modifier.size(17.dp)
+            pointerRadius,
+            modifier = modifier
         )
         DrawPlanetAndOrbit(
             r = orbitIncrement * 5,
             jupiter,
             id = R.drawable.jupiter,
-            modifier = modifier.size(20.dp)
+            pointerRadius,
+            modifier = modifier
         )
         DrawPlanetAndOrbit(
             r = orbitIncrement * 6,
             saturn,
             id = R.drawable.saturn30,
-            modifier = modifier.size(35.dp)
+            pointerRadius,
+            modifier = modifier
         )
     }
 }

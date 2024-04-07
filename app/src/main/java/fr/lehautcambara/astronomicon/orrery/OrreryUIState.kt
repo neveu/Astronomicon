@@ -8,7 +8,7 @@ import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElemen
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-data class OrreryUIState (val zonedDateTime: ZonedDateTime) {
+data class OrreryUIState (val zonedDateTime: ZonedDateTime = ZonedDateTime.now()) {
 //    constructor( dateTime: GregorianCalendar) : this()
 
     override fun toString(): String {

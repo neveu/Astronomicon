@@ -11,10 +11,19 @@ import kotlin.math.tan
 fun sind(degrees: Double): Double {
     return sin(degrees * Math.PI / 180.0)
 }
+
+fun sind(degrees: Float): Float {
+    return sin(degrees * Math.PI / 180.0).toFloat()
+}
+
+
 fun cosd(degrees: Double): Double {
     return cos(degrees * Math.PI / 180.0)
 }
 
+fun cosd(degrees: Float): Float {
+    return cos(degrees * Math.PI / 180.0).toFloat()
+}
 
 fun tand(degrees: Double): Double {
     return tan(degrees * Math.PI / 180.0)
