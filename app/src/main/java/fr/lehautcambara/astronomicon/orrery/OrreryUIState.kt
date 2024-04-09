@@ -44,9 +44,14 @@ data class OrreryUIState (val zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _earth = Earth.eclipticCoords(julianCentury)
      val earth: Coords
         get() = _earth
+
     private var _moon = Moon.eclipticCoords(julianCentury)
      val moon: Coords
         get() = _moon
+
+    fun moonPhase(numImages:Int) : Int {
+        return Moon.phaseImageIndex(zonedDateTime, numImages)
+    }
 
     private var _mars = Mars.eclipticCoords(julianCentury)
     val mars: Coords
@@ -59,6 +64,7 @@ data class OrreryUIState (val zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _saturn = Saturn.eclipticCoords(julianCentury)
     val saturn: Coords
         get() = _saturn
+
 
 }
 

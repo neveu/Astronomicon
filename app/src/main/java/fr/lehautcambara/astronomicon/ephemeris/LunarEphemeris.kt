@@ -6,8 +6,10 @@ import kotlin.math.roundToInt
 import cosd
 import sind
 import tand
+import java.time.Duration
+import java.time.ZonedDateTime
 
-class LunarEphemeris(): Ephemeris() {
+class LunarEphemeris : Ephemeris() {
     override fun eclipticCoords(dateTime: Calendar): Coords {
         return eclipticCoords(dateTime.convertToJulianCentury())
     }
@@ -42,7 +44,8 @@ class LunarEphemeris(): Ephemeris() {
         ) * tand(beta0)
     }
 
-    val NewMoonEpoch = GregorianCalendar(1970, Calendar.JANUARY, 5, 0, 0, 0)
+    private val NewMoonEpoch = GregorianCalendar(1900, Calendar.JANUARY, 1, 0, 0, 0)
+
     private fun lambda(t: Double): Double {
         return (218.32 + 481267.883 * t + 6.29 * sind(477198.85 * t + 134.9)
                 - 1.27 * sind(413335.38 * t + 259.2)) + 0.66 * sind(890534.23 * t + 235.7) + 0.21 * sind(
@@ -102,13 +105,25 @@ class LunarEphemeris(): Ephemeris() {
     fun zecl(): Double {
         return zcommon(0.0)
     }
-    private fun phaseFraction(dateTime: Calendar): Double {
+     private fun phaseFraction(dateTime: Calendar): Double {
         val lp = 2551443
         val phase: Double =
             ( ((dateTime.timeInMillis - NewMoonEpoch.timeInMillis) / 1000L) % lp).toDouble()
         return phase / lp
     }
+
+     private fun phaseFraction(zonedDateTime: ZonedDateTime) : Double {
+        val lp = 2551443
+        val duration: Long = Duration.between(NewMoonEpoch.toZonedDateTime(), zonedDateTime).toMillis() / 1000
+        val phase =  (duration % lp).toDouble()
+         return phase / lp
+    }
     fun phaseImageIndex(dateTime: Calendar, numImages: Int): Int {
         return (phaseFraction(dateTime) * numImages).roundToInt() % numImages
     }
+
+    fun phaseImageIndex(zonedDateTime: ZonedDateTime, numImages: Int): Int {
+        return (phaseFraction(zonedDateTime) * numImages).roundToInt() % numImages
+    }
+
 }

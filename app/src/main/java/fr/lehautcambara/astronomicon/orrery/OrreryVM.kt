@@ -13,11 +13,10 @@ import kotlinx.coroutines.flow.update
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.time.ZonedDateTime
-import java.util.GregorianCalendar
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
-class OrreryVM( ) : ViewModel() {
+class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)

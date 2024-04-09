@@ -22,7 +22,7 @@ class KeplerianElements(
             return KeplerianElements(
                 "EmBary", 1.00000261, 0.01671123, -0.00001531, 100.46457166, 102.93768193, 0.0,
                 0.00000562, -0.00004392, -0.01294668, 35999.37244981, 0.32327364, 0.0
-            );
+            )
         }
 
         fun Mercury(): KeplerianElements {

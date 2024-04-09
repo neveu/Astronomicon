@@ -2,8 +2,6 @@ package fr.lehautcambara.astronomicon.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -32,7 +30,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, orreryVM: OrreryVM) {
         ) {
             OrreryDate(orreryVM.uiState)
             OrreryBox(orreryVM.uiState, orreryBackground)
-            LunarPhaseBox(phase = 5, modifier = Modifier.fillMaxSize(0.5F).padding(vertical = 16.dp))
+            LunarPhaseBox(orreryVM.uiState, modifier = Modifier.fillMaxSize(0.5F).padding(vertical = 32.dp))
         }
     }
 }

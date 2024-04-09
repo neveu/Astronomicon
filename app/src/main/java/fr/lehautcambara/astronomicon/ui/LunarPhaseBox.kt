@@ -2,17 +2,21 @@ package fr.lehautcambara.astronomicon.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.tooling.preview.Preview
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import fr.lehautcambara.astronomicon.orrery.OrreryVM
+import kotlinx.coroutines.flow.StateFlow
+
 
 @Composable
-fun LunarPhaseBox(phase: Int, modifier: Modifier = Modifier) {
-    val phaseArray = remember{ arrayOf(
+fun LunarPhaseBox(uiState: StateFlow<OrreryUIState>, modifier: Modifier = Modifier) {
+    val phaseArray: Array<Int> = remember{ arrayOf(
         R.drawable.moonphase262_00,
         R.drawable.moonphase262_01,
         R.drawable.moonphase262_02,
@@ -38,6 +42,13 @@ fun LunarPhaseBox(phase: Int, modifier: Modifier = Modifier) {
         R.drawable.moonphase262_22,
         R.drawable.moonphase262_23,
     )}
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
+    LunarPhaseBox(phaseArray, orreryUIState.moonPhase(phaseArray.size ), modifier)
+}
+
+@Composable
+fun LunarPhaseBox(phaseArray: Array<Int>, phase: Int, modifier: Modifier = Modifier) {
+
     Image(
         painterResource(id = phaseArray[phase]),
         "Moon Phase",
@@ -48,5 +59,5 @@ fun LunarPhaseBox(phase: Int, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun PreviewLunarPhaseBox() {
-    LunarPhaseBox(4)
+    LunarPhaseBox(OrreryVM().uiState)
 }
