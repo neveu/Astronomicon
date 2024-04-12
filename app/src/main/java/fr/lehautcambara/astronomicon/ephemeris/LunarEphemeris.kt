@@ -16,7 +16,7 @@ class LunarEphemeris : Ephemeris() {
 
     override fun eclipticCoords(julianCentury: Double): Coords {
         calculateOrbit(julianCentury)
-        return Coords(xecl(), yecl(), zecl() )
+        return Coords(xecl(), yecl(), zecl())
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {
@@ -25,7 +25,7 @@ class LunarEphemeris : Ephemeris() {
 
     override fun equatorialCoords(julianCentury: Double): Coords {
         calculateOrbit(julianCentury)
-        return Coords(xeq(), yeq(), zeq() )
+        return Coords( xeq(), yeq(), zeq())
     }
 
     private var t:Double = 0.0

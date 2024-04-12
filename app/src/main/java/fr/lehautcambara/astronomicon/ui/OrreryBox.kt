@@ -23,7 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.RadialScrollEvent
+import fr.lehautcambara.astronomicon.orrery.DisplayMode
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import kotlinx.coroutines.flow.StateFlow
@@ -48,61 +50,67 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int, orbitInc
         }
     ) {
         val modifier = Modifier.align(Alignment.Center)
-        DrawAll(orreryUIState,  orbitIncrement, modifier)
+        DrawBox(orreryUIState, modifier)
     }
 }
 
 @Composable
-private fun DrawAll(
+fun DrawBox(orreryUIState: OrreryUIState,  modifier: Modifier) {
+    if (orreryUIState.displayMode == DisplayMode.Heliocentric) {
+        DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
+    } else {
+        DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
+    }
+}
+
+@Composable
+private fun DrawAllHeliocentric(
     uiState: OrreryUIState,
     orbitIncrement: Int,
     modifier: Modifier
 ) {
     val pointerRadius = orbitIncrement * 9
     with(uiState) {
-        DrawPlanetAndOrbit(
-            r = orbitIncrement,
-            mercury,
-            id = R.drawable.mercury,
-            pointerRadius,
-            modifier = modifier
-        )
-        DrawPlanetAndOrbit(r = 0, sun, id = R.drawable.sun2,0, modifier = modifier)
-        DrawPlanetAndOrbit(
-            r = orbitIncrement * 2,
-            venus,
-            id = R.drawable.venus40,
-            pointerRadius,
-            modifier = modifier
-        )
-        DrawPlanetAndOrbit(
-            r = orbitIncrement * 3,
-            earth,
-            id = R.drawable.earthjpg40,
-            pointerRadius,
-            modifier = modifier
-        )
-        DrawPlanetAndOrbit(
-            r = orbitIncrement * 4,
-            mars,
-            id = R.drawable.mars,
-            pointerRadius,
-            modifier = modifier
-        )
-        DrawPlanetAndOrbit(
-            r = orbitIncrement * 5,
-            jupiter,
-            id = R.drawable.jupiter,
-            pointerRadius,
-            modifier = modifier
-        )
-        DrawPlanetAndOrbit(
-            r = orbitIncrement * 6,
-            saturn,
-            id = R.drawable.saturn30,
-            pointerRadius,
-            modifier = modifier
-        )
+        DrawPlanetAndOrbit(Mercury, r = orbitIncrement, mercury, id = R.drawable.mercury, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Venus, r = orbitIncrement * 2, venus, id = R.drawable.venus40, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Earth, r = orbitIncrement * 3, earth, id = R.drawable.earthjpg40, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Mars, r = orbitIncrement * 4, mars, id = R.drawable.mars, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Jupiter, r = orbitIncrement * 5, jupiter, id = R.drawable.jupiter, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Saturn, r = orbitIncrement * 6, saturn, id = R.drawable.saturn30, pointerRadius, modifier = modifier)
+        DrawPlanetAndOrbit(Sun, r = 0, sun, id = R.drawable.sun2, 0, modifier = modifier)
+    }
+}
+@Composable
+private fun DrawAllGeocentric(
+    uiState: OrreryUIState,
+    orbitIncrement: Int,
+    modifier: Modifier
+) {
+    val pointerRadius = orbitIncrement * 9
+    with(uiState) {
+        DrawPlanetAndOrbit(Moon, r = orbitIncrement, coords = fromTo(earth, moon),
+            id = R.drawable.moon2 , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Mercury, r = orbitIncrement*2, coords = fromTo(earth, mercury),
+            id = R.drawable.mercury , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Venus, r = orbitIncrement*3, coords = fromTo(earth, venus),
+            id = R.drawable.venus40 , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Sun, r = orbitIncrement*4, coords = fromTo(earth, sun),
+            id = R.drawable.sun1 , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Mars, r = orbitIncrement*5, coords = fromTo(earth, mars),
+            id = R.drawable.mars , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Jupiter, r = orbitIncrement*6, coords = fromTo(earth, jupiter),
+            id = R.drawable.jupiter , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Saturn, r = orbitIncrement*7, coords = fromTo(earth, saturn),
+            id = R.drawable.saturn30 , pointerRadius = pointerRadius, modifier = modifier)
+
+        DrawPlanetAndOrbit(Earth, r = 0, coords = earth,  id = R.drawable.earthjpg40,
+            0, modifier = modifier)
     }
 }
 

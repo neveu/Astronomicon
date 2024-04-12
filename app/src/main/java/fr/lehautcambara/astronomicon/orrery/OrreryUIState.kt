@@ -1,5 +1,6 @@
 package fr.lehautcambara.astronomicon.orrery
 
+import angled
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
@@ -7,27 +8,40 @@ import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.abs
+import kotlin.math.acos
+import kotlin.math.sign
+import kotlin.math.sqrt
 
-data class OrreryUIState (val zonedDateTime: ZonedDateTime = ZonedDateTime.now()) {
-//    constructor( dateTime: GregorianCalendar) : this()
+enum class DisplayMode {
+    Heliocentric,
+    Geocentric,
+    Ecliptic,
+}
+data class OrreryUIState (
+    val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
+    val displayMode: DisplayMode = DisplayMode.Heliocentric,
+
+) {
 
     override fun toString(): String {
        // return SimpleDateFormat("dd-MMM-yyyy").format()
         return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG"))
     }
 
-    private val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
-    private val Venus = SolarEphemeris( KeplerianElements.Venus())
-    private val Earth  = SolarEphemeris( KeplerianElements.EmBary())
-    private val Mars = SolarEphemeris( KeplerianElements.Mars())
-    private val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
-    private val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
-    private val Sun = SolarEphemeris( KeplerianElements.Sun())
-    private val Moon  = LunarEphemeris()
+    val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
+    val Venus = SolarEphemeris( KeplerianElements.Venus())
+    val Earth  = SolarEphemeris( KeplerianElements.EmBary())
+    val Mars = SolarEphemeris( KeplerianElements.Mars())
+    val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
+    val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
+    val Sun = SolarEphemeris( KeplerianElements.Sun())
+    val Moon  = LunarEphemeris()
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()
     val julianCentury : Double
         get() = _julianCentury
+
 
     private var _sun = Sun.eclipticCoords(julianCentury)
     val sun: Coords
@@ -65,6 +79,33 @@ data class OrreryUIState (val zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     val saturn: Coords
         get() = _saturn
 
+
+    fun fromTo(from: Coords?, to: Coords?): Coords? {
+        if (from == null) return to
+        return if (to == null) -from
+        else to - from
+    }
+    private fun angle(from: Coords?, to: Coords?) : Double {
+        fromTo(from, to)?.apply {
+            return angled(x, y)
+        }
+        return 0.0
+    }
+
+    fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
+        return abs(angle(center, from) - angle(center, to))
+    }
+    fun aspect(angleFromTo: Double, aspectAngle: Double, error: Double): Boolean {
+        return abs(aspectAngle - angleFromTo) < error
+    }
+    fun elevation(x: Double, y: Double, z: Double): Double {
+        // [x y z] . [x y 0]/|[x y 0]||[x y z]|
+        return sign(z) * (180.0 / Math.PI) * acos(
+            (x * x + y * y) / (sqrt(
+                x * x + y * y
+            ) * sqrt(x * x + y * y + z * z))
+        )
+    }
 
 }
 

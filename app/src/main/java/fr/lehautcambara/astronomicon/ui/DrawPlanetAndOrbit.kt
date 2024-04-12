@@ -3,6 +3,7 @@ package fr.lehautcambara.astronomicon.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,19 +28,25 @@ import androidx.compose.ui.unit.toSize
 import angle
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.ephemeris.Coords
+import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.kbus.BusEvent
+import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+
 @Composable
-fun DrawPlanetAndOrbit(r: Int, coords: Coords, id: Int, pointerRadius: Int,  modifier: Modifier) {
-    DrawPlanetAndOrbit(r = r, xecl = coords.x, yecl = coords.y, id = id, pointerRadius, modifier = modifier)
+fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, coords: Coords?, id: Int, pointerRadius: Int,  modifier: Modifier) {
+    if (coords == null) return
+    DrawPlanetAndOrbit(body, r = r, xecl = coords.x, yecl = coords.y, id = id, pointerRadius,   modifier = modifier)
 }
 @Composable
-fun DrawPlanetAndOrbit(r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,   modifier: Modifier) {
+fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
     DrawOrbit(radius = r, modifier = modifier)
-    DrawPlanet(r, xecl, yecl, id, pointerRadius, modifier)
+    DrawPlanet(body, r, xecl, yecl, id, pointerRadius,   modifier)
 }
 
 @Composable
@@ -51,20 +58,20 @@ private fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2
     }
 }
 @Composable
-fun DrawPlanet(r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,  modifier: Modifier) {
+fun DrawPlanet(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,  modifier: Modifier) {
     val ang = angle(xecl, yecl)
-    DrawPlanet(r, ang, id, pointerRadius, modifier)
+    DrawPlanet(body, r, ang, id, pointerRadius,  modifier)
 }
 
 @Composable
-fun DrawPlanet(r: Int, a: Double, id: Int, pointerRadius: Int,   modifier: Modifier) {
+fun DrawPlanet(body: Ephemeris, r: Int, a: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
     DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
     val x = (r*cos(a)).roundToInt()
     val y = (r*sin(a)).roundToInt()
-    DrawPlanet(x,y,id, modifier)
+    DrawPlanet(body, x,y,id, modifier)
 }
 @Composable
-fun DrawPlanet(x: Int, y: Int, id: Int,  modifier: Modifier) {
+fun DrawPlanet(body: Ephemeris, x: Int, y: Int, id: Int, modifier: Modifier) {
     // shadow
     Image(
         painterResource(id = R.drawable.shadow30x30), "shadow",
@@ -78,6 +85,8 @@ fun DrawPlanet(x: Int, y: Int, id: Int,  modifier: Modifier) {
         painterResource(id = id), "Planet",
         modifier = modifier
             .absoluteOffset { IntOffset(x, -y) }
+            .clickable {
+                Kbus.post(PlanetClickEvent(body)) }
     )
 }
 
@@ -96,7 +105,7 @@ private fun PreviewDrawPlanet() {
     ) {
         val modifier = Modifier.align(Alignment.Center)
 
-        DrawPlanetAndOrbit(100, uiState.mercury, R.drawable.mercury, 600, modifier)
+        DrawPlanetAndOrbit(uiState.Mercury, r=100, uiState.mercury, R.drawable.mercury, 600, modifier)
     }
 
 }

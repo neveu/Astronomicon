@@ -4,8 +4,8 @@ import org.greenrobot.eventbus.EventBus
 
 class Kbus {
     companion object {
-        fun post(event: Event) {
-            EventBus.getDefault().postSticky(event)
+        fun post(busEvent: BusEvent?) {
+            busEvent?.let{EventBus.getDefault().postSticky(it)}
         }
         fun <T> get(eventType: Class<T>) {
             EventBus.getDefault().getStickyEvent(eventType)
@@ -21,6 +21,6 @@ class Kbus {
     }
 }
 
-open class Event() {
+open class BusEvent() {
     val timestamp = System.currentTimeMillis()
 }

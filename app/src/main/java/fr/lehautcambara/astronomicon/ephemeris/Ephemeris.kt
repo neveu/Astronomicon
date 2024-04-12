@@ -15,10 +15,23 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-data class Coords(val x: Double, val y: Double, val z: Double) {
+data class Coords( val x: Double, val y: Double, val z: Double) {
     override fun toString(): String {
         return "($x, $y)"
     }
+
+    operator fun unaryMinus(): Coords {
+        return Coords(-x, -y, -z)
+    }
+
+    operator fun minus(eclipticCoords: Coords): Coords {
+        return Coords(
+            x - eclipticCoords.x,
+            y - eclipticCoords.y,
+            z - eclipticCoords.z
+        )
+    }
+
 }
 class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeris() {
     private var a: Double = 0.0
@@ -32,7 +45,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     private var E: Double = 0.0
     private var t: Double = 0.0
 
-
+    val body = keplerianElements.body
     private fun calculateOrbit(julianCenturies: Double) : Ephemeris {
         t = julianCenturies
         with(keplerianElements) {
@@ -112,7 +125,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
 
     override fun eclipticCoords(julianCentury: Double) : Coords{
         calculateOrbit(julianCentury)
-        return Coords(xeq(), yeq(), zeq())
+        return Coords( xeq(), yeq(), zeq())
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {
