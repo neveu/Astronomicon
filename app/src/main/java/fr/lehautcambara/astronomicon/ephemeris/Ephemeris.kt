@@ -125,7 +125,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
 
     override fun eclipticCoords(julianCentury: Double) : Coords{
         calculateOrbit(julianCentury)
-        return Coords( xeq(), yeq(), zeq())
+        return Coords( xecl(), yecl(), zecl())
     }
 
     override fun equatorialCoords(dateTime: Calendar): Coords {

@@ -1,5 +1,6 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
+import android.util.Log
 import java.util.Calendar
 import java.util.GregorianCalendar
 import kotlin.math.roundToInt
@@ -112,18 +113,20 @@ class LunarEphemeris : Ephemeris() {
         return phase / lp
     }
 
-     private fun phaseFraction(zonedDateTime: ZonedDateTime) : Double {
+    private fun phaseFraction(zonedDateTime: ZonedDateTime) : Double {
         val lp = 2551443
         val duration: Long = Duration.between(NewMoonEpoch.toZonedDateTime(), zonedDateTime).toMillis() / 1000
         val phase =  (duration % lp).toDouble()
-         return phase / lp
+        return phase / lp
     }
     fun phaseImageIndex(dateTime: Calendar, numImages: Int): Int {
-        return (phaseFraction(dateTime) * numImages).roundToInt() % numImages
+        val phase = phaseFraction(dateTime)
+        return (phase * numImages).roundToInt() % numImages
     }
 
     fun phaseImageIndex(zonedDateTime: ZonedDateTime, numImages: Int): Int {
-        return (phaseFraction(zonedDateTime) * numImages).roundToInt() % numImages
+        val phase = phaseFraction(zonedDateTime)
+        return ((phase * numImages) + 0.5).toInt()  % numImages
     }
 
 }

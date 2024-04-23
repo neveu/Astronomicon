@@ -2,6 +2,7 @@ package fr.lehautcambara.astronomicon.orrery
 
 import angled
 import fr.lehautcambara.astronomicon.ephemeris.Coords
+import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
@@ -9,9 +10,6 @@ import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElemen
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.sign
-import kotlin.math.sqrt
 
 enum class DisplayMode {
     Heliocentric,
@@ -20,14 +18,8 @@ enum class DisplayMode {
 }
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.Heliocentric,
-
+    val displayMode: DisplayMode = DisplayMode.Ecliptic,
 ) {
-
-    override fun toString(): String {
-       // return SimpleDateFormat("dd-MMM-yyyy").format()
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG"))
-    }
 
     val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
     val Venus = SolarEphemeris( KeplerianElements.Venus())
@@ -80,32 +72,33 @@ data class OrreryUIState (
         get() = _saturn
 
 
-    fun fromTo(from: Coords?, to: Coords?): Coords? {
-        if (from == null) return to
-        return if (to == null) -from
-        else to - from
-    }
-    private fun angle(from: Coords?, to: Coords?) : Double {
-        fromTo(from, to)?.apply {
-            return angled(x, y)
-        }
-        return 0.0
-    }
 
     fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
-        return abs(angle(center, from) - angle(center, to))
+        return abs(angled(center, from) - angled(center, to))
     }
     fun aspect(angleFromTo: Double, aspectAngle: Double, error: Double): Boolean {
         return abs(aspectAngle - angleFromTo) < error
     }
-    fun elevation(x: Double, y: Double, z: Double): Double {
-        // [x y z] . [x y 0]/|[x y 0]||[x y z]|
-        return sign(z) * (180.0 / Math.PI) * acos(
-            (x * x + y * y) / (sqrt(
-                x * x + y * y
-            ) * sqrt(x * x + y * y + z * z))
-        )
+    override fun toString(): String {
+        // return SimpleDateFormat("dd-MMM-yyyy").format()
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG"))
     }
+
+    companion object {
+        fun fromTo(from: Coords?, to: Coords?): Coords? {
+            if (from == null) return to
+            return if (to == null) -from
+            else to - from
+        }
+        fun angled(from: Coords?, to: Coords?) : Double {
+            fromTo(from, to)?.apply {
+                return angled(x, y)
+            }
+            return 0.0
+        }
+
+    }
+
 
 }
 

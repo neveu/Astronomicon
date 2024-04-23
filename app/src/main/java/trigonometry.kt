@@ -1,9 +1,7 @@
-import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
@@ -44,13 +42,11 @@ fun angled(x: Double, y: Double): Double {
     return atan2(y, x) * 180.0 / Math.PI
 }
 
-fun elevation(x: Double, y: Double, z: Double): Double {
+fun elevationd(x: Double, y: Double, z: Double): Double {
     // [x y z] . [x y 0]/|[x y 0]||[x y z]|
-    return sign(z) * (180.0 / Math.PI) * acos(
-        (x * x + y * y) / (sqrt(
-            x * x + y * y
-        ) * sqrt(x * x + y * y + z * z))
-    )
+    return (180.0/Math.PI) * atan2(z, sqrt(x*x + y*y))
+
+
 }
 
 fun r(x: Double, y: Double): Double {

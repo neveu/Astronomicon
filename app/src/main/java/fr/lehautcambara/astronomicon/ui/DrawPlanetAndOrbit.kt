@@ -26,31 +26,34 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import angle
+import angled
+import cosd
+import elevationd
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
-import fr.lehautcambara.astronomicon.kbus.BusEvent
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
-import kotlin.math.cos
+import sind
 import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 @Composable
-fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, coords: Coords?, id: Int, pointerRadius: Int,  modifier: Modifier) {
+fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, coords: Coords?, id: Int, pointerRadius: Int, orbitColor: Color =  Color.Black,  modifier: Modifier) {
     if (coords == null) return
-    DrawPlanetAndOrbit(body, r = r, xecl = coords.x, yecl = coords.y, id = id, pointerRadius,   modifier = modifier)
+    DrawPlanetAndOrbit(body, r = r, xecl = coords.x, yecl = coords.y, id = id, pointerRadius, orbitColor,  modifier = modifier)
 }
 @Composable
-fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
-    DrawOrbit(radius = r, modifier = modifier)
-    DrawPlanet(body, r, xecl, yecl, id, pointerRadius,   modifier)
+fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int, orbitColor: Color =  Color.Black,   modifier: Modifier) {
+    val ang = angled(xecl, yecl)
+    DrawOrbit(radius = r, color = orbitColor, modifier = modifier)
+    DrawPlanet(body, r, ang, id, pointerRadius,   modifier)
 }
 
 @Composable
-private fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2F, modifier: Modifier) {
+fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2F, modifier: Modifier) {
     Canvas(
         modifier = modifier
     ) {
@@ -59,15 +62,26 @@ private fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2
 }
 @Composable
 fun DrawPlanet(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,  modifier: Modifier) {
-    val ang = angle(xecl, yecl)
+    val ang = angled(xecl, yecl)
     DrawPlanet(body, r, ang, id, pointerRadius,  modifier)
+}
+
+
+
+
+@Composable
+fun DrawPlanet(body: Ephemeris, r: Double, a: Double,  id: Int, pointerRadius: Int, modifier: Modifier) {
+    val x = (r*cosd(a)).roundToInt()
+    val y = (r*sind(a)).roundToInt()
+    DrawPlanet(body, x,y,id, modifier)
+
 }
 
 @Composable
 fun DrawPlanet(body: Ephemeris, r: Int, a: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
     DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
-    val x = (r*cos(a)).roundToInt()
-    val y = (r*sin(a)).roundToInt()
+    val x = (r*cosd(a)).roundToInt()
+    val y = (r*sind(a)).roundToInt()
     DrawPlanet(body, x,y,id, modifier)
 }
 @Composable
@@ -86,10 +100,22 @@ fun DrawPlanet(body: Ephemeris, x: Int, y: Int, id: Int, modifier: Modifier) {
         modifier = modifier
             .absoluteOffset { IntOffset(x, -y) }
             .clickable {
-                Kbus.post(PlanetClickEvent(body)) }
+                Kbus.post(PlanetClickEvent(body))
+            }
     )
 }
 
+@Composable
+fun DrawPlanetEcliptic(body: Ephemeris, coords: Coords?,  id: Int, pointerRadius: Int, modifier: Modifier) {
+    coords?.apply {
+        val ra = sqrt(x*x + y*y)
+        val a = angled(x,y)
+        val elevation: Double = elevationd(x,y,z)
+        val r = 200.0 + (elevation * 10.0)
+        DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
+        DrawPlanet(body, r, a, id, pointerRadius, modifier)
+    }
+}
 @Preview
 @Composable
 private fun PreviewDrawPlanet() {
@@ -104,8 +130,8 @@ private fun PreviewDrawPlanet() {
 
     ) {
         val modifier = Modifier.align(Alignment.Center)
-
-        DrawPlanetAndOrbit(uiState.Mercury, r=100, uiState.mercury, R.drawable.mercury, 600, modifier)
+        DrawPlanetEcliptic(uiState.Earth,  uiState.earth, R.drawable.earthjpg40, 600, modifier)
+        // DrawPlanetAndOrbit(uiState.Sun, r=100, uiState.sun, R.drawable.sun2, 600, modifier)
     }
 
 }

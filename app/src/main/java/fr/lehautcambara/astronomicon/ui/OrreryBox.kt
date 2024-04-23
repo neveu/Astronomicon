@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -21,14 +22,20 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
+import angled
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.ephemeris.Coords
+import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.DisplayMode
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import fr.lehautcambara.astronomicon.orrery.OrreryUIState.Companion.fromTo
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import kotlinx.coroutines.flow.StateFlow
+import java.time.ZonedDateTime
 
 @Composable
 fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int, orbitIncrement: Int = 55) {
@@ -56,10 +63,10 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int, orbitInc
 
 @Composable
 fun DrawBox(orreryUIState: OrreryUIState,  modifier: Modifier) {
-    if (orreryUIState.displayMode == DisplayMode.Heliocentric) {
-        DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
-    } else {
-        DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
+    when(orreryUIState.displayMode) {
+        DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
+        DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
+        DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState,  modifier = modifier)
     }
 }
 
@@ -69,7 +76,7 @@ private fun DrawAllHeliocentric(
     orbitIncrement: Int,
     modifier: Modifier
 ) {
-    val pointerRadius = orbitIncrement * 9
+    val pointerRadius = 0
     with(uiState) {
         DrawPlanetAndOrbit(Mercury, r = orbitIncrement, mercury, id = R.drawable.mercury, pointerRadius, modifier = modifier)
         DrawPlanetAndOrbit(Venus, r = orbitIncrement * 2, venus, id = R.drawable.venus40, pointerRadius, modifier = modifier)
@@ -91,29 +98,72 @@ private fun DrawAllGeocentric(
         DrawPlanetAndOrbit(Moon, r = orbitIncrement, coords = fromTo(earth, moon),
             id = R.drawable.moon2 , pointerRadius = pointerRadius, modifier = modifier)
 
+        var orbitColor: Color = orbitColor(Earth, Mercury, zonedDateTime)
         DrawPlanetAndOrbit(Mercury, r = orbitIncrement*2, coords = fromTo(earth, mercury),
-            id = R.drawable.mercury , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.mercury , pointerRadius = pointerRadius, orbitColor = orbitColor,  modifier = modifier)
 
+        orbitColor = orbitColor(Earth, Venus, zonedDateTime)
         DrawPlanetAndOrbit(Venus, r = orbitIncrement*3, coords = fromTo(earth, venus),
-            id = R.drawable.venus40 , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.venus40 , pointerRadius = pointerRadius, orbitColor = orbitColor,  modifier = modifier)
 
         DrawPlanetAndOrbit(Sun, r = orbitIncrement*4, coords = fromTo(earth, sun),
-            id = R.drawable.sun1 , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.sun2 , pointerRadius = pointerRadius,  modifier = modifier)
 
+        orbitColor = orbitColor(Earth, Mars, zonedDateTime)
         DrawPlanetAndOrbit(Mars, r = orbitIncrement*5, coords = fromTo(earth, mars),
-            id = R.drawable.mars , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.mars , pointerRadius = pointerRadius, orbitColor = orbitColor,  modifier = modifier)
 
+        orbitColor = orbitColor(Earth, Jupiter, zonedDateTime)
         DrawPlanetAndOrbit(Jupiter, r = orbitIncrement*6, coords = fromTo(earth, jupiter),
-            id = R.drawable.jupiter , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.jupiter , pointerRadius = pointerRadius, orbitColor = orbitColor,  modifier = modifier)
 
+        orbitColor = orbitColor(Earth, Jupiter, zonedDateTime)
         DrawPlanetAndOrbit(Saturn, r = orbitIncrement*7, coords = fromTo(earth, saturn),
-            id = R.drawable.saturn30 , pointerRadius = pointerRadius, modifier = modifier)
+            id = R.drawable.saturn30 , pointerRadius = pointerRadius,  orbitColor = orbitColor, modifier = modifier)
 
         DrawPlanetAndOrbit(Earth, r = 0, coords = earth,  id = R.drawable.earthjpg40,
             0, modifier = modifier)
     }
 }
 
+fun orbitColor(fromPlanet: Ephemeris, planet: Ephemeris, zdt: ZonedDateTime) : Color =
+    if (apparentAngularVelocity(fromPlanet, planet, zdt) < 0.0) Color.Red else Color.Black
+
+fun apparentAngularVelocity(fromPlanet: Ephemeris, planet: Ephemeris, zdt: ZonedDateTime): Double {
+        val planetCoords = planet.eclipticCoords(zdt.convertToJulianCentury())
+        val fromCoords = fromPlanet.eclipticCoords(zdt.convertToJulianCentury())
+        val deltaT = zdt.plusHours(1)
+        val currentAngle = OrreryUIState.angled(fromCoords, planetCoords)
+        val deltaJ = deltaT.convertToJulianCentury()
+        val deltaEarth = fromPlanet.eclipticCoords(deltaJ)
+        val deltaPlanet = planet.eclipticCoords(deltaJ)
+        val deltaAngle = OrreryUIState.angled(deltaEarth, deltaPlanet)
+        return deltaAngle - currentAngle
+}
+
+@Composable
+private fun DrawAllEcliptic(
+    uiState: OrreryUIState,
+    modifier: Modifier
+) {
+    with(uiState) {
+        DrawOrbit(radius = 200, modifier = modifier)
+        DrawOrbit(radius = 50, modifier = modifier)
+        DrawOrbit(radius = 350, modifier = modifier)
+
+        DrawPlanet(body = Earth, r = 0.0, a = 0.0, id = R.drawable.earthjpg40, pointerRadius = 0, modifier = modifier)
+        DrawPlanetEcliptic(body = Mercury, coords = fromTo(earth, mercury), id = R.drawable.mercury, pointerRadius = 500, modifier = modifier)
+        DrawPlanetEcliptic(body = Venus, coords = fromTo(earth, venus), id = R.drawable.venus40, pointerRadius = 500, modifier = modifier)
+        DrawPlanetEcliptic(body = Sun, coords = fromTo(earth, sun), id = R.drawable.sun2, pointerRadius = 500, modifier = modifier)
+        DrawPlanetEcliptic(body = Mars, coords = fromTo(earth, mars), id = R.drawable.mars, pointerRadius = 500, modifier = modifier)
+        DrawPlanetEcliptic(body = Jupiter, coords = fromTo(earth, jupiter), id = R.drawable.jupiter, pointerRadius = 500, modifier = modifier)
+        DrawPlanetEcliptic(body = Saturn, coords = fromTo(earth, saturn), id = R.drawable.saturn30, pointerRadius = 500, modifier = modifier)
+
+
+    }
+
+
+}
 @Preview
 @Composable
 

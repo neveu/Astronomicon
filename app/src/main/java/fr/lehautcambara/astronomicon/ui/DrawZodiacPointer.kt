@@ -12,6 +12,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cosd
+import sind
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -20,8 +22,8 @@ fun DrawZodiacPointer(radius: Int, a: Double, color: Color = Color.Red, width: F
        Canvas(modifier = modifier) {
            val path = Path()
            path.moveTo(0F, 0F)
-           val x = (radius * cos(a)).toFloat()
-           val y = -radius * sin(a).toFloat()
+           val x = (radius * cosd(a)).toFloat()
+           val y = -radius * sind(a).toFloat()
            path.lineTo(x, y)
            path.close()
            drawPath(path, color, style = Stroke(width = width))
@@ -37,6 +39,6 @@ private fun PreviewDrawZodiacPointer() {
     ) {
         val modifier = Modifier.align(Alignment.Center)
         DrawZodiacPointer(radius = 100, a = 0.0, width =3F,  modifier = modifier)
-        DrawZodiacPointer(radius = 100, a = 45.0, width =3F,  modifier = modifier)
+        DrawZodiacPointer(radius = 100, a = 90.0, width =3F,  modifier = modifier)
     }
 }
