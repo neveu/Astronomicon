@@ -22,13 +22,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
-import angled
 import fr.lehautcambara.astronomicon.R
-import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
 import fr.lehautcambara.astronomicon.kbus.Kbus
-import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.DisplayMode
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
@@ -40,7 +37,7 @@ import java.time.ZonedDateTime
 @Composable
 fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int, orbitIncrement: Int = 55) {
     val orreryUIState: OrreryUIState by uiState.collectAsState()
-    var size by remember { mutableStateOf(Size.Zero) }
+    var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = Modifier
         .fillMaxWidth()
         .paint(
@@ -147,17 +144,18 @@ private fun DrawAllEcliptic(
     modifier: Modifier
 ) {
     with(uiState) {
-        DrawOrbit(radius = 200, modifier = modifier)
-        DrawOrbit(radius = 50, modifier = modifier)
-        DrawOrbit(radius = 350, modifier = modifier)
+        DrawOrbit(radius = 200, color = Color.Red, stroke = 4F, modifier = modifier)
+        for (i in 50..350 step 50) {
+            DrawOrbit(radius = i, modifier = modifier)
+        }
 
-        DrawPlanet(body = Earth, r = 0.0, a = 0.0, id = R.drawable.earthjpg40, pointerRadius = 0, modifier = modifier)
         DrawPlanetEcliptic(body = Mercury, coords = fromTo(earth, mercury), id = R.drawable.mercury, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Venus, coords = fromTo(earth, venus), id = R.drawable.venus40, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Sun, coords = fromTo(earth, sun), id = R.drawable.sun2, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Mars, coords = fromTo(earth, mars), id = R.drawable.mars, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Jupiter, coords = fromTo(earth, jupiter), id = R.drawable.jupiter, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Saturn, coords = fromTo(earth, saturn), id = R.drawable.saturn30, pointerRadius = 500, modifier = modifier)
+        DrawPlanet(body = Earth, r = 0.0, a = 0.0, id = R.drawable.earthjpg40, pointerRadius = 0, modifier = modifier)
 
 
     }

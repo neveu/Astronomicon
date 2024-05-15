@@ -15,7 +15,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
-data class Coords( val x: Double, val y: Double, val z: Double) {
+data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: Ephemeris?=null) {
     override fun toString(): String {
         return "($x, $y)"
     }
@@ -45,7 +45,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     private var E: Double = 0.0
     private var t: Double = 0.0
 
-    val body = keplerianElements.body
+    val body: String = keplerianElements.body
     private fun calculateOrbit(julianCenturies: Double) : Ephemeris {
         t = julianCenturies
         with(keplerianElements) {
@@ -135,10 +135,14 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         calculateOrbit(julianCentury)
         return Coords(xeq(), yeq(), zeq())
     }
+
+    override fun toString(): String {
+        return body
+    }
 }
 
 fun Calendar.convertToJulianCentury(): Double {
-    val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 0, 0, 0)
+    val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 12, 0, 0)
     val Tmsec: Double = (this.timeInMillis - j2000.timeInMillis).toDouble()
     val Tsec = Tmsec / 1000.0
     val Tday = Tsec / (60 * 60 * 24)
@@ -146,9 +150,9 @@ fun Calendar.convertToJulianCentury(): Double {
     return Tyear / 100.0 // time in julian centuries
 }
 
-fun ZonedDateTime.convertToJulianCentury(): Double {
-    val zoneID = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
-    val j2000 = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, zoneID)
+fun ZonedDateTime.convertToJulianCentury(zoneID: ZoneId = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
+): Double {
+    val j2000 = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, zoneID)
     val now = this
     val duration = Duration.between(j2000, now)
     val period = Period.between(j2000.toLocalDate(), now.toLocalDate())
@@ -166,4 +170,5 @@ abstract class Ephemeris {
 
     abstract fun eclipticCoords(julianCentury: Double): Coords
     abstract fun equatorialCoords(julianCentury: Double): Coords
+    abstract override fun toString(): String
 }

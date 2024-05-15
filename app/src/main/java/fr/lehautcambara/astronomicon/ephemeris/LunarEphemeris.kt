@@ -1,6 +1,5 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import android.util.Log
 import java.util.Calendar
 import java.util.GregorianCalendar
 import kotlin.math.roundToInt
@@ -27,6 +26,10 @@ class LunarEphemeris : Ephemeris() {
     override fun equatorialCoords(julianCentury: Double): Coords {
         calculateOrbit(julianCentury)
         return Coords( xeq(), yeq(), zeq())
+    }
+
+    override fun toString(): String {
+        return "moon"
     }
 
     private var t:Double = 0.0

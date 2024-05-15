@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import angle
 import angled
 import cosd
 import elevationd
@@ -111,7 +110,7 @@ fun DrawPlanetEcliptic(body: Ephemeris, coords: Coords?,  id: Int, pointerRadius
         val ra = sqrt(x*x + y*y)
         val a = angled(x,y)
         val elevation: Double = elevationd(x,y,z)
-        val r = 200.0 + (elevation * 10.0)
+        val r = 200.0 + (elevation * 20.0)
         DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
         DrawPlanet(body, r, a, id, pointerRadius, modifier)
     }
@@ -120,7 +119,7 @@ fun DrawPlanetEcliptic(body: Ephemeris, coords: Coords?,  id: Int, pointerRadius
 @Composable
 private fun PreviewDrawPlanet() {
     val uiState = OrreryUIState()
-    var size by remember { mutableStateOf(Size.Zero) }
+    var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = Modifier
         .background(Color.White)
         .fillMaxSize()
