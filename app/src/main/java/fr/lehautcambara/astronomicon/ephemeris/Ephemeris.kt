@@ -1,15 +1,10 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
 import cosd
+import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import sind
-import java.time.Duration
-import java.time.Period
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.Calendar
-import java.util.GregorianCalendar
 import kotlin.math.IEEErem
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -141,26 +136,6 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     }
 }
 
-fun Calendar.convertToJulianCentury(): Double {
-    val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 12, 0, 0)
-    val Tmsec: Double = (this.timeInMillis - j2000.timeInMillis).toDouble()
-    val Tsec = Tmsec / 1000.0
-    val Tday = Tsec / (60 * 60 * 24)
-    val Tyear = Tday / 365.242
-    return Tyear / 100.0 // time in julian centuries
-}
-
-fun ZonedDateTime.convertToJulianCentury(zoneID: ZoneId = ZoneId.ofOffset("UTC", ZoneOffset.UTC)
-): Double {
-    val j2000 = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, zoneID)
-    val now = this
-    val duration = Duration.between(j2000, now)
-    val period = Period.between(j2000.toLocalDate(), now.toLocalDate())
-    val secs: Double = duration.toMillis() / 1000.0
-    val days = secs /  (60 * 60 * 24)
-    val years = days / 365.242
-    return years/100.0
-}
 
 abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords

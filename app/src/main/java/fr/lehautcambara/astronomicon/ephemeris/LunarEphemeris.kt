@@ -4,6 +4,7 @@ import java.util.Calendar
 import java.util.GregorianCalendar
 import kotlin.math.roundToInt
 import cosd
+import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import sind
 import tand
 import java.time.Duration

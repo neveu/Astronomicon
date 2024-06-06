@@ -14,16 +14,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cosd
 import sind
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 fun DrawZodiacPointer(radius: Int, a: Double, color: Color = Color.Red, width: Float = 5F, modifier: Modifier) {
        Canvas(modifier = modifier) {
-           val path = Path()
-           path.moveTo(0F, 0F)
            val x = (radius * cosd(a)).toFloat()
            val y = -radius * sind(a).toFloat()
+           val path = Path()
+           path.moveTo(0F, 0F)
            path.lineTo(x, y)
            path.close()
            drawPath(path, color, style = Stroke(width = width))

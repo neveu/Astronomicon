@@ -23,8 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
-import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.DisplayMode

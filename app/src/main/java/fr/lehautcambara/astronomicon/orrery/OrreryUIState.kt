@@ -5,7 +5,7 @@ import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
-import fr.lehautcambara.astronomicon.ephemeris.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter

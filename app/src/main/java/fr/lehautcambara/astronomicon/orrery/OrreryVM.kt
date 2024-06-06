@@ -2,6 +2,7 @@ package fr.lehautcambara.astronomicon.orrery
 
 import androidx.lifecycle.ViewModel
 import angled
+import fr.lehautcambara.astronomicon.astrology.natalDate
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
@@ -13,14 +14,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.time.ZoneId
 import java.time.ZonedDateTime
-import kotlin.math.abs
 import kotlin.math.roundToLong
 
 class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)
+        natalDate(2000, 1, 1, 12, 0, ZoneId.of("GMT"))
+        natalDate(1959, 8, 25, 8, 37, ZoneId.of("America/Chicago"))
     }
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _uiState = MutableStateFlow(OrreryUIState(zonedDateTime))

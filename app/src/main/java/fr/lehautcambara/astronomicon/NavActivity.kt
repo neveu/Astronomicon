@@ -32,13 +32,6 @@ class NavActivity : ComponentActivity() {
 }
 
 
-
-
-
-
-
-
-
 @Preview
 @Composable
 fun ScreenPreview() {
