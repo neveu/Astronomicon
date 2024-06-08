@@ -13,55 +13,87 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import fr.lehautcambara.astronomicon.R
 import rcosd
 import rsind
 
-fun DrawScope.drawZodiacDividers(r0: Float, r1: Float, angleOffset: Float, color: Color) {
+@OptIn(ExperimentalTextApi::class)
+fun DrawScope.drawZodiacDividers(
+    r0: Double,
+    r1: Double,
+    angleOffset: Double,
+    color: Color,
+    image: ImageBitmap,
+) {
     for (i in 0..11) {
-        val angle = (i * 30F) + angleOffset
-        val x0 = rcosd(r0, angle)
-        val y0 = rsind(r0, angle)
-        val x1 = rcosd(r1, angle)
-        val y1 = rsind(r1, angle)
+        val angle = 180.0 + (i * 30F) + angleOffset // 180 so we start on the left
+        val x0 = rcosd(r0, angle).toFloat()
+        val y0 = rsind(r0, angle).toFloat()
+        val x1 = rcosd(r1, angle).toFloat()
+        val y1 = rsind(r1, angle).toFloat()
         drawLine(Color.Black, start = Offset(x1,y1), end = Offset(x0, y0), strokeWidth = 5F)
-        val xt = rcosd((r0 + r1)/2F, angle+15F)
-        val yt = rsind((r0 + r1)/2F, angle+15F)
-
-
-
+        val xsign = rcosd((r0 + r1)/2.0, angle+15.0)
+        val ysign = rsind((r0 + r1)/2.0, angle+15.0)
+        drawZodiacSign(xsign, ysign, image )
     }
 }
 
-@Composable
-fun DrawNatalChart(r0: Float, r1: Float = r0 - 60, modifier: Modifier) {
-    Canvas(modifier = modifier){
+fun DrawScope.drawZodiacSign(x: Double, y: Double, image: ImageBitmap) {
+    val x0 = (-x - image.width/4).toInt()
+    val y0 = (-y - (image.height/4)).toInt()
+    val intOffset = IntOffset(x0, y0)
+    val intSize = IntSize(image.width/2, image.height/2)
+    drawIntoCanvas { canvas ->
+        drawImage(image, dstOffset = intOffset, dstSize = intSize)
+    }
 
-        drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0)
-        drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1)
-        drawZodiacDividers(r0, r1, 15F, color = Color.Black)
+}
+
+@OptIn(ExperimentalTextApi::class)
+fun DrawScope.drawZodiac(
+    r0: Double,
+    r1: Double,
+    angleOffset: Double = 0.0,
+    image: ImageBitmap,
+) {
+    drawZodiacDividers(r0, r1, angleOffset, color = Color.Black, image)
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun DrawNatalChart(r0: Double, r1: Double = r0 - 60, angleOffset: Double = 0.0,  modifier: Modifier) {
+    val image: ImageBitmap = ImageBitmap.imageResource(id = R.drawable.aries)
+    Canvas(modifier = modifier){
+        drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0.toFloat())
+        drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1.toFloat())
+        drawZodiac(r0, r1, angleOffset, image)
+
     }
 }
 
 @Preview
 @Composable
 fun PreviewDrawNatalChart() {
-    var width by remember { mutableStateOf(0F) }
+    var width by remember { mutableStateOf(0.0) }
     Box(modifier = Modifier
         .background(Color.White)
         .fillMaxSize()
         .onGloballyPositioned { coordinates: LayoutCoordinates ->
-            width = coordinates.boundsInRoot().width
+            width = coordinates.boundsInRoot().width.toDouble()
         }
-
-
     ) {
-
         DrawNatalChart(width/2, modifier = Modifier
             .align(Alignment.Center)
         )

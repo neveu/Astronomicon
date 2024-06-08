@@ -23,7 +23,10 @@ fun cosd(degrees: Float): Float {
 }
 
 fun rcosd(r: Float, angleD: Float) = r*cosd(angleD)
+fun rcosd(r: Double, angleD: Double) = r*cosd(angleD)
+
 fun rsind(r: Float, angleD: Float) = r*sind(angleD)
+fun rsind(r: Double, angleD: Double) = r*sind(angleD)
 
 
 fun tand(degrees: Double): Double {
