@@ -2,6 +2,7 @@ package fr.lehautcambara.astronomicon.astrology
 
 import android.util.Log
 import cosd
+import fr.lehautcambara.astronomicon.R
 import sind
 import tand
 import java.lang.Math.atan2
@@ -13,7 +14,7 @@ import java.time.ZonedDateTime
 import java.util.Calendar
 import java.util.GregorianCalendar
 
-val zodiac = arrayOf(
+val zodiacNames = arrayOf(
     "Aries",
     "Taurus",
     "Gemini",
@@ -27,6 +28,22 @@ val zodiac = arrayOf(
     "Aquarius",
     "Pisces"
     )
+
+val zodiacSignDrawables = arrayOf(
+    R.drawable.aries,
+    R.drawable.taurus,
+    R.drawable.gemini,
+    R.drawable.cancer,
+    R.drawable.leo,
+    R.drawable.virgo,
+    R.drawable.libra,
+    R.drawable.scorpio,
+    R.drawable.sagitarius,
+    R.drawable.capricorn,
+    R.drawable.aquarius,
+    R.drawable.pisces,
+    )
+
 
 fun Calendar.convertToJulianCentury(): Double {
     val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 12, 0, 0)
@@ -76,7 +93,7 @@ fun ZonedDateTime.ascendantToZodiacIndex(longitude: Double? = null, latitude: Do
     return (ascendant(longitude, latitude)/30.0).toInt()
 }
 fun ZonedDateTime.ascendantToZodiacSign(longitude: Double? = null, latitude: Double = 0.0): String {
-    return zodiac[(ascendant(longitude, latitude)/30.0).toInt()]
+    return zodiacNames[(ascendant(longitude, latitude)/30.0).toInt()]
 }
 fun ZonedDateTime.ascendantSignDegrees(longitude: Double? = null, latitude: Double = 0.0): Double {
     return ascendant(longitude, latitude) % 30
