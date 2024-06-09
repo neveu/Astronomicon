@@ -51,12 +51,13 @@ fun DrawScope.drawZodiacSign(index: Int,
                              angleOffset: Double,
                              imageArray: Array<ImageBitmap>,
 ) {
-    val angle = 180.0 + (index * 30F) + angleOffset // 180 so we start on the left
+    //val angle = 180.0 + (index * 30F) + angleOffset // 180 so we start on the left
+    val angle = (index * 30F) + angleOffset // 180 so we start on the left
     val image = imageArray[index]
-    val x = rcosd((r0 + r1)/2.0, angle+15.0)
+    val x = -rcosd((r0 + r1)/2.0, angle+15.0)
     val y = rsind((r0 + r1)/2.0, angle+15.0)
-    val x0 = (-x - image.width/4).toInt()
-    val y0 = (-y - (image.height/4)).toInt()
+    val x0 = (x - image.width/4).toInt()
+    val y0 = (y - (image.height/4)).toInt()
     val intOffset = IntOffset(x0, y0)
     val intSize = IntSize(image.width/2, image.height/2)
     drawIntoCanvas { canvas ->
@@ -80,7 +81,7 @@ fun DrawScope.drawZodiac(
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun DrawNatalChart(r0: Double, r1: Double = r0 - 60, angleOffset: Double = 0.0,  modifier: Modifier) {
+fun DrawNatalChart(r0: Double, r1: Double = r0 - 60, angleOffset: Double = 15.0,  modifier: Modifier) {
     val imageArray: Array<ImageBitmap> = zodiacSignDrawables.map {
         ImageBitmap.imageResource(id = it)
     }.toTypedArray()
