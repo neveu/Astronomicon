@@ -3,6 +3,10 @@ package fr.lehautcambara.astronomicon.astrology
 import android.util.Log
 import cosd
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
+import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
+import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import sind
 import tand
 import java.lang.Math.atan2
@@ -44,6 +48,29 @@ val zodiacSignDrawables = arrayOf(
     R.drawable.pisces,
     )
 
+val planetSignDrawables = hashMapOf<String, Int> (
+    "Sun" to R.drawable.sun_symbol,
+    "Earth" to R.drawable.earth_symbol,
+    "Mercury" to R.drawable.mercury_symbol,
+    "Moon" to  R.drawable.moon_symbol,
+    "Venus" to R.drawable.venus_symbol,
+    "Mars" to R.drawable.mars_symbol,
+    "Jupiter" to R.drawable.jupiter_symbol,
+    "Saturn" to R.drawable.saturn_symbol,
+)
+
+val ephemerides: HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
+
+    "Sun" to SolarEphemeris( KeplerianElements.Mercury()),
+    "Earth" to SolarEphemeris( KeplerianElements.EmBary()),
+    "Mercury" to SolarEphemeris( KeplerianElements.Mercury()),
+    "Moon" to  LunarEphemeris(),
+    "Venus" to SolarEphemeris( KeplerianElements.Venus()),
+    "Mars" to SolarEphemeris( KeplerianElements.Mars()),
+    "Jupiter" to SolarEphemeris( KeplerianElements.Jupiter()),
+    "Saturn" to SolarEphemeris( KeplerianElements.Saturn()),
+
+)
 
 fun Calendar.convertToJulianCentury(): Double {
     val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 12, 0, 0)
@@ -72,13 +99,15 @@ fun ZonedDateTime.convertToJulianDays() : Double {
 fun ZonedDateTime.sidereal(longitude: Double? = null): Double { // approximate longitude from timezone offset
     val ut = this.withZoneSameInstant(ZoneId.of("GMT")) //
     val timeInDecimalHoursUTC = ut.hour + ut.minute/60.0
-    val d = convertToJulianDays()
+    val d = convertToJulianDays().toInt()
     val long = longitude?:(15.0 * this.offset.totalSeconds / 3600.0)
-    return 100.46 + (0.985647 * d) + long + (15.0 *  timeInDecimalHoursUTC)
+    val st = 100.46 + (0.985647 * d) + long + (15.0 *  timeInDecimalHoursUTC)
+    return st
 }
 
 fun ZonedDateTime.sidereal360(longitude: Double? = null) : Double {
-    return sidereal(longitude) % 360.0
+    val st = sidereal(longitude) % 360.0
+    return st
 }
 
 fun ZonedDateTime.ascendant(longitude: Double? = null, latitude: Double = 0.0): Double {
@@ -87,7 +116,8 @@ fun ZonedDateTime.ascendant(longitude: Double? = null, latitude: Double = 0.0): 
     val y = -cosd(lst)
     val x = (sind(lst) * cosd(inclination)) + (tand(latitude)*sind(inclination))
     val asc0 = atan2(y,x) * (180.0/Math.PI)
-    return if (asc0 < 180.0) asc0 + 180.0 else asc0 - 180
+    val ascendant = if (asc0 < 180.0) asc0 + 180.0 else asc0 - 180
+    return ascendant
 }
 fun ZonedDateTime.ascendantToZodiacIndex(longitude: Double? = null, latitude: Double = 0.0): Int {
     return (ascendant(longitude, latitude)/30.0).toInt()

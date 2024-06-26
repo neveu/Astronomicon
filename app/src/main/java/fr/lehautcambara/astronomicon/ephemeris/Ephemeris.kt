@@ -1,9 +1,11 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
+import angled
 import cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import sind
+import java.time.ZonedDateTime
 import java.util.Calendar
 import kotlin.math.IEEErem
 import kotlin.math.abs
@@ -12,7 +14,7 @@ import kotlin.math.sqrt
 
 data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: Ephemeris?=null) {
     override fun toString(): String {
-        return "($x, $y)"
+        return "($x, $y, $z)"
     }
 
     operator fun unaryMinus(): Coords {
@@ -25,6 +27,10 @@ data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: E
             y - eclipticCoords.y,
             z - eclipticCoords.z
         )
+    }
+
+    fun toPolar(): Pair<Double, Double> {
+        return Pair(sqrt(x*x + y*y), angled(x,y))
     }
 
 }
@@ -118,6 +124,10 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
        return  eclipticCoords(dateTime.convertToJulianCentury())
     }
 
+    override fun eclipticCoords(zdt: ZonedDateTime): Coords {
+        return eclipticCoords( zdt.convertToJulianCentury())
+    }
+
     override fun eclipticCoords(julianCentury: Double) : Coords{
         calculateOrbit(julianCentury)
         return Coords( xecl(), yecl(), zecl())
@@ -139,6 +149,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
 
 abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords
+    abstract fun eclipticCoords(zdt: ZonedDateTime): Coords
 
     abstract fun equatorialCoords(dateTime: Calendar): Coords
 

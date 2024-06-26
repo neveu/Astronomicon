@@ -1,18 +1,22 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import java.util.Calendar
-import java.util.GregorianCalendar
-import kotlin.math.roundToInt
 import cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import sind
 import tand
 import java.time.Duration
 import java.time.ZonedDateTime
+import java.util.Calendar
+import java.util.GregorianCalendar
+import kotlin.math.roundToInt
 
 class LunarEphemeris : Ephemeris() {
     override fun eclipticCoords(dateTime: Calendar): Coords {
         return eclipticCoords(dateTime.convertToJulianCentury())
+    }
+
+    override fun eclipticCoords(zdt: ZonedDateTime): Coords {
+        return eclipticCoords( zdt.convertToJulianCentury())
     }
 
     override fun eclipticCoords(julianCentury: Double): Coords {
