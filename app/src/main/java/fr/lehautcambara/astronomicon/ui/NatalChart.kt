@@ -3,7 +3,8 @@ package fr.lehautcambara.astronomicon.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,12 +25,16 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import fr.lehautcambara.astronomicon.astrology.ascendant
 import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.astrology.zodiacSignDrawables
+import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.ephemeris.PolarCoords
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import rcosd
 import rsind
@@ -96,10 +101,10 @@ fun DrawScope.drawZodiac(
 }
 
 
-fun DrawScope.drawPlanet(planet: ImageBitmap, r: Double, angle: Double, scale: Double = 1.0) {
+fun DrawScope.drawPlanet(planetBitmap: ImageBitmap, r: Double, angle: Double, scale: Double = 1.0) {
     val sc = scale.toFloat()
-    scale(scale =sc) {
-        drawBitmapImage( r/sc, angle, planet)
+    scale(scale = sc) {
+        drawBitmapImage( r/sc, angle, planetBitmap)
     }
 }
 
@@ -138,7 +143,13 @@ fun DrawNatalChart (
         }
     }
 
-    val planetSignPolarCoords: Map<String, Pair<Double, Double>?> = ephemerides.mapValues { entry ->
+    val planetSignEclipticCoords: Map<String, Coords?> = ephemerides.mapValues { entry ->
+        ephemerides[entry.key]?.let {ephemeris: Ephemeris ->
+            ephemeris.eclipticCoords(zdt)
+        }
+    }
+
+    val planetSignPolarCoords: Map<String, PolarCoords?> = ephemerides.mapValues { entry ->
         ephemerides[entry.key]?.let {ephemeris: Ephemeris ->
             ephemeris.eclipticCoords(zdt).toPolar()
         }
@@ -147,27 +158,59 @@ fun DrawNatalChart (
     // calculate angle offset of zodiac
     val zodiacAngleOffset = zdt.ascendant()
     DrawNatalChart(r0 = r0, angleOffset = zodiacAngleOffset,  modifier = modifier)
+    DrawPlanetSigns(r0, planetSignImages, planetSignEclipticCoords, zodiacAngleOffset, modifier = modifier)
 
+}
 
+@Composable
+fun DrawPlanetSigns(
+    r: Double,
+    planetSignImages: Map<String, ImageBitmap?>,
+    planetSignEclipticCoords: Map<String, Coords?>,
+    zodiacAngleOffset: Double,
+    modifier: Modifier
+) {
+    Canvas(modifier = modifier) {
+        planetSignEclipticCoords["Earth"]?.let {earthCoords ->
+            for ((planet, bitmap) in planetSignImages) {
+                if (planet == "Earth") continue
+                planetSignEclipticCoords[planet]?.let { planetCoords: Coords ->
+                    bitmap?.let {planetBitmap ->
+                        val geocentricCoords = earthCoords.fromTo(planetCoords)
+                        val polarGeocentricCoords: PolarCoords = geocentricCoords.toPolar()
+                        val angle = (polarGeocentricCoords.a + zodiacAngleOffset) % 360
+                        drawPlanet(planetBitmap, r -120, angle)
+                    }
+                }
+            }
+        }
+
+    }
 }
 
 @Composable
 fun DrawNatalChart(uiState: OrreryUIState) {
 
 }
-@Preview
 @Composable
-fun PreviewDrawNatalChart() {
-    var width by remember { mutableStateOf(1080.0) }
+fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), radiusDp: Dp = 400.dp) {
+    var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
     Box(modifier = Modifier
-        .background(Color.White)
-        .fillMaxSize()
+        .width(radiusDp)
+        .height((radiusDp))
+        .background(Color.Yellow)
         .onGloballyPositioned { coordinates: LayoutCoordinates ->
-            width = coordinates.boundsInRoot().width.toDouble()
+            layoutWidth = coordinates.boundsInRoot().width
         }
     ) {
-        DrawNatalChart(zdt = ZonedDateTime.now().plusHours(2), r0 = width/2, modifier = Modifier
+        DrawNatalChart(zdt = zdt, r0 = (layoutWidth/2.0), modifier = Modifier
             .align(Alignment.Center)
         )
     }
+}
+
+@Preview
+@Composable
+fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
+    DrawNatalChart(zdt)
 }

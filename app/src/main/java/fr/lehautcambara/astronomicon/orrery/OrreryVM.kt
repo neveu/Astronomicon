@@ -49,28 +49,31 @@ class OrreryVM : ViewModel() {
     }
 
     private fun fromTo(from: Ephemeris?, to: Ephemeris?): Coords? {
-        val currentDate = _uiState.value.julianCentury
-        return fromTo(from?.eclipticCoords(currentDate), to?.eclipticCoords(currentDate))
+        val currentDate: Double = _uiState.value.julianCentury
+        return from?.fromTo(to, currentDate)
     }
 
-    private fun fromTo(from: Coords?, to: Coords?): Coords? {
-        if (from == null) return to
-        return if (to == null) -from
-        else to - from
-    }
+//    fun fromTo(from: Ephemeris?, to: Ephemeris?, currentDate: Double): Coords? {
+//        return fromTo(from?.eclipticCoords(currentDate), to?.eclipticCoords(currentDate))
+//    }
+//
+//    fun fromTo(from: Coords?, to: Coords?): Coords? {
+//        if (from == null) return to
+//        return if (to == null) -from
+//        else to - from
+//    }
 
-    private fun angle(from: Ephemeris?, to: Ephemeris?): Double {
+    fun angle(from: Ephemeris?, to: Ephemeris?): Double {
         fromTo(from, to)?.apply {
             return angled(x, y)
         }
         return 0.0
     }
 
-    private fun angle(from: Coords?, to: Coords?) : Double {
-        fromTo(from, to)?.apply {
-            return angled(x, y)
-        }
-        return 0.0
+    fun angle(from: Coords?, to: Coords?) : Double {
+        return ((from?.fromTo(to)?.let {
+            angled(it.x, it.y)
+        })?: 0.0)
     }
 
 

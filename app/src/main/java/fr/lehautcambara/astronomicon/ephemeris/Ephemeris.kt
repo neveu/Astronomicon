@@ -28,12 +28,18 @@ data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: E
             z - eclipticCoords.z
         )
     }
-
-    fun toPolar(): Pair<Double, Double> {
-        return Pair(sqrt(x*x + y*y), angled(x,y))
+    fun fromTo( to: Coords?): Coords {
+        return if (to == null) -this
+        else to - this
     }
 
+    fun toPolar(): PolarCoords {
+        return PolarCoords(sqrt(x*x + y*y), angled(x,y))
+    }
 }
+
+data class PolarCoords (val r: Double, val a: Double) {}
+
 class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeris() {
     private var a: Double = 0.0
     private var e: Double =  0.0
@@ -112,12 +118,10 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         return sind(obliquityJ2000) * yecl() + cosd(obliquityJ2000) * zecl()
     }
 
-
     companion object {
         private val obliquityJ2000 = 23.43928
         fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
         fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)
-
     }
 
     override fun eclipticCoords(dateTime: Calendar): Coords {
@@ -157,4 +161,10 @@ abstract class Ephemeris {
     abstract fun eclipticCoords(julianCentury: Double): Coords
     abstract fun equatorialCoords(julianCentury: Double): Coords
     abstract override fun toString(): String
+
+    fun fromTo( to: Ephemeris?, currentDate: Double): Coords {
+        return this.eclipticCoords(currentDate).fromTo(to?.eclipticCoords(currentDate))
+    }
+
+
 }
