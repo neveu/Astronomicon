@@ -61,7 +61,7 @@ val planetSignDrawables = hashMapOf<String, Int> (
 
 val ephemerides: HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
 
-    "Sun" to SolarEphemeris( KeplerianElements.Mercury()),
+    "Sun" to SolarEphemeris( KeplerianElements.Sun()),
     "Earth" to SolarEphemeris( KeplerianElements.EmBary()),
     "Mercury" to SolarEphemeris( KeplerianElements.Mercury()),
     "Moon" to  LunarEphemeris(),

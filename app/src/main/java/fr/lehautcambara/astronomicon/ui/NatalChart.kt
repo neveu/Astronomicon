@@ -195,7 +195,7 @@ fun DrawNatalChart(uiState: OrreryUIState) {
 @Composable
 fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), radiusDp: Dp = 400.dp) {
     var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
-    Box(modifier = Modifier
+     Box(modifier = Modifier
         .width(radiusDp)
         .height((radiusDp))
         .background(Color.Yellow)
