@@ -115,7 +115,7 @@ fun ZonedDateTime.ascendant(longitude: Double? = null, latitude: Double = 0.0): 
     val inclination = 23.44
     val y = -cosd(lst)
     val x = (sind(lst) * cosd(inclination)) + (tand(latitude)*sind(inclination))
-    val asc0 = atan2(y,x) * (180.0/Math.PI)
+    val asc0 = -atan2(y,x) * (180.0/Math.PI)
     val ascendant = if (asc0 < 180.0) asc0 + 180.0 else asc0 - 180
     return ascendant
 }

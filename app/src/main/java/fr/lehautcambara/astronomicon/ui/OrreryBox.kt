@@ -64,6 +64,7 @@ fun DrawBox(orreryUIState: OrreryUIState,  modifier: Modifier) {
         DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
         DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
         DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState,  modifier = modifier)
+        DisplayMode.NatalChart -> DrawNatalChart(uiState = orreryUIState, modifier = modifier)
     }
 }
 

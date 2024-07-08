@@ -1,24 +1,35 @@
 package fr.lehautcambara.astronomicon.orrery
 
 import angled
+import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 enum class DisplayMode {
-    Heliocentric,
-    Geocentric,
-    Ecliptic,
+    Heliocentric {
+        override fun scale(radialScroll: Float) = radialScroll/20.0
+                 },
+    Geocentric {
+        override fun scale(radialScroll: Float) = radialScroll/20.0
+    },
+    Ecliptic{
+        override fun scale(radialScroll: Float) = radialScroll/20.0
+    },
+    NatalChart{
+        override fun scale(radialScroll: Float) = radialScroll/200.0
+    };
+    abstract fun scale(radialScroll: Float): Double
 }
+
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.Ecliptic,
+    val displayMode: DisplayMode = DisplayMode.Heliocentric,
 ) {
 
     val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
@@ -53,8 +64,6 @@ data class OrreryUIState (
     private var _earth = Earth.eclipticCoords(julianCentury)
      val earth: Coords
         get() = _earth
-
-
 
     private var _moon = Moon.eclipticCoords(julianCentury)
      val moon: Coords
@@ -112,7 +121,7 @@ data class OrreryUIState (
     }
     override fun toString(): String {
         // return SimpleDateFormat("dd-MMM-yyyy").format()
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG"))
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm GG"))
     }
 
     companion object {

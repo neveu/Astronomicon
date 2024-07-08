@@ -32,8 +32,9 @@ class OrreryVM : ViewModel() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: RadialScrollEvent) {
-        val scrollAmount = (event.radialScroll()/200F).roundToLong()
-        zonedDateTime = zonedDateTime.plusHours(scrollAmount)
+        val scale = uiState.value.displayMode.scale(event.radialScroll())
+        val scrollAmount = (scale).roundToLong()
+        zonedDateTime = zonedDateTime.plusMinutes(scrollAmount)
         _uiState.update { uistate ->
             uistate.copy(zonedDateTime = zonedDateTime)
         }
