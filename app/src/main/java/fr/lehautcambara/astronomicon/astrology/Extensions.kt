@@ -1,6 +1,9 @@
 package fr.lehautcambara.astronomicon.astrology
 
+import acosd
 import android.util.Log
+import asind
+import atand
 import cosd
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
@@ -10,6 +13,7 @@ import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElemen
 import sind
 import tand
 import java.lang.Math.atan2
+import java.lang.Math.floor
 import java.time.Duration
 import java.time.OffsetTime
 import java.time.ZoneId
@@ -72,6 +76,15 @@ val ephemerides: HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
 
 )
 
+class Zenith {
+    companion object {
+        val Official = 90.0 + 50.0/60.0 // 90 degrees 50'
+        val Civil = 96.0
+        val Nautical = 102.0
+        val Astronomical = 108.0
+    }
+}
+
 fun Calendar.convertToJulianCentury(): Double {
     val j2000 = GregorianCalendar(2000, Calendar.JANUARY, 1, 12, 0, 0)
     val Tmsec: Double = (this.timeInMillis - j2000.timeInMillis).toDouble()
@@ -89,11 +102,9 @@ fun ZonedDateTime.convertToJulianCentury(): Double {
 
 fun ZonedDateTime.convertToJulianDays() : Double {
     val j2000 = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, ZoneId.ofOffset("UTC", ZoneOffset.UTC))
-    val now = this
-    val duration = Duration.between(j2000, now,  )
+    val duration = Duration.between(j2000, this,  )
     val secs: Double = duration.toMillis() / 1000.0
-    val days = secs / (60 * 60 * 24)
-    return days
+    return secs / (60 * 60 * 24)
 }
 
 fun ZonedDateTime.sidereal(longitude: Double? = null): Double { // approximate longitude from timezone offset
@@ -127,6 +138,46 @@ fun ZonedDateTime.ascendantToZodiacSign(longitude: Double? = null, latitude: Dou
 }
 fun ZonedDateTime.ascendantSignDegrees(longitude: Double? = null, latitude: Double = 0.0): Double {
     return ascendant(longitude, latitude) % 30
+}
+
+fun ZonedDateTime.longitudeHour(longitude: Double? = null): Double {
+    return ((longitude?:(15.0 * this.offset.totalSeconds / 3600.0)) / 15.0) % 360
+}
+
+private fun meanAnomaly(t: Double) = (0.9856 * t) - 3.289
+fun trueLongitude(meanAnomaly : Double): Double {
+    val M = meanAnomaly
+    return M + (1.916 * sind(M)) + (0.020 * sind(2.0 * M)) + 282.834
+}
+fun ZonedDateTime.sunrise(longitude: Double? = null, latitude: Double = 0.0, zenith: Double): Double {
+    val n = dayOfYear
+    val longHour = longitudeHour(longitude)
+    val t = n + ((6 - longHour) / 24.0) // rising
+    // val t = n + ((6 - longHour) / 24.0) // setting
+
+    val M = meanAnomaly(t)
+    val L = trueLongitude(M)
+    var ra = atand(0.91764 * tand(L)) % 360 // right ascension
+    val Lquadrant = floor(L / 90.0) * 90.0
+    val RAquadrant = (floor(ra / 90.0)) * 90.0
+    ra = ra + (Lquadrant - RAquadrant) // right ascension value needs to be in the same quadrant as L
+    ra = ra / 15.0 // right ascension value needs to be converted into hours
+    val sinDec = 0.39782 * sind(L) // calculate the Sun's declination
+    val cosDec = cosd(asind(sinDec))
+    val cosH =
+        (cosd(zenith) - (sinDec * sind(latitude))) / (cosDec * cosd(latitude))  // calculate the Sun's local hour angle
+//    if (cosH >  1)
+//        the sun never rises on this location (on the specified date)
+//    if (cosH < -1)
+//        the sun never sets on this location (on the specified date)
+    // finish calculating H and convert into hours
+    var H = 360.0 - acosd(cosH) // if rising time is desired:
+    //  H = acos(cosH) // if setting time is desired:
+    H = H / 15.0
+    val T = H + ra - (0.06571 * t) - 6.622 // calculate local mean time of rising/setting
+    val ut = (T - longHour) % 24
+    val localTime = ut + (this.offset.totalSeconds / 3600)
+    return localTime
 }
 
 fun natalDate(year: Int, month: Int, day: Int, hour: Int, minute: Int, zone: ZoneId) {

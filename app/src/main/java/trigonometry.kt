@@ -1,4 +1,7 @@
 
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -31,6 +34,18 @@ fun rsind(r: Double, angleD: Double) = r*sind(angleD)
 
 fun tand(degrees: Double): Double {
     return tan(degrees * Math.PI / 180.0)
+}
+
+fun atand(t: Double) : Double { // atan in degrees
+    return atan(t) * 180.0 / Math.PI
+}
+
+fun asind(s: Double) : Double {
+    return asin(s) * 180.0 / Math.PI
+}
+
+fun acosd(c: Double) : Double {
+    return acos(c) * 180.0/Math.PI
 }
 
 fun angled(x: Double, y: Double): Double {

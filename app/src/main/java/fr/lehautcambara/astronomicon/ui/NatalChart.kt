@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -209,7 +208,7 @@ fun DrawScope.drawZodiac(
     angleOffset: Double = 0.0,
     imageArray: Array<ImageBitmap>,
 ) {
-    drawCircle(color = Color.White, style = Fill,radius = r0.toFloat(), alpha = 0.8F )
+    drawCircle(color = Color(0xffdda680), style = Fill,radius = r0.toFloat(), alpha = 0.8F )
     drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0.toFloat())
     drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1.toFloat())
     for (index in 0..11) {
@@ -220,7 +219,7 @@ fun DrawScope.drawZodiac(
 
 
 private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
-    drawCircle(color = Color.LightGray, style = Fill, radius = r2.toFloat(), alpha = 0.8F, blendMode = BlendMode.SrcOver)
+    //drawCircle(color = Color(0xffdda680), style = Fill, radius = r2.toFloat(), alpha = 1.0F, blendMode = BlendMode.SrcOver)
     //drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r2.toFloat())
     for (index in 0..11) {
         drawDividers(index, r1, r2, angleOffset = 0.0, color = Color.Black)
