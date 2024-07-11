@@ -19,8 +19,11 @@ import java.time.OffsetTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.GregorianCalendar
+import kotlin.math.roundToInt
+import kotlin.math.truncate
 
 val zodiacNames = arrayOf(
     "Aries",
@@ -149,40 +152,52 @@ fun trueLongitude(meanAnomaly : Double): Double {
     val M = meanAnomaly
     return M + (1.916 * sind(M)) + (0.020 * sind(2.0 * M)) + 282.834
 }
-fun ZonedDateTime.sunrise(longitude: Double? = null, latitude: Double = 0.0, zenith: Double): Double {
-    val n = dayOfYear
-    val longHour = longitudeHour(longitude)
-    val t = n + ((6 - longHour) / 24.0) // rising
-    // val t = n + ((6 - longHour) / 24.0) // setting
 
-    val M = meanAnomaly(t)
-    val L = trueLongitude(M)
-    var ra = atand(0.91764 * tand(L)) % 360 // right ascension
+private fun risingT(n: Int, longitudeHour: Double) = n + ((6 - longitudeHour) / 24.0)
+private fun settingT(n: Int, longitudeHour: Double) = n + ((18 - longitudeHour) / 24.0)
+
+fun ZonedDateTime.sunrise(longitude: Double? = null, latitude: Double = 0.0, zenith: Double): ZonedDateTime? {
+    return sunriseSunset(true, longitude, latitude, zenith)
+}
+
+fun ZonedDateTime.sunset(longitude: Double? = null, latitude: Double = 0.0, zenith: Double): ZonedDateTime? {
+    return sunriseSunset(false, longitude, latitude, zenith)
+}
+
+private fun ZonedDateTime.sunriseSunset(rising: Boolean = true, longitude: Double? = null, latitude: Double = 0.0, zenith: Double): ZonedDateTime? {
+    val n: Int = dayOfYear
+    val longHour: Double = longitudeHour(longitude)
+    val t: Double = if (rising) risingT(n,longHour) else n + ((18 - longHour) / 24.0)
+
+    val L = trueLongitude(meanAnomaly(t))
     val Lquadrant = floor(L / 90.0) * 90.0
+    var ra = atand(0.91764 * tand(L)) % 360 // right ascension
     val RAquadrant = (floor(ra / 90.0)) * 90.0
-    ra = ra + (Lquadrant - RAquadrant) // right ascension value needs to be in the same quadrant as L
+    ra += (Lquadrant - RAquadrant) // right ascension value needs to be in the same quadrant as L
     ra = ra / 15.0 // right ascension value needs to be converted into hours
-    val sinDec = 0.39782 * sind(L) // calculate the Sun's declination
+    val sinDec = 0.39782 * sind(L) // calculate  the Sun's declination
     val cosDec = cosd(asind(sinDec))
-    val cosH =
-        (cosd(zenith) - (sinDec * sind(latitude))) / (cosDec * cosd(latitude))  // calculate the Sun's local hour angle
-//    if (cosH >  1)
-//        the sun never rises on this location (on the specified date)
-//    if (cosH < -1)
-//        the sun never sets on this location (on the specified date)
+    val cosH = (cosd(zenith) - (sinDec * sind(latitude))) / (cosDec * cosd(latitude))  // calculate the Sun's local hour angle
+    if (rising && (cosH >  1)) return null else if (cosH < -1) return null //the sun never rises/sets on this location (on the specified date)
+
     // finish calculating H and convert into hours
-    var H = 360.0 - acosd(cosH) // if rising time is desired:
-    //  H = acos(cosH) // if setting time is desired:
-    H = H / 15.0
+    val H = (if (rising) 360.0 - acosd(cosH) else acosd(cosH)) / 15.0
     val T = H + ra - (0.06571 * t) - 6.622 // calculate local mean time of rising/setting
     val ut = (T - longHour) % 24
-    val localTime = ut + (this.offset.totalSeconds / 3600)
-    return localTime
+    val localTime: Double = ut + (this.offset.totalSeconds / 3600)
+    val hour = truncate(localTime).toInt()
+    val minute = ((localTime - hour) * 60).roundToInt()
+    return ZonedDateTime.from(this)
+        .withHour(hour)
+        .withMinute(minute)
+        .truncatedTo(ChronoUnit.MINUTES)
 }
 
 fun natalDate(year: Int, month: Int, day: Int, hour: Int, minute: Int, zone: ZoneId) {
     val bday: ZonedDateTime =  ZonedDateTime.of(year, month, day, hour, minute, 0, 0, zone)
     val j2000 = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, zone)
+    val sunrise = bday.sunrise(latitude = 51.51, zenith = Zenith.Official)
+    val sunset = bday.sunset(latitude = 51.51, zenith = Zenith.Official)
 
     val offsetDateTime = bday.toOffsetDateTime()
     val offsetTime: OffsetTime = offsetDateTime.toOffsetTime()

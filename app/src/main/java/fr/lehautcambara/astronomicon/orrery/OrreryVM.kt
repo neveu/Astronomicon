@@ -22,7 +22,7 @@ class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)
-        natalDate(2000, 1, 1, 12, 0, ZoneId.of("GMT"))
+        natalDate(2000, 1, 31, 12, 0, ZoneId.of("GMT"))
         natalDate(1959, 8, 25, 8, 37, ZoneId.of("America/Chicago"))
     }
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
