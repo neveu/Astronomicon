@@ -121,7 +121,7 @@ data class OrreryUIState (
     }
     override fun toString(): String {
         // return SimpleDateFormat("dd-MMM-yyyy").format()
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm GG"))
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mmaa GG"))
     }
 
     companion object {

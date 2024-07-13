@@ -22,7 +22,6 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.GregorianCalendar
-import kotlin.math.roundToInt
 import kotlin.math.truncate
 
 val zodiacNames = arrayOf(
@@ -150,7 +149,7 @@ fun ZonedDateTime.longitudeHour(longitude: Double? = null): Double {
 private fun meanAnomaly(t: Double) = (0.9856 * t) - 3.289
 fun trueLongitude(meanAnomaly : Double): Double {
     val M = meanAnomaly
-    return M + (1.916 * sind(M)) + (0.020 * sind(2.0 * M)) + 282.834
+    return (M + (1.916 * sind(M)) + (0.020 * sind(2.0 * M)) + 282.634) % 360
 }
 
 private fun risingT(n: Int, longitudeHour: Double) = n + ((6 - longitudeHour) / 24.0)
@@ -167,7 +166,7 @@ fun ZonedDateTime.sunset(longitude: Double? = null, latitude: Double = 0.0, zeni
 private fun ZonedDateTime.sunriseSunset(rising: Boolean = true, longitude: Double? = null, latitude: Double = 0.0, zenith: Double): ZonedDateTime? {
     val n: Int = dayOfYear
     val longHour: Double = longitudeHour(longitude)
-    val t: Double = if (rising) risingT(n,longHour) else n + ((18 - longHour) / 24.0)
+    val t: Double = if (rising) risingT(n,longHour) else settingT(n, longHour)
 
     val L = trueLongitude(meanAnomaly(t))
     val Lquadrant = floor(L / 90.0) * 90.0
@@ -184,19 +183,25 @@ private fun ZonedDateTime.sunriseSunset(rising: Boolean = true, longitude: Doubl
     val H = (if (rising) 360.0 - acosd(cosH) else acosd(cosH)) / 15.0
     val T = H + ra - (0.06571 * t) - 6.622 // calculate local mean time of rising/setting
     val ut = (T - longHour) % 24
-    val localTime: Double = ut + (this.offset.totalSeconds / 3600)
+    val localTime: Double = (ut + (this.offset.totalSeconds / 3600)).mod(24.0)
     val hour = truncate(localTime).toInt()
-    val minute = ((localTime - hour) * 60).roundToInt()
+    val minute = truncate((localTime - hour) * 60).toInt()
+    val seconds = ((((localTime - hour) * 60) - minute) * 60).toInt()
     return ZonedDateTime.from(this)
         .withHour(hour)
         .withMinute(minute)
-        .truncatedTo(ChronoUnit.MINUTES)
+        .withSecond(seconds)
+        .truncatedTo(ChronoUnit.SECONDS)
+}
+fun natalDate(zdt: ZonedDateTime, latitude: Double = 0.0, longitude: Double = 0.0) {
+    val sunrise = zdt.sunrise(longitude, latitude, zenith = Zenith.Official)
+    val sunset = zdt.sunset(longitude, latitude, zenith = Zenith.Official)
 }
 
 fun natalDate(year: Int, month: Int, day: Int, hour: Int, minute: Int, zone: ZoneId) {
     val bday: ZonedDateTime =  ZonedDateTime.of(year, month, day, hour, minute, 0, 0, zone)
     val j2000 = ZonedDateTime.of(2000, 1, 1, 12, 0, 0, 0, zone)
-    val sunrise = bday.sunrise(latitude = 51.51, zenith = Zenith.Official)
+    val sunrise = bday.sunrise(latitude = 43.07, longitude = -89.4, zenith = Zenith.Official)
     val sunset = bday.sunset(latitude = 51.51, zenith = Zenith.Official)
 
     val offsetDateTime = bday.toOffsetDateTime()

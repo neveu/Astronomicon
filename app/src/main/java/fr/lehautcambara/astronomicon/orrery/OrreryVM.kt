@@ -22,8 +22,10 @@ class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)
-        natalDate(2000, 1, 31, 12, 0, ZoneId.of("GMT"))
-        natalDate(1959, 8, 25, 8, 37, ZoneId.of("America/Chicago"))
+        // natalDate(2000, 1, 31, 12, 0, ZoneId.of("GMT"))
+        val zdt = ZonedDateTime.of(1959, 8, 1, 8, 37, 0, 0, ZoneId.of("America/Chicago"))
+        val jan31 = ZonedDateTime.of(2000, 1, 31, 12, 0, 0, 0, ZoneId.of("GMT"))
+        natalDate(zdt, latitude = 43.074761, longitude = -89.3837613)
     }
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _uiState = MutableStateFlow(OrreryUIState(zonedDateTime))
@@ -54,15 +56,6 @@ class OrreryVM : ViewModel() {
         return from?.fromTo(to, currentDate)
     }
 
-//    fun fromTo(from: Ephemeris?, to: Ephemeris?, currentDate: Double): Coords? {
-//        return fromTo(from?.eclipticCoords(currentDate), to?.eclipticCoords(currentDate))
-//    }
-//
-//    fun fromTo(from: Coords?, to: Coords?): Coords? {
-//        if (from == null) return to
-//        return if (to == null) -from
-//        else to - from
-//    }
 
     fun angle(from: Ephemeris?, to: Ephemeris?): Double {
         fromTo(from, to)?.apply {
