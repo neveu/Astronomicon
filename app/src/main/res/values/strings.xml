@@ -20,7 +20,7 @@
     <string name="anno_domini">" anno DOMINI "</string>
     <string name="ecliptic">E C L I P T I C AE</string>
     <string name="degrees"> G R A D U S</string>
-
+    <string name="conjunction">Conjunction</string>
 
 
 </resources>

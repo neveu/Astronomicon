@@ -34,7 +34,7 @@ class LunarEphemeris : Ephemeris() {
     }
 
     override fun toString(): String {
-        return "moon"
+        return "Moon"
     }
 
     private var t:Double = 0.0

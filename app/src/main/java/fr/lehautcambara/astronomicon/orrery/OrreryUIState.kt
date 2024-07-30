@@ -1,7 +1,10 @@
 package fr.lehautcambara.astronomicon.orrery
 
 import angled
+import fr.lehautcambara.astronomicon.astrology.Aspect
+import fr.lehautcambara.astronomicon.astrology.AspectType
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.ephemerides
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
@@ -14,7 +17,7 @@ import kotlin.math.abs
 enum class DisplayMode {
     Heliocentric {
         override fun scale(radialScroll: Float) = radialScroll/20.0
-                 },
+    },
     Geocentric {
         override fun scale(radialScroll: Float) = radialScroll/20.0
     },
@@ -85,9 +88,14 @@ data class OrreryUIState (
     val saturn: Coords
         get() = _saturn
 
+    private var _aspectDescription: String = "Aspects"
+    val aspectDescription: String
+        get() = _aspectDescription
+
     val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf<Ephemeris>(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
-    // val aspectAnglePairs = cartesianProduct(geocentricPlanets, geocentricPlanets).filter { it: Pair<Ephemeris, Ephemeris> -> it.first != it.second}
-    fun aspectAnglePairs(): MutableList<Pair<Ephemeris, Ephemeris>> {
+
+
+    fun aspectEphemerisPairs(): MutableList<Pair<Ephemeris, Ephemeris>> {
         val pairs = mutableListOf<Pair<Ephemeris, Ephemeris>>()
         for(i in 0..geocentricPlanets.size -2)
             for(j in i+1..geocentricPlanets.size-1) {
@@ -96,32 +104,44 @@ data class OrreryUIState (
         return pairs
     }
 
+    fun aspects( zdt:ZonedDateTime): List<Aspect> {
+        return aspectEphemerisPairs()
+            .map{pair: Pair<Ephemeris, Ephemeris> ->
+                ephemerisPairToAspect(pair.first, pair.second, zdt)
+            }
+            .filterNotNull()
+    }
 
-    val significantAspectPairs = aspectAnglePairs().map { it: Pair<Ephemeris,Ephemeris> ->
-        Pair(it, aspectAngle(earth, it.first.eclipticCoords(julianCentury), it.second.eclipticCoords(julianCentury)))
-    }.filter {it -> isSignificantAspect(it) }
+    fun aspectRange(center: Double, error: Double = 2.5): ClosedFloatingPointRange<Double> {
+        return ((center - error)..(center + error))
+    }
 
-    fun isSignificantAspect(anglePair: Pair<Pair<Ephemeris, Ephemeris>, Double>) : Boolean {
-        return when(abs(anglePair.second)) {
-            in 0.0F..1.0F -> true
-            in 29F .. 31F -> true
-            in 44F..46F -> true
-            in 59F..61F -> true
-            in 89F..91F -> true
-            in 119F..121F -> true
-            in 134F..136F -> true
-            in 179F..180F -> true
-            else -> false
+    fun ephemerisPairToAspect(b1: Ephemeris, b2: Ephemeris, zdt: ZonedDateTime) : Aspect? {
+        val angle = aspectAngle(ephemerides["Earth"], b1,b2, zdt)
+        return when(angle) {
+            in aspectRange(0.0) -> Aspect(AspectType.Conjunction, zdt, b1,b2, angle)
+            in aspectRange(30.0) -> Aspect(AspectType.SemiSextile, zdt, b1,b2, angle)
+            in aspectRange(45.0) -> Aspect(AspectType.Octile, zdt, b1,b2, angle)
+            in aspectRange(60.0) -> Aspect(AspectType.Sextile, zdt, b1,b2, angle)
+            in aspectRange(90.0) -> Aspect(AspectType.Square, zdt, b1,b2, angle)
+            in aspectRange(120.0) -> Aspect(AspectType.Trine, zdt, b1,b2, angle)
+            in aspectRange(135.0) -> Aspect(AspectType.Trioctile, zdt, b1,b2, angle)
+            in aspectRange(180.0) ->  Aspect(AspectType.Opposition, zdt, b1,b2, angle)
+            else -> null
         }
     }
 
-
-    fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
-        return abs(angled(center, from) - angled(center, to))
+    fun aspectAngle(center: Ephemeris?, from: Ephemeris?, to: Ephemeris?, zdt:ZonedDateTime): Double {
+            return aspectAngle(center?.eclipticCoords(zdt), from?.eclipticCoords(zdt), to?.eclipticCoords(zdt))
     }
+    fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
+        val a1 = abs(angled(center, from) - angled(center, to))
+        val a180 = abs( if (a1 > 180) a1 - 360.0 else a1)
+        return a180
+    }
+
     override fun toString(): String {
-        // return SimpleDateFormat("dd-MMM-yyyy").format()
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mmaa GG"))
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG hh:mm:ss a "))
     }
 
     companion object {

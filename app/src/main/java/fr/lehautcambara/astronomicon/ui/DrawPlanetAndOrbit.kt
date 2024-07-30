@@ -65,9 +65,6 @@ fun DrawPlanet(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, poi
     DrawPlanet(body, r, ang, id, pointerRadius,  modifier)
 }
 
-
-
-
 @Composable
 fun DrawPlanet(body: Ephemeris, r: Double, a: Double,  id: Int, pointerRadius: Int, modifier: Modifier) {
     val x = (r*cosd(a)).roundToInt()
