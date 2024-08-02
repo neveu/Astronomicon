@@ -1,4 +1,4 @@
-
+package fr.lehautcambara.astronomicon
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.atan
@@ -25,11 +25,11 @@ fun cosd(degrees: Float): Float {
     return cos(degrees * Math.PI / 180.0).toFloat()
 }
 
-fun rcosd(r: Float, angleD: Float) = r*cosd(angleD)
-fun rcosd(r: Double, angleD: Double) = r*cosd(angleD)
+fun rcosd(r: Float, angleD: Float) = r* cosd(angleD)
+fun rcosd(r: Double, angleD: Double) = r* cosd(angleD)
 
-fun rsind(r: Float, angleD: Float) = r*sind(angleD)
-fun rsind(r: Double, angleD: Double) = r*sind(angleD)
+fun rsind(r: Float, angleD: Float) = r* sind(angleD)
+fun rsind(r: Double, angleD: Double) = r* sind(angleD)
 
 
 fun tand(degrees: Double): Double {

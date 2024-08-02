@@ -1,17 +1,17 @@
 package fr.lehautcambara.astronomicon.astrology
 
-import acosd
 import android.util.Log
-import asind
-import atand
-import cosd
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.acosd
+import fr.lehautcambara.astronomicon.asind
+import fr.lehautcambara.astronomicon.atand
+import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
-import sind
-import tand
+import fr.lehautcambara.astronomicon.sind
+import fr.lehautcambara.astronomicon.tand
 import java.lang.Math.atan2
 import java.lang.Math.floor
 import java.time.Duration
@@ -127,7 +127,7 @@ fun ZonedDateTime.ascendant(longitude: Double? = null, latitude: Double = 0.0): 
     val lst = sidereal360(longitude)
     val inclination = 23.44
     val y = -cosd(lst)
-    val x = (sind(lst) * cosd(inclination)) + (tand(latitude)*sind(inclination))
+    val x = (sind(lst) * cosd(inclination)) + (tand(latitude) * sind(inclination))
     val asc0 = -atan2(y,x) * (180.0/Math.PI)
     val ascendant = if (asc0 < 180.0) asc0 + 180.0 else asc0 - 180
     return ascendant

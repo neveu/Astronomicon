@@ -12,8 +12,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cosd
-import sind
+import fr.lehautcambara.astronomicon.cosd
+import fr.lehautcambara.astronomicon.sind
 
 @Composable
 fun DrawZodiacPointer(radius: Int, a: Double, color: Color = Color.Red, width: Float = 5F, modifier: Modifier) {

@@ -1,44 +1,16 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import angled
-import cosd
+import fr.lehautcambara.astronomicon.angled
+import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
-import sind
+import fr.lehautcambara.astronomicon.sind
 import java.time.ZonedDateTime
 import java.util.Calendar
 import kotlin.math.IEEErem
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-
-data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: Ephemeris?=null) {
-    override fun toString(): String {
-        return "($x, $y, $z)"
-    }
-
-    operator fun unaryMinus(): Coords {
-        return Coords(-x, -y, -z)
-    }
-
-    operator fun minus(eclipticCoords: Coords): Coords {
-        return Coords(
-            x - eclipticCoords.x,
-            y - eclipticCoords.y,
-            z - eclipticCoords.z
-        )
-    }
-    fun fromTo( to: Coords?): Coords {
-        return if (to == null) -this
-        else to - this
-    }
-
-    fun toPolar(): PolarCoords {
-        return PolarCoords(sqrt(x*x + y*y), angled(x,y))
-    }
-}
-
-data class PolarCoords (val r: Double, val a: Double) {}
 
 class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeris() {
     private var a: Double = 0.0
@@ -120,6 +92,16 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
 
     companion object {
         private val obliquityJ2000 = 23.43928
+//        val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
+//        val Venus = SolarEphemeris( KeplerianElements.Venus())
+//        val Earth  = SolarEphemeris( KeplerianElements.EmBary())
+//        val Mars = SolarEphemeris( KeplerianElements.Mars())
+//        val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
+//        val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
+//        val Sun = SolarEphemeris( KeplerianElements.Sun())
+//        val Moon  = LunarEphemeris()
+//        val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
+
         fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
         fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)
     }
@@ -150,6 +132,33 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     }
 }
 
+data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: Ephemeris?=null) {
+    override fun toString(): String {
+        return "($x, $y, $z)"
+    }
+
+    operator fun unaryMinus(): Coords {
+        return Coords(-x, -y, -z)
+    }
+
+    operator fun minus(eclipticCoords: Coords): Coords {
+        return Coords(
+            x - eclipticCoords.x,
+            y - eclipticCoords.y,
+            z - eclipticCoords.z
+        )
+    }
+    fun fromTo( to: Coords?): Coords {
+        return if (to == null) -this
+        else to - this
+    }
+
+    fun toPolar(): PolarCoords {
+        return PolarCoords(sqrt(x*x + y*y), angled(x,y))
+    }
+}
+
+data class PolarCoords (val r: Double, val a: Double) {}
 
 abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords

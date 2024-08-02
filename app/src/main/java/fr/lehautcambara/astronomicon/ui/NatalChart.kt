@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
-import fr.lehautcambara.astronomicon.astrology.Aspect
+import fr.lehautcambara.astronomicon.astrology.Aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.ascendant
 import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.astrology.zodiacSignDrawables
@@ -44,10 +44,10 @@ import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.PolarCoords
 import fr.lehautcambara.astronomicon.kbus.Kbus
-import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
+import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
-import rcosd
-import rsind
+import fr.lehautcambara.astronomicon.rcosd
+import fr.lehautcambara.astronomicon.rsind
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -184,7 +184,7 @@ private fun planetSignPolarCoords(
 @Composable
 fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
     val zdt = uiState.zonedDateTime
-    val aspectPairs: List<Aspect> = uiState.aspects(zdt)
+    val aspectPairs: List<Aspect> = uiState.aspects
     DrawNatalChart(zdt, aspectPairs, modifier = modifier)
 }
 @Composable

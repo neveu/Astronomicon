@@ -25,16 +25,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import angled
-import cosd
-import elevationd
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.angled
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
+import fr.lehautcambara.astronomicon.cosd
+import fr.lehautcambara.astronomicon.elevationd
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
-import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
+import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
-import sind
+import fr.lehautcambara.astronomicon.sind
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -48,7 +49,7 @@ fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, coords: Coords?, id: Int, pointe
 fun DrawPlanetAndOrbit(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int, orbitColor: Color =  Color.Black,   modifier: Modifier) {
     val ang = angled(xecl, yecl)
     DrawOrbit(radius = r, color = orbitColor, modifier = modifier)
-    DrawPlanet(body, r, ang, id, pointerRadius,   modifier)
+    DrawPlanet(body, r.toDouble(), ang, id, pointerRadius,   modifier)
 }
 
 @Composable
@@ -59,25 +60,20 @@ fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2F, modif
         drawCircle(color = color, style = Stroke(width = stroke), radius = radius.toFloat())
     }
 }
-@Composable
-fun DrawPlanet(body: Ephemeris, r: Int, xecl: Double, yecl: Double, id: Int, pointerRadius: Int,  modifier: Modifier) {
-    val ang = angled(xecl, yecl)
-    DrawPlanet(body, r, ang, id, pointerRadius,  modifier)
-}
+
+//@Composable
+//fun DrawPlanet(body: Ephemeris, r: Double, a: Double,  id: Int,  modifier: Modifier) {
+//    val x = (r* cosd(a)).roundToInt()
+//    val y = (r* sind(a)).roundToInt()
+//    DrawPlanet(body, x,y,id, modifier)
+//
+//}
 
 @Composable
-fun DrawPlanet(body: Ephemeris, r: Double, a: Double,  id: Int, pointerRadius: Int, modifier: Modifier) {
-    val x = (r*cosd(a)).roundToInt()
-    val y = (r*sind(a)).roundToInt()
-    DrawPlanet(body, x,y,id, modifier)
-
-}
-
-@Composable
-fun DrawPlanet(body: Ephemeris, r: Int, a: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
+fun DrawPlanet(body: Ephemeris, r: Double, a: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {
     DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
-    val x = (r*cosd(a)).roundToInt()
-    val y = (r*sind(a)).roundToInt()
+    val x = (r* cosd(a)).roundToInt()
+    val y = (r* sind(a)).roundToInt()
     DrawPlanet(body, x,y,id, modifier)
 }
 @Composable
@@ -126,7 +122,7 @@ private fun PreviewDrawPlanet() {
 
     ) {
         val modifier = Modifier.align(Alignment.Center)
-        DrawPlanetEcliptic(uiState.Earth,  uiState.earth, R.drawable.earthjpg40, 600, modifier)
+        DrawPlanetEcliptic(Earth,  uiState.earth, R.drawable.earthjpg40, 600, modifier)
         // DrawPlanetAndOrbit(uiState.Sun, r=100, uiState.sun, R.drawable.sun2, 600, modifier)
     }
 

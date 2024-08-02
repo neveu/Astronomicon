@@ -1,9 +1,9 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import cosd
+import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
-import sind
-import tand
+import fr.lehautcambara.astronomicon.sind
+import fr.lehautcambara.astronomicon.tand
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.Calendar

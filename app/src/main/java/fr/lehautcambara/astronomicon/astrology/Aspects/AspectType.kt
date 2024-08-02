@@ -1,4 +1,4 @@
-package fr.lehautcambara.astronomicon.astrology
+package fr.lehautcambara.astronomicon.astrology.Aspects
 
 import androidx.compose.ui.graphics.Color
 

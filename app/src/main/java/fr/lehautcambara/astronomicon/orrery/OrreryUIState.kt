@@ -1,18 +1,19 @@
 package fr.lehautcambara.astronomicon.orrery
 
-import angled
-import fr.lehautcambara.astronomicon.astrology.Aspect
-import fr.lehautcambara.astronomicon.astrology.AspectType
+import fr.lehautcambara.astronomicon.angled
+import fr.lehautcambara.astronomicon.astrology.Aspects.Aspect
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Jupiter
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mars
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mercury
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Moon
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Saturn
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Sun
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
-import fr.lehautcambara.astronomicon.astrology.ephemerides
 import fr.lehautcambara.astronomicon.ephemeris.Coords
-import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
-import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
-import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
-import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.abs
 
 enum class DisplayMode {
     Heliocentric {
@@ -33,20 +34,9 @@ enum class DisplayMode {
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
     val displayMode: DisplayMode = DisplayMode.Heliocentric,
+    val aspects: List<Aspect> = emptyList()
 ) {
 
-    val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
-    val Venus = SolarEphemeris( KeplerianElements.Venus())
-    val Earth  = SolarEphemeris( KeplerianElements.EmBary())
-    val Mars = SolarEphemeris( KeplerianElements.Mars())
-    val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
-    val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
-    val Sun = SolarEphemeris( KeplerianElements.Sun())
-    val Moon  = LunarEphemeris()
-
-    fun <T, U> cartesianProduct(c1: Collection<T>, c2: Collection<U>): List<Pair<T, U>> {
-        return c1.flatMap { lhsElem -> c2.map { rhsElem -> lhsElem to rhsElem } }
-    }
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()
     val julianCentury : Double
         get() = _julianCentury
@@ -91,54 +81,6 @@ data class OrreryUIState (
     private var _aspectDescription: String = "Aspects"
     val aspectDescription: String
         get() = _aspectDescription
-
-    val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf<Ephemeris>(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
-
-
-    fun aspectEphemerisPairs(): MutableList<Pair<Ephemeris, Ephemeris>> {
-        val pairs = mutableListOf<Pair<Ephemeris, Ephemeris>>()
-        for(i in 0..geocentricPlanets.size -2)
-            for(j in i+1..geocentricPlanets.size-1) {
-                pairs.add(Pair(geocentricPlanets[i],geocentricPlanets[j]))
-            }
-        return pairs
-    }
-
-    fun aspects( zdt:ZonedDateTime): List<Aspect> {
-        return aspectEphemerisPairs()
-            .map{pair: Pair<Ephemeris, Ephemeris> ->
-                ephemerisPairToAspect(pair.first, pair.second, zdt)
-            }
-            .filterNotNull()
-    }
-
-    fun aspectRange(center: Double, error: Double = 2.5): ClosedFloatingPointRange<Double> {
-        return ((center - error)..(center + error))
-    }
-
-    fun ephemerisPairToAspect(b1: Ephemeris, b2: Ephemeris, zdt: ZonedDateTime) : Aspect? {
-        val angle = aspectAngle(ephemerides["Earth"], b1,b2, zdt)
-        return when(angle) {
-            in aspectRange(0.0) -> Aspect(AspectType.Conjunction, zdt, b1,b2, angle)
-            in aspectRange(30.0) -> Aspect(AspectType.SemiSextile, zdt, b1,b2, angle)
-            in aspectRange(45.0) -> Aspect(AspectType.Octile, zdt, b1,b2, angle)
-            in aspectRange(60.0) -> Aspect(AspectType.Sextile, zdt, b1,b2, angle)
-            in aspectRange(90.0) -> Aspect(AspectType.Square, zdt, b1,b2, angle)
-            in aspectRange(120.0) -> Aspect(AspectType.Trine, zdt, b1,b2, angle)
-            in aspectRange(135.0) -> Aspect(AspectType.Trioctile, zdt, b1,b2, angle)
-            in aspectRange(180.0) ->  Aspect(AspectType.Opposition, zdt, b1,b2, angle)
-            else -> null
-        }
-    }
-
-    fun aspectAngle(center: Ephemeris?, from: Ephemeris?, to: Ephemeris?, zdt:ZonedDateTime): Double {
-            return aspectAngle(center?.eclipticCoords(zdt), from?.eclipticCoords(zdt), to?.eclipticCoords(zdt))
-    }
-    fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
-        val a1 = abs(angled(center, from) - angled(center, to))
-        val a180 = abs( if (a1 > 180) a1 - 360.0 else a1)
-        return a180
-    }
 
     override fun toString(): String {
         return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG hh:mm:ss a "))

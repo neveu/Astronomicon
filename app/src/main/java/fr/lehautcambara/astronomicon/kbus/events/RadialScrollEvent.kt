@@ -1,9 +1,10 @@
-package fr.lehautcambara.astronomicon.kbus
+package fr.lehautcambara.astronomicon.kbus.events
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import fr.lehautcambara.astronomicon.kbus.BusEvent
 
-data class RadialScrollEvent(val size: Size, val change: Offset, val dragAmount: Offset): BusEvent(){
+data class RadialScrollEvent(val size: Size, val change: Offset, val dragAmount: Offset): BusEvent() {
     private fun outerProduct(v1: Offset, v2: Offset): Float = (v2.y * v1.x) - (v2.x * v1.y)
 
     fun radialScroll(

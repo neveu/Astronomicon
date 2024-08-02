@@ -1,10 +1,11 @@
 package fr.lehautcambara.astronomicon.orrery
 
 import androidx.lifecycle.ViewModel
-import fr.lehautcambara.astronomicon.kbus.AspectDescriptionEvent
 import fr.lehautcambara.astronomicon.kbus.Kbus
-import fr.lehautcambara.astronomicon.kbus.PlanetClickEvent
-import fr.lehautcambara.astronomicon.kbus.RadialScrollEvent
+import fr.lehautcambara.astronomicon.kbus.events.AspectsEvent
+import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
+import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
+import fr.lehautcambara.astronomicon.kbus.events.ZDTEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,12 +30,20 @@ class OrreryVM : ViewModel() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: RadialScrollEvent) {
-        val scale = uiState.value.displayMode.scale(event.radialScroll())
-        val scrollAmount = (scale).roundToLong()
+        val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
         zonedDateTime = zonedDateTime.plusMinutes(scrollAmount)
         _uiState.update { uistate ->
             uistate.copy(zonedDateTime = zonedDateTime)
         }
+        Kbus.post(ZDTEvent(zonedDateTime))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: AspectsEvent) {
+        _uiState.update { uistate ->
+            uistate.copy(aspects = event.aspects)
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -46,11 +55,5 @@ class OrreryVM : ViewModel() {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onEvent(event: AspectDescriptionEvent) {
-//        _uiState.update { uiState ->
-//            uiState.copy(aspectDescription = event.description)
-//        }
-    }
 }
 
