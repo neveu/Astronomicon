@@ -61,13 +61,6 @@ fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2F, modif
     }
 }
 
-//@Composable
-//fun DrawPlanet(body: Ephemeris, r: Double, a: Double,  id: Int,  modifier: Modifier) {
-//    val x = (r* cosd(a)).roundToInt()
-//    val y = (r* sind(a)).roundToInt()
-//    DrawPlanet(body, x,y,id, modifier)
-//
-//}
 
 @Composable
 fun DrawPlanet(body: Ephemeris, r: Double, a: Double, id: Int, pointerRadius: Int,    modifier: Modifier) {

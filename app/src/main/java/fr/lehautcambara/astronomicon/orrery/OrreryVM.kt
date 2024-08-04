@@ -19,9 +19,6 @@ class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)
-//        val zdt = ZonedDateTime.of(1959, 8, 1, 8, 37, 0, 0, ZoneId.of("America/Chicago"))
-//        val jan31 = ZonedDateTime.of(2000, 1, 31, 12, 0, 0, 0, ZoneId.of("GMT"))
-//        natalDate(zdt, latitude = 43.074761, longitude = -89.3837613)
     }
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _uiState = MutableStateFlow(OrreryUIState(zonedDateTime))
@@ -31,11 +28,17 @@ class OrreryVM : ViewModel() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: RadialScrollEvent) {
         val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
-        zonedDateTime = zonedDateTime.plusMinutes(scrollAmount)
-        _uiState.update { uistate ->
-            uistate.copy(zonedDateTime = zonedDateTime)
+        Kbus.post(ZDTEvent(zonedDateTime.plusMinutes(scrollAmount)))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: ZDTEvent) {
+        if (!zonedDateTime.isEqual(event.zdt)) {
+            zonedDateTime = event.zdt
+            _uiState.update { uistate ->
+                uistate.copy(zonedDateTime = zonedDateTime)
+            }
         }
-        Kbus.post(ZDTEvent(zonedDateTime))
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -43,7 +46,6 @@ class OrreryVM : ViewModel() {
         _uiState.update { uistate ->
             uistate.copy(aspects = event.aspects)
         }
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
