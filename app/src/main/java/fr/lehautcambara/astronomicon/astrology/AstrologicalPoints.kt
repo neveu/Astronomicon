@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2024. Charles Frederick Neveu All Rights Reserved.
+ */
+
+
 package fr.lehautcambara.astronomicon.astrology
 
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
@@ -16,6 +21,7 @@ class AstrologicalPoints {
         val Sun = SolarEphemeris( KeplerianElements.Sun())
         val Moon  = LunarEphemeris()
         val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
+
 
     }
 }

@@ -1,7 +1,6 @@
 package fr.lehautcambara.astronomicon.orrery
 
 import fr.lehautcambara.astronomicon.angled
-import fr.lehautcambara.astronomicon.astrology.Aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Jupiter
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mars
@@ -10,6 +9,8 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Moon
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Saturn
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Sun
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
+import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
+import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import java.time.ZonedDateTime
@@ -34,7 +35,7 @@ enum class DisplayMode {
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
     val displayMode: DisplayMode = DisplayMode.Heliocentric,
-    val aspects: List<Aspect> = emptyList()
+    val aspects: List<Aspect> = aspects(zonedDateTime)
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()

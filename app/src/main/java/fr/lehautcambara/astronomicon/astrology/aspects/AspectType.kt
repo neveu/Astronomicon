@@ -1,4 +1,9 @@
-package fr.lehautcambara.astronomicon.astrology.Aspects
+/*
+ * Copyright (c) 2024. Charles Frederick Neveu All Rights Reserved.
+ */
+
+
+package fr.lehautcambara.astronomicon.astrology.aspects
 
 import androidx.compose.ui.graphics.Color
 

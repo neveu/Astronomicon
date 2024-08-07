@@ -1,5 +1,11 @@
-package fr.lehautcambara.astronomicon.astrology.Aspects
+/*
+ * Copyright (c) 2024. Charles Frederick Neveu All Rights Reserved.
+ */
 
+package fr.lehautcambara.astronomicon.astrology.aspects
+
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints
+import fr.lehautcambara.astronomicon.astrology.aspectSignDrawables
 import fr.lehautcambara.astronomicon.astrology.ephemerides
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
@@ -17,6 +23,20 @@ data class Aspect(
     override fun toString(): String {
         return "${aspectType.name}: ${body1.toString()}-${body2.toString()} $orb deg"
     }
+
+    val name: String = aspectType.name
+
+    fun symbol(): Int? {
+        return aspectSignDrawables[aspectType]
+    }
+
+}
+fun aspects(zdt: ZonedDateTime): List<Aspect> {
+    return aspectEphemerisPairs(AstrologicalPoints.geocentricPlanets)
+        .map{pair: Pair<Ephemeris, Ephemeris> ->
+            ephemerisPairToAspect(pair.first, pair.second, zdt)
+        }
+        .filterNotNull()
 }
 fun aspectEphemerisPairs(geocentricPlanets: ArrayList<Ephemeris>): MutableList<Pair<Ephemeris, Ephemeris>> {
     val pairs = mutableListOf<Pair<Ephemeris, Ephemeris>>()

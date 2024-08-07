@@ -81,7 +81,7 @@ fun DrawPlanet(body: Ephemeris, x: Int, y: Int, id: Int, modifier: Modifier) {
     )
     // Planet
     Image(
-        painterResource(id = id), "Planet",
+        painterResource(id = id), body.toString(),
         modifier = modifier
             .absoluteOffset { IntOffset(x, -y) }
             .clickable {

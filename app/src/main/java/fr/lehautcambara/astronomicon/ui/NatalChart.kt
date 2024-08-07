@@ -36,8 +36,11 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
-import fr.lehautcambara.astronomicon.astrology.Aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.ascendant
+import fr.lehautcambara.astronomicon.astrology.aspectSignDrawables
+import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
+import fr.lehautcambara.astronomicon.astrology.aspects.AspectType
+import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.astrology.zodiacSignDrawables
 import fr.lehautcambara.astronomicon.ephemeris.Coords
@@ -82,8 +85,9 @@ fun DrawScope.drawZodiacSign(index: Int,
 private fun DrawScope.drawBitmapImage(
     meanRadius: Double,
     angle: Double,
-    image: ImageBitmap
+    image: ImageBitmap?
 ) {
+    if (image == null) return
     val x = -rcosd(meanRadius, angle)
     val y = rsind(meanRadius, angle)
     val x0 = (x - image.width / 4).toInt()
@@ -103,7 +107,7 @@ fun DrawScope.drawPlanet(planet: PlanetSignPolarCoords?) {
     }
 }
 
-fun DrawScope.drawPlanet(planetBitmap: ImageBitmap, r: Double, angle: Double, scale: Double = 1.0) {
+fun DrawScope.drawPlanet(planetBitmap: ImageBitmap, r: Double, angle: Double, scale: Double = 1.5) {
     val sc = scale.toFloat()
     scale(scale = sc) {
         drawBitmapImage( r/sc, angle, planetBitmap)
@@ -115,6 +119,7 @@ fun DrawPlanetsAndAspects(
     r: Double,
     r2: Double,
     planetSignImages: Map<String, ImageBitmap?>,
+    aspectSignImages: Map<AspectType, ImageBitmap?>,
     planetSignCoords: Map<String, Coords?>,
     significantAspectPairs: List<Aspect>?,
     zodiacAngleOffset: Double,
@@ -132,20 +137,26 @@ fun DrawPlanetsAndAspects(
             planets.keys.filterNotNull().forEach { p ->
                 drawPlanet(planets[p])
             }
-            drawAspects(planets, significantAspectPairs, r2)
+            drawAspects(planets, significantAspectPairs, aspectSignImages, r2)
         }
     }
 }
 
-fun DrawScope.drawAspects(planets: Map<String?, PlanetSignPolarCoords?>, significantAspectPairs: List<Aspect>?, r: Double) {
+fun DrawScope.drawAspects(
+    planets: Map<String?, PlanetSignPolarCoords?>,
+    significantAspectPairs: List<Aspect>?,
+    aspectSignImages: Map<AspectType, ImageBitmap?>,
+    r: Double
+) {
     significantAspectPairs?.forEach { aspect: Aspect ->
-        drawAspect(aspect, planets, r)
+        drawAspect(aspect, planets, aspectSignImages, r)
     }
 }
 
 private fun DrawScope.drawAspect(
     aspect: Aspect,
     planets: Map<String?, PlanetSignPolarCoords?>,
+    aspectSignImages: Map<AspectType, ImageBitmap?>,
     r: Double
 ) {
     val b1 = aspect.body1.toString()
@@ -155,6 +166,12 @@ private fun DrawScope.drawAspect(
             val offset1 = Offset(-rcosd(r, angle1).toFloat(), rsind(r, angle1).toFloat())
             val offset2 = Offset(-rcosd(r, angle2).toFloat(), rsind(r, angle2).toFloat())
             drawLine(color = aspect.aspectType.color, start = offset1, end = offset2, strokeWidth = 5F)
+            val sc = 0.33F
+            scale(scale = sc ) {
+                drawBitmapImage(r/sc, angle1, aspectSignImages[aspect.aspectType])
+                drawBitmapImage(r/sc, angle2, aspectSignImages[aspect.aspectType])
+            }
+
         }
     }
 }
@@ -191,6 +208,7 @@ fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
 fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), significantAspectPairs: List<Aspect>? = null, radiusDp: Dp = 400.dp, modifier: Modifier) {
     var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
     var size: Size by remember { mutableStateOf(Size.Zero) }
+
     Box(modifier = Modifier
         .width(radiusDp)
         .height(radiusDp)
@@ -215,6 +233,11 @@ fun DrawNatalChart (
     ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides,
     modifier: Modifier
 ) {
+    val aspectSignImages: Map<AspectType, ImageBitmap?> = aspectSignDrawables.mapValues { entry ->
+        aspectSignDrawables[entry.key]?.let { drawable ->
+            ImageBitmap.imageResource(drawable)
+        }
+    }
 
     val planetSignImages: Map<String, ImageBitmap?> = planetSignDrawables.mapValues { entry: Map.Entry<String, Int> ->
         planetSignDrawables[entry.key]?.let { drawable ->
@@ -236,7 +259,7 @@ fun DrawNatalChart (
     Image(painterResource(id = R.drawable.accentercrop),
         contentDescription = "",
         modifier = modifier.clickable { Kbus.post(PlanetClickEvent()) })
-    DrawPlanetsAndAspects(r0, r2, planetSignImages, planetSignEclipticCoords, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
+    DrawPlanetsAndAspects(r0, r2, planetSignImages,aspectSignImages,  planetSignEclipticCoords, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
 }
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -277,9 +300,10 @@ private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
 @Composable
 fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
     val zdtj2000 = ZonedDateTime.of(2000,9, 3, 12, 0, 0, 0, ZoneId.of("GMT"))
+    val aspectPairs: List<Aspect> = aspects(zdt)
     Box(modifier = Modifier) {
         val modifier = Modifier.align(Alignment.Center)
-        DrawNatalChart(zdtj2000, modifier = modifier)
+        DrawNatalChart(zdtj2000, aspectPairs, modifier = modifier)
     }
 
 }
