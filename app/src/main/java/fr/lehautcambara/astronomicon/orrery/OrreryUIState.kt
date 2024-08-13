@@ -35,7 +35,8 @@ enum class DisplayMode {
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
     val displayMode: DisplayMode = DisplayMode.Heliocentric,
-    val aspects: List<Aspect> = aspects(zonedDateTime)
+    val aspects: List<Aspect> = aspects(zonedDateTime),
+    val showDateInput: Boolean = false,
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()

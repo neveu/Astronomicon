@@ -3,6 +3,8 @@ package fr.lehautcambara.astronomicon.orrery
 import androidx.lifecycle.ViewModel
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
+import fr.lehautcambara.astronomicon.kbus.events.DateSelectedEvent
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.kbus.events.ZDTEvent
@@ -55,5 +57,20 @@ class OrreryVM : ViewModel() {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: DateInputEvent) {
+        _uiState.update { uistate ->
+            uistate.copy(showDateInput = event.show)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: DateSelectedEvent) {
+        event.zdt?.let { zdt ->
+            Kbus.post(ZDTEvent(zdt))
+            Kbus.post(DateInputEvent(false))
+
+        }
+    }
 }
 

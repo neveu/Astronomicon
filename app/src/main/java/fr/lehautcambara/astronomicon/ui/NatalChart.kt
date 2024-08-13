@@ -55,6 +55,28 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalTextApi::class)
+fun DrawScope.drawZodiac(
+    r0: Double,
+    r1: Double,
+    angleOffset: Double = 0.0,
+    imageArray: Array<ImageBitmap>,
+) {
+    drawCircle(color = Color(0xffdda680), style = Fill,radius = r0.toFloat(), alpha = 0.8F )
+    drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0.toFloat())
+    drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1.toFloat())
+    for (index in 0..11) {
+        drawDividers(index, r0, r1, angleOffset, color = Color.Black)
+        drawZodiacSign(index, r0, r1, angleOffset,  imageArray,)
+    }
+}
+
+private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
+    for (index in 0..11) {
+        drawDividers(index, r1, r2, angleOffset = 0.0, color = Color.Black)
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
 fun DrawScope.drawDividers(
     index: Int,
     r0: Double,
@@ -198,33 +220,19 @@ private fun planetSignPolarCoords(
         }
 }
 
-@Composable
-fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
-    val zdt = uiState.zonedDateTime
-    val aspectPairs: List<Aspect> = uiState.aspects
-    DrawNatalChart(zdt, aspectPairs, modifier = modifier)
-}
-@Composable
-fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), significantAspectPairs: List<Aspect>? = null, radiusDp: Dp = 400.dp, modifier: Modifier) {
-    var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
-    var size: Size by remember { mutableStateOf(Size.Zero) }
 
-    Box(modifier = Modifier
-        .width(radiusDp)
-        .height(radiusDp)
-        .background(Color(0x00000000))
-        .onGloballyPositioned { coordinates: LayoutCoordinates ->
-            layoutWidth = coordinates.boundsInRoot().width
-            size = coordinates.size.toSize()
-        }
-    ) {
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun DrawNatalChart(r0: Double, r1: Double = r0 - 70, r2: Double = r1-120, angleOffset: Double = 0.0,  modifier: Modifier) {
+    val zodiacImages: Array<ImageBitmap> = zodiacSignDrawables.map {
+        ImageBitmap.imageResource(id = it)
+    }.toTypedArray()
 
-        DrawNatalChart(zdt = zdt, significantAspectPairs, r0 = (layoutWidth/2.0), modifier = Modifier
-            .align(Alignment.Center)
-        )
+    Canvas(modifier = modifier) {
+        drawZodiac(r0, r1, angleOffset, zodiacImages)
+        drawHouses(r1, r2)
     }
 }
-
 @Composable
 fun DrawNatalChart (
     zdt: ZonedDateTime = ZonedDateTime.now(),
@@ -249,10 +257,6 @@ fun DrawNatalChart (
         entry.value.eclipticCoords(zdt)
     }
 
-    val planetSignPolarCoords: Map<String, PolarCoords?> = planetSignEclipticCoords.mapValues { entry: Map.Entry<String, Coords?> ->
-        entry.value?.toPolar()
-    }
-
     // calculate angle offset of zodiac
     val zodiacAngleOffset = zdt.ascendant()
     DrawNatalChart(r0 = r0, angleOffset = zodiacAngleOffset,  modifier = modifier)
@@ -261,39 +265,32 @@ fun DrawNatalChart (
         modifier = modifier.clickable { Kbus.post(PlanetClickEvent()) })
     DrawPlanetsAndAspects(r0, r2, planetSignImages,aspectSignImages,  planetSignEclipticCoords, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
 }
-@OptIn(ExperimentalTextApi::class)
+
 @Composable
-fun DrawNatalChart(r0: Double, r1: Double = r0 - 70, r2: Double = r1-120, angleOffset: Double = 0.0,  modifier: Modifier) {
-    val zodiacImages: Array<ImageBitmap> = zodiacSignDrawables.map {
-        ImageBitmap.imageResource(id = it)
-    }.toTypedArray()
+fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), significantAspectPairs: List<Aspect>? = null, radiusDp: Dp = 400.dp, modifier: Modifier) {
+    var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
+    var size: Size by remember { mutableStateOf(Size.Zero) }
 
-    Canvas(modifier = modifier) {
-        drawZodiac(r0, r1, angleOffset, zodiacImages)
-        drawHouses(r1, r2)
+    Box(modifier = Modifier
+        .width(radiusDp)
+        .height(radiusDp)
+        .background(Color(0x00000000))
+        .onGloballyPositioned { coordinates: LayoutCoordinates ->
+            layoutWidth = coordinates.boundsInRoot().width
+            size = coordinates.size.toSize()
+        }
+    ) {
+
+        DrawNatalChart(zdt = zdt, significantAspectPairs, r0 = (layoutWidth/2.0), modifier = Modifier
+            .align(Alignment.Center)
+        )
     }
 }
-
-@OptIn(ExperimentalTextApi::class)
-fun DrawScope.drawZodiac(
-    r0: Double,
-    r1: Double,
-    angleOffset: Double = 0.0,
-    imageArray: Array<ImageBitmap>,
-) {
-    drawCircle(color = Color(0xffdda680), style = Fill,radius = r0.toFloat(), alpha = 0.8F )
-    drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0.toFloat())
-    drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1.toFloat())
-    for (index in 0..11) {
-        drawDividers(index, r0, r1, angleOffset, color = Color.Black)
-        drawZodiacSign(index, r0, r1, angleOffset,  imageArray,)
-    }
-}
-
-private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
-    for (index in 0..11) {
-        drawDividers(index, r1, r2, angleOffset = 0.0, color = Color.Black)
-    }
+@Composable
+fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
+    val zdt = uiState.zonedDateTime
+    val aspectPairs: List<Aspect> = uiState.aspects
+    DrawNatalChart(zdt, aspectPairs, modifier = modifier)
 }
 
 @Preview
@@ -301,9 +298,5 @@ private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
 fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
     val zdtj2000 = ZonedDateTime.of(2000,9, 3, 12, 0, 0, 0, ZoneId.of("GMT"))
     val aspectPairs: List<Aspect> = aspects(zdt)
-    Box(modifier = Modifier) {
-        val modifier = Modifier.align(Alignment.Center)
-        DrawNatalChart(zdtj2000, aspectPairs, modifier = modifier)
-    }
-
+    DrawNatalChart(zdt, aspectPairs, modifier = Modifier)
 }
