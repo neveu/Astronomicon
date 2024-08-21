@@ -78,6 +78,16 @@ fun DatePickerModalInput(
         DatePicker(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
+                titleContentColor = Color.Black,
+                headlineContentColor = Color.Black,
+                weekdayContentColor = Color.Black,
+                subheadContentColor = Color.Black,
+                navigationContentColor = Color.Black,
+                yearContentColor =Color(0xFFdd8d29),
+                currentYearContentColor = Color.Black,
+                selectedYearContentColor = Color.Black,
+                dayContentColor = Color.Black,
+                todayContentColor = Color.Black,
                 selectedDayContainerColor = Color(0xFFdd8d29),
                 selectedYearContainerColor = Color(0xFFdd8d29),
             ),

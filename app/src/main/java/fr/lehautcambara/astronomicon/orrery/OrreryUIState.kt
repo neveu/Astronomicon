@@ -1,6 +1,5 @@
 package fr.lehautcambara.astronomicon.orrery
 
-import fr.lehautcambara.astronomicon.angled
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Jupiter
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mars
@@ -17,8 +16,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 enum class DisplayMode {
-    Heliocentric {
-        override fun scale(radialScroll: Float) = radialScroll/20.0
+    NatalChart{
+        override fun scale(radialScroll: Float) = radialScroll/200.0
     },
     Geocentric {
         override fun scale(radialScroll: Float) = radialScroll/20.0
@@ -26,15 +25,16 @@ enum class DisplayMode {
     Ecliptic{
         override fun scale(radialScroll: Float) = radialScroll/20.0
     },
-    NatalChart{
-        override fun scale(radialScroll: Float) = radialScroll/200.0
-    };
+    Heliocentric {
+        override fun scale(radialScroll: Float) = radialScroll/20.0
+    },
+    ;
     abstract fun scale(radialScroll: Float): Double
 }
 
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.Heliocentric,
+    val displayMode: DisplayMode = DisplayMode.NatalChart,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
 ) {
@@ -94,13 +94,6 @@ data class OrreryUIState (
             return if (to == null) -from
             else to - from
         }
-        fun angled(from: Coords?, to: Coords?) : Double {
-            fromTo(from, to)?.apply {
-                return angled(x, y)
-            }
-            return 0.0
-        }
-
     }
 
 

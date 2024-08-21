@@ -139,11 +139,11 @@ fun apparentAngularVelocity(fromPlanet: Ephemeris, planet: Ephemeris, zdt: Zoned
         val planetCoords = planet.eclipticCoords(zdt.convertToJulianCentury())
         val fromCoords = fromPlanet.eclipticCoords(zdt.convertToJulianCentury())
         val deltaT = zdt.plusHours(1)
-        val currentAngle = OrreryUIState.angled(fromCoords, planetCoords)
+        val currentAngle = fromCoords.angleTo(planetCoords)
         val deltaJ = deltaT.convertToJulianCentury()
         val deltaEarth = fromPlanet.eclipticCoords(deltaJ)
         val deltaPlanet = planet.eclipticCoords(deltaJ)
-        val deltaAngle = OrreryUIState.angled(deltaEarth, deltaPlanet)
+        val deltaAngle = deltaEarth.angleTo(deltaPlanet)
         return deltaAngle - currentAngle
 }
 
@@ -154,9 +154,6 @@ private fun DrawAllEcliptic(
 ) {
     with(uiState) {
         DrawOrbit(radius = 200, color = Color.Red, stroke = 4F, modifier = modifier)
-//        for (i in 50..350 step 50) {
-//            DrawOrbit(radius = i, modifier = modifier)
-//        }
 
         DrawPlanetEcliptic(body = Mercury, coords = fromTo(earth, mercury), id = R.drawable.mercury, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Venus, coords = fromTo(earth, venus), id = R.drawable.venus40, pointerRadius = 500, modifier = modifier)

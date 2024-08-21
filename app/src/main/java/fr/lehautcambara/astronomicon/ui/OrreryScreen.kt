@@ -42,7 +42,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, orreryVM: OrreryVM) {
 @Preview
 @Composable
 fun PreviewOrreryScreen() {
-    AstronomiconTheme {
+   AstronomiconTheme(darkTheme = true, dynamicColor = false) {
         OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, OrreryVM())
 
     }

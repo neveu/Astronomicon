@@ -1,8 +1,8 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
 import fr.lehautcambara.astronomicon.angled
-import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import fr.lehautcambara.astronomicon.sind
 import java.time.ZonedDateTime
@@ -148,9 +148,17 @@ data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: E
             z - eclipticCoords.z
         )
     }
+
+
+
     fun fromTo( to: Coords?): Coords {
         return if (to == null) -this
         else to - this
+    }
+    fun angleTo( to: Coords?) : Double {
+        fromTo(to).apply {
+            return angled(x, y)
+        }
     }
 
     fun toPolar(): PolarCoords {

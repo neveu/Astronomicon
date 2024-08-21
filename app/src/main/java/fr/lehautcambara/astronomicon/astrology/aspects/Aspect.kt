@@ -5,11 +5,9 @@
 package fr.lehautcambara.astronomicon.astrology.aspects
 
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints
-import fr.lehautcambara.astronomicon.astrology.aspectSignDrawables
 import fr.lehautcambara.astronomicon.astrology.ephemerides
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
-import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import java.time.ZonedDateTime
 import kotlin.math.abs
 
@@ -25,10 +23,8 @@ data class Aspect(
     }
 
     val name: String = aspectType.name
-
-    fun symbol(): Int? {
-        return aspectSignDrawables[aspectType]
-    }
+    val glyph: Int?
+        get() = aspectType.glyph
 
 }
 fun aspects(zdt: ZonedDateTime): List<Aspect> {
@@ -53,9 +49,12 @@ fun aspectAngle(center: Ephemeris?, from: Ephemeris?, to: Ephemeris?, zdt:ZonedD
     return aspectAngle(center?.eclipticCoords(zdt), from?.eclipticCoords(zdt), to?.eclipticCoords(zdt))
 }
 fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
-    val a1 = abs(OrreryUIState.angled(center, from) - OrreryUIState.angled(center, to))
-    val a180 = abs( if (a1 > 180) a1 - 360.0 else a1)
-    return a180
+    center?.let {center ->
+        val a1 = abs(center.angleTo( from) - center.angleTo(to))
+        val a180 = abs( if (a1 > 180) a1 - 360.0 else a1)
+        return a180
+    }
+    return 0.0
 }
 fun ephemerisPairToAspect(b1: Ephemeris, b2: Ephemeris, zdt: ZonedDateTime) : Aspect? {
     val angle = aspectAngle(ephemerides["Earth"], b1,b2, zdt)
