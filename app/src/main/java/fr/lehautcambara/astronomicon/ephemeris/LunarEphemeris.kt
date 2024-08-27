@@ -1,7 +1,7 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.sind
 import fr.lehautcambara.astronomicon.tand
 import java.time.Duration
@@ -36,6 +36,7 @@ class LunarEphemeris : Ephemeris() {
     override fun toString(): String {
         return "Moon"
     }
+
 
     private var t:Double = 0.0
     private var beta0 = 0.0

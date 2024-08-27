@@ -90,22 +90,6 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         return sind(obliquityJ2000) * yecl() + cosd(obliquityJ2000) * zecl()
     }
 
-    companion object {
-        private val obliquityJ2000 = 23.43928
-//        val Mercury =  SolarEphemeris( KeplerianElements.Mercury())
-//        val Venus = SolarEphemeris( KeplerianElements.Venus())
-//        val Earth  = SolarEphemeris( KeplerianElements.EmBary())
-//        val Mars = SolarEphemeris( KeplerianElements.Mars())
-//        val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
-//        val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
-//        val Sun = SolarEphemeris( KeplerianElements.Sun())
-//        val Moon  = LunarEphemeris()
-//        val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
-
-        fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
-        fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)
-    }
-
     override fun eclipticCoords(dateTime: Calendar): Coords {
        return  eclipticCoords(dateTime.convertToJulianCentury())
     }
@@ -130,11 +114,19 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     override fun toString(): String {
         return body
     }
+
+    companion object {
+        private val obliquityJ2000 = 23.43928
+
+        fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
+        fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)
+    }
+
 }
 
-data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: Ephemeris?=null) {
+data class Coords( val x: Double, val y: Double, val z: Double, val name: String? = null) {
     override fun toString(): String {
-        return "($x, $y, $z)"
+        return "${name?:""} : ($x, $y, $z)"
     }
 
     operator fun unaryMinus(): Coords {
@@ -150,7 +142,6 @@ data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: E
     }
 
 
-
     fun fromTo( to: Coords?): Coords {
         return if (to == null) -this
         else to - this
@@ -162,11 +153,11 @@ data class Coords( val x: Double, val y: Double, val z: Double, val ephemeris: E
     }
 
     fun toPolar(): PolarCoords {
-        return PolarCoords(sqrt(x*x + y*y), angled(x,y))
+        return PolarCoords(sqrt(x*x + y*y), angled(x,y), name)
     }
 }
 
-data class PolarCoords (val r: Double, val a: Double) {}
+data class PolarCoords (val r: Double, val a: Double, val name: String? = null)
 
 abstract class Ephemeris {
     abstract fun eclipticCoords(dateTime: Calendar): Coords
@@ -179,9 +170,19 @@ abstract class Ephemeris {
     abstract fun equatorialCoords(julianCentury: Double): Coords
     abstract override fun toString(): String
 
-    fun fromTo( to: Ephemeris?, currentDate: Double): Coords {
-        return this.eclipticCoords(currentDate).fromTo(to?.eclipticCoords(currentDate))
+    fun apparentAngularVelocity(toPlanet: Ephemeris, zdt: ZonedDateTime): Double {
+        val planetCoords = toPlanet.eclipticCoords(zdt.convertToJulianCentury())
+        val fromCoords = this.eclipticCoords(zdt.convertToJulianCentury())
+        val deltaT = zdt.plusHours(1)
+        val currentAngle = fromCoords.angleTo(planetCoords)
+        val deltaJ = deltaT.convertToJulianCentury()
+        val deltaEarth = this.eclipticCoords(deltaJ)
+        val deltaPlanet = toPlanet.eclipticCoords(deltaJ)
+        val deltaAngle = deltaEarth.angleTo(deltaPlanet)
+        val av = deltaAngle - currentAngle
+        return av
     }
 
+    fun inRetrograde(toEphemeris: Ephemeris, zdt: ZonedDateTime) : Boolean = apparentAngularVelocity(toEphemeris, zdt) < 0.0
 
 }

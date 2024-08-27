@@ -31,7 +31,6 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Moon
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Saturn
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Sun
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
@@ -123,7 +122,7 @@ private fun DrawAllGeocentric(
         DrawPlanetAndOrbit(Jupiter, r = orbitIncrement*6, coords = fromTo(earth, jupiter),
             id = R.drawable.jupiter , pointerRadius = pointerRadius, orbitColor = orbitColor,  modifier = modifier)
 
-        orbitColor = orbitColor(Earth, Jupiter, zonedDateTime)
+        orbitColor = orbitColor(Earth, Saturn, zonedDateTime)
         DrawPlanetAndOrbit(Saturn, r = orbitIncrement*7, coords = fromTo(earth, saturn),
             id = R.drawable.saturn30 , pointerRadius = pointerRadius,  orbitColor = orbitColor, modifier = modifier)
 
@@ -133,19 +132,10 @@ private fun DrawAllGeocentric(
 }
 
 fun orbitColor(fromPlanet: Ephemeris, planet: Ephemeris, zdt: ZonedDateTime) : Color =
-    if (apparentAngularVelocity(fromPlanet, planet, zdt) < 0.0) Color.Red else Color.Black
+    if (fromPlanet.apparentAngularVelocity(planet, zdt) < 0.0)
+        Color.Red
+    else Color.Black
 
-fun apparentAngularVelocity(fromPlanet: Ephemeris, planet: Ephemeris, zdt: ZonedDateTime): Double {
-        val planetCoords = planet.eclipticCoords(zdt.convertToJulianCentury())
-        val fromCoords = fromPlanet.eclipticCoords(zdt.convertToJulianCentury())
-        val deltaT = zdt.plusHours(1)
-        val currentAngle = fromCoords.angleTo(planetCoords)
-        val deltaJ = deltaT.convertToJulianCentury()
-        val deltaEarth = fromPlanet.eclipticCoords(deltaJ)
-        val deltaPlanet = planet.eclipticCoords(deltaJ)
-        val deltaAngle = deltaEarth.angleTo(deltaPlanet)
-        return deltaAngle - currentAngle
-}
 
 @Composable
 private fun DrawAllEcliptic(
@@ -163,8 +153,6 @@ private fun DrawAllEcliptic(
         DrawPlanetEcliptic(body = Saturn, coords = fromTo(earth, saturn), id = R.drawable.saturn30, pointerRadius = 500, modifier = modifier)
         DrawPlanetEcliptic(body = Moon, coords = fromTo(earth, moon), id = R.drawable.moon2, pointerRadius = 500, modifier = modifier)
         DrawPlanet(body = Earth, r = 0.0, a = 0.0, id = R.drawable.earthjpg40, pointerRadius = 0, modifier = modifier)
-
-
     }
 
 

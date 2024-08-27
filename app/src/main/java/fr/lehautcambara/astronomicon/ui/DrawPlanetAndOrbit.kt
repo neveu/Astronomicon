@@ -37,7 +37,6 @@ import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.sind
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 
 @Composable
@@ -93,7 +92,6 @@ fun DrawPlanet(body: Ephemeris, x: Int, y: Int, id: Int, modifier: Modifier) {
 @Composable
 fun DrawPlanetEcliptic(body: Ephemeris, coords: Coords?,  id: Int, pointerRadius: Int, modifier: Modifier) {
     coords?.apply {
-        val ra = sqrt(x*x + y*y)
         val a = angled(x,y)
         val elevation: Double = elevationd(x,y,z)
         val r = 200.0 + (elevation * 20.0)

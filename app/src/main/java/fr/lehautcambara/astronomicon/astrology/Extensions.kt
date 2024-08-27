@@ -4,7 +4,6 @@ import android.util.Log
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.acosd
 import fr.lehautcambara.astronomicon.asind
-import fr.lehautcambara.astronomicon.astrology.aspects.AspectType
 import fr.lehautcambara.astronomicon.atand
 import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
@@ -66,6 +65,16 @@ val planetSignDrawables = hashMapOf<String, Int> (
     "Saturn" to R.drawable.saturn_symbol,
 )
 
+val planetSignRetroDrawables = hashMapOf<String, Int> (
+    "Sun" to R.drawable.sun_symbol,
+    "Earth" to R.drawable.earth_symbol,
+    "Mercury" to R.drawable.mercury_retro_symbol,
+    "Moon" to  R.drawable.moon_symbol,
+    "Venus" to R.drawable.venus_retro_symbol,
+    "Mars" to R.drawable.mars_retro_symbol,
+    "Jupiter" to R.drawable.jupiter_retrograde_symbol,
+    "Saturn" to R.drawable.saturn_retro_symbol,
+)
 
 
 val ephemerides: HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
