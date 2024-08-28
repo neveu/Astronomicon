@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -327,7 +326,7 @@ fun DrawNatalChart (
 
 @Composable
 fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), significantAspectPairs: List<Aspect>? = null,  modifier: Modifier) {
-    var layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
+    val layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
     DrawNatalChart(zdt = zdt, significantAspectPairs, r0 = (layoutWidth/2.0), modifier = modifier)
 }
 

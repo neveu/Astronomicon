@@ -82,8 +82,8 @@ enum class AspectType {
     },
     Octile {
         override val influentiality get() = 5
-        override val glyph: Int?
-            get() = null
+        override val glyph: Int
+            get() = R.drawable.octile
         override val angle get() = 45.0
         override val color: Color
             get() = Color.Gray
