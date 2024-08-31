@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -223,11 +224,11 @@ fun DrawAspect(
     val b2 = aspect.body2.toString()
     planets[b1]?.angle?.let { angle1 ->
         planets[b2]?.angle?.let { angle2 ->
-            val offset1 = Offset(-rcosd(r, angle1).toFloat(), rsind(r, angle1).toFloat())
-            val offset2 = Offset(-rcosd(r, angle2).toFloat(), rsind(r, angle2).toFloat())
+            val start = Offset(-rcosd(r, angle1).toFloat(), rsind(r, angle1).toFloat())
+            val end = Offset(-rcosd(r, angle2).toFloat(), rsind(r, angle2).toFloat())
 
-            drawAspectLine(aspect, offset1, offset2, modifier, )
-            drawGlyphs(aspect,  offset1, offset2, modifier,)
+            drawAspectLine(aspect, start, end, modifier, )
+            drawGlyphs(aspect,  start, end, modifier,)
         }
     }
 }
@@ -345,6 +346,7 @@ fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
 
     Box(modifier = Modifier
         .background(Color(0x00000000))
+        .fillMaxSize()
     ) {
         DrawNatalChart(zdt, aspectPairs, modifier = Modifier.align(Alignment.Center))
 

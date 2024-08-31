@@ -11,8 +11,8 @@ android {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
         targetSdk = 34
-        versionCode = 2
-        versionName = "DateInput"
+        versionCode = 3
+        versionName = "Improved natal chart"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -33,7 +33,6 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, orreryVM: OrreryVM) {
             LunarPhaseBox(orreryVM.uiState, modifier = Modifier
                 .fillMaxSize(0.5F)
                 .padding(vertical = 32.dp))
-            
         }
         DatePickerModalInput(uiState = orreryVM.uiState)
     }
