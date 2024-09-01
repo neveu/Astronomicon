@@ -11,7 +11,7 @@ android {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
         targetSdk = 34
-        versionCode = 3
+        versionCode = 4
         versionName = "Improved natal chart"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
