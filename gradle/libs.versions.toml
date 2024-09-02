@@ -1,6 +1,8 @@
 [versions]
 activity-compose = "1.9.1"
 androidx-junit = "1.2.1"
+app-update = "2.1.0"
+app-update-ktx = "2.1.0"
 core-ktx = "1.13.1"
 espresso-core = "3.6.1"
 eventbus = "3.3.1"
@@ -16,8 +18,10 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 androidx-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "material3-android" }
+app-update = { module = "com.google.android.play:app-update", version.ref = "app-update" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 junit = { module = "junit:junit", version.ref = "junit" }
+play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update-ktx" }
 
 
 [plugins]
