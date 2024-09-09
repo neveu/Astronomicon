@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -342,10 +343,10 @@ fun DrawNatalChart(
 
 @Composable
 private fun pixToDp(
-    outerRadius: Double,
+    pixels: Double,
 ): Dp {
     val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = ((outerRadius * 2.0) / screenPixelDensity).dp
+    val dpValue = ((pixels * 2.0) / screenPixelDensity).dp
     return dpValue
 }
 
@@ -377,7 +378,7 @@ fun DrawNatalChart(
 
 
 @Composable
-fun DrawNatalChart(uiState: OrreryUIState, size: IntSize, modifier: Modifier = Modifier) {
+fun DrawNatalChart(uiState: OrreryUIState, size: Size, modifier: Modifier = Modifier) {
     val zdt = uiState.zonedDateTime
     val aspectPairs: List<Aspect> = uiState.aspects
 

@@ -9,10 +9,10 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Satu
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Sun
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
-import fr.lehautcambara.astronomicon.ui.NatalChartProportions
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Coords
+import fr.lehautcambara.astronomicon.ui.NatalChartProportions
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -35,7 +35,7 @@ enum class DisplayMode {
 
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.NatalChart,
+    val displayMode: DisplayMode = DisplayMode.Geocentric,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
     val proportions: NatalChartProportions = NatalChartProportions()
