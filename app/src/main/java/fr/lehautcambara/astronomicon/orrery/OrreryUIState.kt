@@ -9,6 +9,7 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Satu
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Sun
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
+import fr.lehautcambara.astronomicon.ui.NatalChartProportions
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
 import fr.lehautcambara.astronomicon.ephemeris.Coords
@@ -37,6 +38,7 @@ data class OrreryUIState (
     val displayMode: DisplayMode = DisplayMode.NatalChart,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
+    val proportions: NatalChartProportions = NatalChartProportions()
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()

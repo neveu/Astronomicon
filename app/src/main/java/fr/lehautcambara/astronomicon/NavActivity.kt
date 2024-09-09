@@ -27,32 +27,7 @@ class NavActivity : ComponentActivity() {
     private var orreryVM = OrreryVM()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val getUpdate: ActivityResultLauncher<IntentSenderRequest> =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-                // handle callback
-                if (result.resultCode != RESULT_OK) {
-                    Log.d("registerForActivityResult", "Update flow failed! Result code: " + result.resultCode);
-                    // If the update is canceled or fails,
-                    // you can request to start the update again.
-                }
-            }
-        val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)
-        // Returns an intent object that you use to check for an update.
-        val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
-
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                // This example applies an immediate update. To apply a flexible update
-                // instead, pass in AppUpdateType.FLEXIBLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
-            ) {
-                appUpdateManager.startUpdateFlowForResult(appUpdateInfo,
-                    getUpdate,
-                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
-                )
-            }
-        }
-
+        checkForUpdate()
 
         setContent {
             AstronomiconTheme {
@@ -63,6 +38,38 @@ class NavActivity : ComponentActivity() {
                 ) {
                     OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, orreryVM)
                 }
+            }
+        }
+    }
+
+    private fun checkForUpdate() {
+        val getUpdate: ActivityResultLauncher<IntentSenderRequest> =
+            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                // handle callback
+                if (result.resultCode != RESULT_OK) {
+                    Log.d(
+                        "registerForActivityResult",
+                        "Update flow failed! Result code: " + result.resultCode
+                    );
+                    // If the update is canceled or fails,
+                    // you can request to start the update again.
+                }
+            }
+        val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)
+        // Returns an intent object that you use to check for an update.
+        val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
+
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                // This example applies an immediate update. To apply a flexible update
+                // instead, pass in AppUpdateType.FLEXIBLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    getUpdate,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                )
             }
         }
     }

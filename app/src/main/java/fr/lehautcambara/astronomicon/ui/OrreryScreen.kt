@@ -3,6 +3,7 @@ package fr.lehautcambara.astronomicon.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,8 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, orreryVM: OrreryVM) {
         .paint(
             painterResource(id = bg),
             contentScale = ContentScale.FillBounds
-        ))
+        )
+    )
     {
         Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -31,7 +33,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, orreryVM: OrreryVM) {
             OrreryDate(orreryVM.uiState)
             OrreryBox(orreryVM.uiState, orreryBackground)
             LunarPhaseBox(orreryVM.uiState, modifier = Modifier
-                .fillMaxSize(0.5F)
+                .fillMaxWidth(0.5f)
                 .padding(vertical = 32.dp))
         }
         DatePickerModalInput(uiState = orreryVM.uiState)

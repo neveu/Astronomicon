@@ -2,7 +2,6 @@ package fr.lehautcambara.astronomicon.ui
 
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -13,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -21,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
@@ -44,36 +43,34 @@ import java.time.ZonedDateTime
 @Composable
 fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
     val orreryUIState: OrreryUIState by uiState.collectAsState()
-    var size: Size by remember { mutableStateOf(Size.Zero) }
+    var size: IntSize by remember { mutableStateOf(IntSize.Zero) }
     Box(modifier = Modifier
-        .fillMaxWidth()
+
         .paint(
             painterResource(id = orreryBackground),
             contentScale = ContentScale.FillWidth
         )
         .onGloballyPositioned { coordinates ->
-            size = coordinates.size.toSize()
+            size = coordinates.size
         }
         .pointerInput(Unit) {
             detectDragGestures { change: PointerInputChange, dragAmount: Offset ->
-                Kbus.post(RadialScrollEvent(size, change.position, dragAmount))
+                Kbus.post(RadialScrollEvent(size.toSize(), change.position, dragAmount))
             }
         }
     ) {
         val modifier = Modifier.align(Alignment.Center)
-        DrawBox(orreryUIState, modifier)
+        when(orreryUIState.displayMode) {
+            DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
+            DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
+            DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState,  modifier = modifier)
+            DisplayMode.NatalChart -> DrawNatalChart(uiState = orreryUIState, size, modifier = modifier)
+        }
     }
 }
 
-@Composable
-fun DrawBox(orreryUIState: OrreryUIState,  modifier: Modifier) {
-    when(orreryUIState.displayMode) {
-        DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, orbitIncrement = 55, modifier = modifier)
-        DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, orbitIncrement = 45, modifier = modifier)
-        DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState,  modifier = modifier)
-        DisplayMode.NatalChart -> DrawNatalChart(uiState = orreryUIState, modifier = modifier)
-    }
-}
+
+
 
 @Composable
 private fun DrawAllHeliocentric(

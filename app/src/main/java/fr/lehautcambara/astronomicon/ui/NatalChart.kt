@@ -6,14 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -21,11 +17,14 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.astrology.ascendant
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
@@ -49,11 +48,13 @@ import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 
 fun DrawScope.drawZodiac(
-    r0: Double,
-    r1: Double,
+    outerRadius: Double,
+    proportions: NatalChartProportions,
     angleOffset: Double = 0.0,
     imageArray: Array<ImageBitmap>,
 ) {
+    val r0 = outerRadius
+    val r1 = r0*proportions.innerZodiacRadius
     drawCircle(color = Color(0xffdda680), style = Fill,radius = r0.toFloat(), alpha = 0.8F )
     drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r0.toFloat())
     drawCircle(color = Color.Black, style = Stroke(width = 5F), radius = r1.toFloat())
@@ -63,7 +64,9 @@ fun DrawScope.drawZodiac(
     }
 }
 
-private fun DrawScope.drawHouses(r1: Double, r2: Double, ) {
+private fun DrawScope.drawHouses(outerRadius: Double, proportions: NatalChartProportions) {
+    val r1 = outerRadius * proportions.outerHouseRadius
+    val r2 = outerRadius * proportions.innerHouseRadius
     for (index in 0..11) {
         drawDividers(index, r1, r2, angleOffset = 0.0, color = Color.Black)
     }
@@ -98,15 +101,16 @@ fun DrawScope.drawZodiacSign(index: Int,
 private fun DrawScope.drawBitmapImage(
     meanRadius: Double,
     angle: Double,
-    image: ImageBitmap?
+    image: ImageBitmap?,
+    imageScale: Double = 0.4
 ) {
     if (image == null) return
     val x = -rcosd(meanRadius, angle)
     val y = rsind(meanRadius, angle)
-    val x0 = (x - image.width / 4).toInt()
-    val y0 = (y - (image.height / 4)).toInt()
+    val x0 = (x - image.width / 5).toInt()
+    val y0 = (y - (image.height / 5)).toInt()
     val intOffset = IntOffset(x0, y0)
-    val intSize = IntSize(image.width / 2, image.height / 2)
+    val intSize = IntSize((image.width *imageScale).toInt(), (image.height * imageScale).toInt())
     drawIntoCanvas { canvas ->
         drawImage(image, dstOffset = intOffset, dstSize = intSize)
     }
@@ -120,16 +124,17 @@ data class PlanetSignPolarCoords(
     val angle: Double )
 
 @Composable
-fun DrawPlanet(planet: PlanetSignPolarCoords?, planetSymbolDrawable: Int?, modifier: Modifier) {
+fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
     planetSymbolDrawable?.let { drawable ->
         planet?.let { planet ->
             val x = -rcosd(planet.radius, planet.angle)
             val y = rsind(planet.radius, planet.angle)
+            
 
             Image(painterResource(id = drawable), planet.planet,
                 modifier = modifier
                     .absoluteOffset { IntOffset(x.toInt(), y.toInt()) }
-                    .scale(0.8F)
+                    .size(sizeDp)
                     .clickable {
                         Kbus.post(PlanetSignClickEvent(planet))
                     }
@@ -155,7 +160,7 @@ fun planetSignPolarCoords(
                     PlanetSignPolarCoords(
                         planetString,
                         coords = planetCoords,
-                        radius = r - 120,
+                        radius = r,
                         angle = angle
                     )
                 }
@@ -165,38 +170,39 @@ fun planetSignPolarCoords(
 
 @Composable
 fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
-    r: Double,
-    r2: Double,
+    outerRadius: Double,
+    proportions: NatalChartProportions,
     planetSignCoords: Map<String, Coords?>?,
     retrogradeMap: Map<String, Boolean>,
     significantAspectPairs: List<Aspect>?,
     zodiacAngleOffset: Double,
     modifier: Modifier
 ) {
+    val sizeDp = pixToDp(outerRadius * proportions.planetGlyphScale )
     planetSignCoords?.let {planetCoords ->
         planetSignCoords["Earth"]?.let { earthCoords ->
             val planets: Map<String?, PlanetSignPolarCoords?> = planetSignPolarCoords(
                 planetCoords,
                 earthCoords,
                 zodiacAngleOffset,
-                r,
+                outerRadius * proportions.planetGlyphRadius,
             )
             planets.keys.filterNotNull().forEach { p ->
                 planets[p]?.let { planet ->
                     retrogradeMap[p]?.let { isRetro ->
                         if (isRetro) {
                             planetSignRetroDrawables[p]?.let { drawable ->
-                                DrawPlanet(planet, drawable, modifier)
+                                DrawPlanet(planet, sizeDp, drawable, modifier)
                             }
                         } else {
                             planetSignDrawables[p]?.let { drawable ->
-                                DrawPlanet(planet, drawable, modifier)
+                                DrawPlanet(planet, sizeDp, drawable, modifier)
                             }
                         }
                     }
                 }
             }
-            DrawAspects(planets, significantAspectPairs, r2, modifier)
+            DrawAspects(planets, significantAspectPairs, outerRadius * proportions.aspectGlyphRadius, pixToDp(outerRadius * proportions.aspectGlyphScale ), modifier)
         }
     }
 }
@@ -206,10 +212,11 @@ fun DrawAspects(
     planets: Map<String?, PlanetSignPolarCoords?>,
     significantAspectPairs: List<Aspect>?,
     r: Double,
+    sizeDp: Dp,
     modifier: Modifier
 ) {
     significantAspectPairs?.forEach { aspect: Aspect ->
-        DrawAspect(aspect, planets,  r, modifier)
+        DrawAspect(aspect, planets,  r, sizeDp, modifier)
     }
 }
 
@@ -218,6 +225,7 @@ fun DrawAspect(
     aspect: Aspect,
     planets: Map<String?, PlanetSignPolarCoords?>,
     r: Double,
+    sizeDp: Dp,
     modifier: Modifier
 ) {
     val b1 = aspect.body1.toString()
@@ -228,7 +236,7 @@ fun DrawAspect(
             val end = Offset(-rcosd(r, angle2).toFloat(), rsind(r, angle2).toFloat())
 
             drawAspectLine(aspect, start, end, modifier, )
-            drawGlyphs(aspect,  start, end, modifier,)
+            drawGlyphs(aspect,  start, end, sizeDp, modifier,)
         }
     }
 }
@@ -238,19 +246,21 @@ private fun drawGlyphs(
     aspect: Aspect,
     offset1: Offset,
     offset2: Offset,
+    sizeDp: Dp,
     modifier: Modifier,
     ) {
-        drawGlyph(aspect, offset1, modifier, )
-        drawGlyph(aspect, offset2, modifier)
+        drawAspectGlyph(aspect, offset1, sizeDp, modifier, )
+        drawAspectGlyph(aspect, offset2, sizeDp, modifier)
 }
 
 @Composable
-private fun drawGlyph(
+private fun drawAspectGlyph(
     aspect: Aspect,
     offset: Offset,
+    sizeDp: Dp,
     modifier: Modifier,
 ) {
-    aspect.glyph?.let { glyph ->
+    aspect.glyph?.let { glyph: Int ->
         Image(
             painterResource(id = glyph),
             aspect.name,
@@ -258,7 +268,7 @@ private fun drawGlyph(
                 .absoluteOffset {
                     IntOffset(offset.x.roundToInt(), offset.y.roundToInt())
                 }
-                .scale(0.2F)
+                .size(sizeDp)
                 .clickable { Kbus.post(AspectClickEvent(aspect)) },
         )
     }
@@ -283,21 +293,23 @@ private fun drawAspectLine(
 }
 
 @Composable
-fun DrawNatalChart(r0: Double, r1: Double = r0 - 70, r2: Double = r1-120, angleOffset: Double = 0.0,  modifier: Modifier) {
+fun DrawZodiacAndHouses(outerRadius: Double, proportions: NatalChartProportions, angleOffset: Double = 0.0, modifier: Modifier) {
     val zodiacImages: Array<ImageBitmap> = zodiacSignDrawables.map {
         ImageBitmap.imageResource(id = it)
     }.toTypedArray()
 
     Canvas(modifier = modifier) {
-        drawZodiac(r0, r1, angleOffset, zodiacImages)
-        drawHouses(r1, r2)
+        val s = size
+        drawZodiac(outerRadius, proportions, angleOffset, zodiacImages)
+        drawHouses(outerRadius, proportions)
     }
 }
 @Composable
-fun DrawNatalChart (
+fun DrawNatalChart(
     zdt: ZonedDateTime = ZonedDateTime.now(),
     significantAspectPairs: List<Aspect>? = null,
-    r0: Double, r1: Double = r0 - 60, r2: Double = r1 - 160,
+    outerRadius: Double,
+    proportions: NatalChartProportions,
     ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides,
     modifier: Modifier
 ) {
@@ -315,27 +327,68 @@ fun DrawNatalChart (
     val retrogradeMap: Map<String, Boolean> = ephemerides.mapValues { entry ->
         ephemerides["Earth"]?.inRetrograde(entry.value, zdt)?:false
     }
+    val dpValue = pixToDp(outerRadius * proportions.innerHouseRadius)
 
     // calculate angle offset of zodiac
     val zodiacAngleOffset = zdt.ascendant()
-    DrawNatalChart(r0 = r0, angleOffset = zodiacAngleOffset,  modifier = modifier)
+    DrawZodiacAndHouses(outerRadius = outerRadius, proportions, angleOffset = zodiacAngleOffset,  modifier = modifier)
     Image(painterResource(id = R.drawable.accentercrop),
         contentDescription = "",
-        modifier = modifier.clickable { Kbus.post(PlanetClickEvent()) })
-    DrawPlanetsAndAspects(r0, r2, planetSignEclipticCoords, retrogradeMap, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
+        modifier = modifier
+            .size(dpValue)
+            .clickable { Kbus.post(PlanetClickEvent()) })
+    DrawPlanetsAndAspects(outerRadius, proportions,  planetSignEclipticCoords, retrogradeMap, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
 }
 
 @Composable
-fun DrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now(), significantAspectPairs: List<Aspect>? = null,  modifier: Modifier) {
-    val layoutWidth by remember { mutableStateOf(1080F) } // Canvas coords
-    DrawNatalChart(zdt = zdt, significantAspectPairs, r0 = (layoutWidth/2.0), modifier = modifier)
+private fun pixToDp(
+    outerRadius: Double,
+): Dp {
+    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
+    val dpValue = ((outerRadius * 2.0) / screenPixelDensity).dp
+    return dpValue
 }
 
 @Composable
-fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
+fun DrawNatalChart(
+    outerRadius: Double,
+    modifier: Modifier = Modifier,
+    zdt: ZonedDateTime = ZonedDateTime.now(),
+    significantAspectPairs: List<Aspect>? = null,
+    proportions: NatalChartProportions = NatalChartProportions(),
+
+    ) {
+    Box(
+        modifier = modifier
+            .background(Color(0x00000000))
+            .clickable { Kbus.post(PlanetClickEvent()) }
+
+    ) {
+        DrawNatalChart(
+            zdt = zdt,
+            significantAspectPairs = significantAspectPairs,
+            outerRadius = outerRadius,
+            proportions,
+            modifier = modifier
+        )
+    }
+}
+
+
+
+@Composable
+fun DrawNatalChart(uiState: OrreryUIState, size: IntSize, modifier: Modifier = Modifier) {
     val zdt = uiState.zonedDateTime
     val aspectPairs: List<Aspect> = uiState.aspects
-    DrawNatalChart(zdt, aspectPairs, modifier = modifier)
+
+    DrawNatalChart(
+        zdt = zdt,
+        significantAspectPairs = aspectPairs,
+        outerRadius = size.width.toDouble()/2.0,
+        proportions = uiState.proportions,
+        modifier = modifier,
+
+    )
 }
 
 @Preview
@@ -343,12 +396,12 @@ fun DrawNatalChart(uiState: OrreryUIState, modifier: Modifier) {
 fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
     val zdtj2000 = ZonedDateTime.of(2000,9, 3, 12, 0, 0, 0, ZoneId.of("GMT"))
     val aspectPairs: List<Aspect> = aspects(zdt)
-
+    val width: Double = 720.0
+    val proportions = NatalChartProportions()
     Box(modifier = Modifier
-        .background(Color(0x00000000))
-        .fillMaxSize()
+        .size(320.dp)
     ) {
-        DrawNatalChart(zdt, aspectPairs, modifier = Modifier.align(Alignment.Center))
+        DrawNatalChart(zdt=zdt, significantAspectPairs =  aspectPairs, outerRadius = width/2.0, proportions,  modifier = Modifier.align(Alignment.Center))
 
     }
 }

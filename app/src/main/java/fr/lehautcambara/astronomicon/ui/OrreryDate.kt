@@ -25,7 +25,7 @@ fun OrreryDate(uiState: StateFlow<OrreryUIState>) {
     Text(
         text = orreryUIState.toString(),
         color = Color.White,
-        fontSize = TextUnit(24.0F, TextUnitType.Sp),
+        fontSize = TextUnit(22.0F, TextUnitType.Sp),
         modifier = Modifier.padding(16.dp).clickable {
             Kbus.post(DateInputEvent(true))
         }

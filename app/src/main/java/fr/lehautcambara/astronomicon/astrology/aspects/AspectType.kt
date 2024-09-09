@@ -65,7 +65,7 @@ enum class AspectType {
     Quintile {
         override val influentiality get() = 4
         override val glyph: Int?
-            get() = null
+            get() = R.drawable.pentagon_symbol
         override val angle get() = 72.0
         override val color: Color
             get() = Color.LightGray
@@ -92,7 +92,7 @@ enum class AspectType {
     Trioctile {
         override val influentiality get() = 5
         override val glyph: Int?
-            get() = null
+            get() = R.drawable.sesquisquare_symbol
         override val angle get() = 135.0
         override val color: Color
             get() = Color.Gray
