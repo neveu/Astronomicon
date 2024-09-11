@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -90,6 +91,7 @@ fun DrawPlanet(body: Ephemeris, x: Int, y: Int, size: Size, proportions: Orbital
             .size(
                 pixToDp(2 * size.width * proportions.planetShadowScale))
             .blur(3.dp)
+            .alpha(0.7F)
     )
     // Planet
     Image(

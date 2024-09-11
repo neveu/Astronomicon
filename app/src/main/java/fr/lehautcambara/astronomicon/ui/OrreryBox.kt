@@ -86,7 +86,8 @@ private fun DrawAllHeliocentric(
         DrawPlanetAndOrbit(Earth, 3, size, proportions,  earth, id = R.drawable.earthjpg40,  modifier = modifier)
         DrawPlanetAndOrbit(Mars, 4, size, proportions,   mars, id = R.drawable.mars,  modifier = modifier)
         DrawPlanetAndOrbit(Jupiter, 5, size, proportions, jupiter, id = R.drawable.jupiter,  modifier = modifier)
-        DrawPlanetAndOrbit(Saturn, 6, size, proportions,  saturn, id = R.drawable.saturn30, modifier = modifier)
+        val saturnScale = proportions.planetImageScale * 2
+        DrawPlanetAndOrbit(Saturn, 6, size, proportions.copy(planetImageScale = saturnScale),  saturn, id = R.drawable.saturn30, modifier = modifier)
         DrawPlanetAndOrbit(Sun, 0, size, proportions,  sun, id = R.drawable.sun2,  modifier = modifier)
     }
 }
@@ -115,7 +116,8 @@ private fun DrawAllGeocentric(
         DrawPlanetAndOrbit(Jupiter, 6, size, proportions, coords = fromTo(earth, jupiter), id = R.drawable.jupiter, orbitColor = orbitColor, modifier = modifier)
 
         orbitColor = orbitColor(Earth, Saturn, zonedDateTime)
-        DrawPlanetAndOrbit(Saturn, 7, size, proportions, coords = fromTo(earth, saturn), id = R.drawable.saturn30, orbitColor = orbitColor, modifier = modifier)
+        val saturnScale = proportions.planetImageScale * 2
+        DrawPlanetAndOrbit(Saturn, 7, size, proportions.copy(planetImageScale = saturnScale), coords = fromTo(earth, saturn), id = R.drawable.saturn30, orbitColor = orbitColor, modifier = modifier)
         DrawPlanetAndOrbit(Earth, 0, size, proportions, coords = earth, id = R.drawable.earthjpg40, modifier = modifier)
     }
 }
@@ -141,7 +143,8 @@ private fun DrawAllEcliptic(
         DrawPlanetEcliptic(body = Sun, size, proportions,  coords = fromTo(earth, sun), id = R.drawable.sun2,  modifier = modifier)
         DrawPlanetEcliptic(body = Mars, size, proportions, coords = fromTo(earth, mars), id = R.drawable.mars,  modifier = modifier)
         DrawPlanetEcliptic(body = Jupiter, size, proportions, coords = fromTo(earth, jupiter), id = R.drawable.jupiter,  modifier = modifier)
-        DrawPlanetEcliptic(body = Saturn, size, proportions, coords = fromTo(earth, saturn), id = R.drawable.saturn30, modifier = modifier)
+        val saturnScale = proportions.planetImageScale * 2
+        DrawPlanetEcliptic(body = Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = fromTo(earth, saturn), id = R.drawable.saturn30, modifier = modifier)
         DrawPlanetEcliptic(body = Moon, size, proportions, coords = fromTo(earth, moon), id = R.drawable.moon2,  modifier = modifier)
         DrawPlanet(body = Earth, r = 0.0, a = 0.0, size, proportions, id = R.drawable.earthjpg40,  modifier = modifier)
     }
