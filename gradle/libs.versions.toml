@@ -1,18 +1,22 @@
 [versions]
-activity-compose = "1.9.1"
+activity-compose = "1.9.2"
 androidx-junit = "1.2.1"
+animation-graphics-android = "1.7.1"
 app-update = "2.1.0"
 app-update-ktx = "2.1.0"
 core-ktx = "1.13.1"
 espresso-core = "3.6.1"
 eventbus = "3.3.1"
+google-accompanist-drawablepainter = "0.35.0-alpha"
 junit = "4.13.2"
-lifecycle-runtime-ktx = "2.8.4"
-material3-android = "1.2.1"
+lifecycle-runtime-ktx = "2.8.5"
+material3-android = "1.3.0"
 
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation-graphics-android" }
+#androidx-animation-graphics-android = { module = "androidx.compose.animation:animation.graphics.android", version.ref = "animation-graphics-android" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
@@ -20,6 +24,7 @@ androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtim
 androidx-material3-android = { module = "androidx.compose.material3:material3-android", version.ref = "material3-android" }
 app-update = { module = "com.google.android.play:app-update", version.ref = "app-update" }
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
+google-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "google-accompanist-drawablepainter" }
 junit = { module = "junit:junit", version.ref = "junit" }
 play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update-ktx" }
 

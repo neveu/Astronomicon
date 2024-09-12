@@ -43,23 +43,23 @@ class NavActivity : ComponentActivity() {
     }
 
     private fun checkForUpdate() {
-        val getUpdate: ActivityResultLauncher<IntentSenderRequest> =
+        val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)
+        val updateLauncherIntent: ActivityResultLauncher<IntentSenderRequest> =
             registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
                 // handle callback
                 if (result.resultCode != RESULT_OK) {
                     Log.d(
                         "registerForActivityResult",
                         "Update flow failed! Result code: " + result.resultCode
-                    );
+                    )
                     // If the update is canceled or fails,
                     // you can request to start the update again.
                 }
             }
-        val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)
         // Returns an intent object that you use to check for an update.
         val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
 
-        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 // This example applies an immediate update. To apply a flexible update
                 // instead, pass in AppUpdateType.FLEXIBLE
@@ -67,13 +67,13 @@ class NavActivity : ComponentActivity() {
             ) {
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
-                    getUpdate,
+                    updateLauncherIntent,
                     AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
                 )
             }
         }
-    }
 
+    }
 }
 
 

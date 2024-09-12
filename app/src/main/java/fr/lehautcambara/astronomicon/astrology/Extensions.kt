@@ -54,6 +54,18 @@ val zodiacSignDrawables = arrayOf(
     R.drawable.pisces,
     )
 
+val planetDrawables = hashMapOf<String, Int>(
+    "Sun" to R.drawable.sun_anim40,
+    "Earth" to R.drawable.earthcloudanimation,
+    "Mercury" to R.drawable.mercuryanim141x141,
+    "Moon" to  R.drawable.moon2,
+    "Venus" to R.drawable.venusanim183x183,
+    "Mars" to R.drawable.marsanim,
+    "Jupiter" to R.drawable.jupiteranim225x225,
+    "Saturn" to R.drawable.saturnanimprecess,
+
+    )
+
 val planetSignDrawables = hashMapOf<String, Int> (
     "Sun" to R.drawable.sun_symbol,
     "Earth" to R.drawable.earth_symbol,

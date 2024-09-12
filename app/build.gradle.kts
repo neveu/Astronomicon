@@ -11,8 +11,8 @@ android {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
         targetSdk = 34
-        versionCode = 8
-        versionName = "Scale to different phone sizes"
+        versionCode = 9
+        versionName = "Animated GIFS for planets"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -65,6 +65,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.eventbus)
     implementation(libs.androidx.material3.android)
+    implementation(libs.google.accompanist.drawablepainter)
+    implementation(libs.androidx.animation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
