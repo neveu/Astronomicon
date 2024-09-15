@@ -116,7 +116,7 @@ class LunarEphemeris : Ephemeris() {
     }
 
     //private val NewMoonEpoch = GregorianCalendar(1900, Calendar.JANUARY, 1, 0, 0, 0)
-    private val NewMoonEpoch = GregorianCalendar(2024, Calendar.OCTOBER, 2, 19, 0, 0)
+    private val NewMoonEpoch = GregorianCalendar(2024, Calendar.SEPTEMBER, 3, 2, 0, 0)
 
 
     private fun phaseFraction(dateTime: Calendar): Double {
@@ -139,7 +139,7 @@ class LunarEphemeris : Ephemeris() {
 
     fun phaseImageIndex(zonedDateTime: ZonedDateTime, numImages: Int): Int {
         val phase = phaseFraction(zonedDateTime)
-        return ((phase * numImages) + 0.5).toInt().mod(numImages)
+        return ((phase * numImages)).toInt().mod(numImages)
     }
 
 }
