@@ -11,8 +11,8 @@ android {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
         targetSdk = 34
-        versionCode = 9
-        versionName = "Animated GIFS for planets"
+        versionCode = 10
+        versionName = "Better moon, haptic feedback"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

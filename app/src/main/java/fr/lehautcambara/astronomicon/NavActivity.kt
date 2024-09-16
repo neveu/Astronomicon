@@ -2,6 +2,8 @@ package fr.lehautcambara.astronomicon
 
 import android.os.Bundle
 import android.util.Log
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -19,27 +22,47 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.events.ZDTEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import fr.lehautcambara.astronomicon.ui.OrreryScreen
 import fr.lehautcambara.astronomicon.ui.theme.AstronomiconTheme
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class NavActivity : ComponentActivity() {
     private var orreryVM = OrreryVM()
+    private var view: View? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkForUpdate()
 
         setContent {
+            view = LocalView.current
             AstronomiconTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    //color = MaterialTheme.colorScheme.background
                 ) {
                     OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, orreryVM)
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Kbus.register(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Kbus.unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: ZDTEvent) {
+        view?.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
     }
 
     private fun checkForUpdate() {

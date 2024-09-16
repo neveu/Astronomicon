@@ -43,7 +43,6 @@ class OrreryVM : ViewModel() {
             _uiState.update { uistate ->
                 uistate.copy(aspects = aspects(event.zdt))
             }
-
         }
     }
 
@@ -51,9 +50,8 @@ class OrreryVM : ViewModel() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: PlanetClickEvent) {
         val index = (displayModes.indexOf(uiState.value.displayMode) + 1) % displayModes.size
-        val newDisplayMode = displayModes[index]
         _uiState.update { uistate ->
-            uistate.copy(displayMode = newDisplayMode)
+            uistate.copy(displayMode = displayModes[index])
         }
     }
 
@@ -69,7 +67,6 @@ class OrreryVM : ViewModel() {
         event.zdt?.let { zdt ->
             Kbus.post(ZDTEvent(zdt))
             Kbus.post(DateInputEvent(false))
-
         }
     }
 }

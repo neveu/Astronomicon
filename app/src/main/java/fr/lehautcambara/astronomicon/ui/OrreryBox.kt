@@ -46,7 +46,6 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
     val orreryUIState: OrreryUIState by uiState.collectAsState()
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = Modifier
-
         .paint(
             painterResource(id = orreryBackground),
             contentScale = ContentScale.FillWidth
@@ -69,9 +68,6 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
         }
     }
 }
-
-
-
 
 @Composable
 private fun DrawAllHeliocentric(
