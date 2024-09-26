@@ -300,19 +300,20 @@ fun DrawZodiacAndHouses(outerRadius: Double, proportions: NatalChartProportions,
     }.toTypedArray()
 
     Canvas(modifier = modifier) {
-        val s = size
         drawZodiac(outerRadius, proportions, angleOffset, zodiacImages)
         drawHouses(outerRadius, proportions)
     }
 }
 @Composable
 fun DrawNatalChart(
-    zdt: ZonedDateTime = ZonedDateTime.now(),
-    significantAspectPairs: List<Aspect>? = null,
     outerRadius: Double,
-    proportions: NatalChartProportions,
+    modifier: Modifier,
+    zdt: ZonedDateTime = ZonedDateTime.now(),
+    proportions: NatalChartProportions = NatalChartProportions(),
+    significantAspectPairs: List<Aspect>? = null,
+    latitude: Double = 0.0,
+    longitude: Double = 0.0,
     ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides,
-    modifier: Modifier
 ) {
     val aspectSignImages: MutableMap<AspectType, ImageBitmap?> = mutableMapOf()
     AspectType.values().forEach { aspectType ->
@@ -331,7 +332,7 @@ fun DrawNatalChart(
     val dpValue = pixToDp(outerRadius * proportions.innerHouseRadius)
 
     // calculate angle offset of zodiac
-    val zodiacAngleOffset = zdt.ascendant()
+    val zodiacAngleOffset = zdt.ascendant(longitude = longitude, latitude = latitude)
     DrawZodiacAndHouses(outerRadius = outerRadius, proportions, angleOffset = zodiacAngleOffset,  modifier = modifier)
     Image(painterResource(id = R.drawable.accentercrop),
         contentDescription = "",
@@ -353,10 +354,12 @@ private fun pixToDp(
 @Composable
 fun DrawNatalChart(
     outerRadius: Double,
-    modifier: Modifier = Modifier,
     zdt: ZonedDateTime = ZonedDateTime.now(),
     significantAspectPairs: List<Aspect>? = null,
+    modifier: Modifier = Modifier,
     proportions: NatalChartProportions = NatalChartProportions(),
+    latitude: Double = 0.0,
+    longitude: Double = 0.0,
 
     ) {
     Box(
@@ -366,11 +369,14 @@ fun DrawNatalChart(
 
     ) {
         DrawNatalChart(
-            zdt = zdt,
-            significantAspectPairs = significantAspectPairs,
             outerRadius = outerRadius,
-            proportions,
-            modifier = modifier
+            modifier = modifier,
+            zdt = zdt,
+            proportions = proportions,
+            significantAspectPairs = significantAspectPairs,
+            latitude = latitude,
+            longitude = longitude,
+            ephemerides = fr.lehautcambara.astronomicon.astrology.ephemerides,
         )
     }
 }
@@ -387,6 +393,8 @@ fun DrawNatalChart(uiState: OrreryUIState, size: Size, modifier: Modifier = Modi
         significantAspectPairs = aspectPairs,
         outerRadius = size.width.toDouble()/2.0,
         proportions = uiState.proportions,
+        latitude = uiState.latitude,
+        longitude = uiState.longitude,
         modifier = modifier,
 
     )
@@ -397,12 +405,12 @@ fun DrawNatalChart(uiState: OrreryUIState, size: Size, modifier: Modifier = Modi
 fun PreviewDrawNatalChart(zdt: ZonedDateTime = ZonedDateTime.now()) {
     val zdtj2000 = ZonedDateTime.of(2000,9, 3, 12, 0, 0, 0, ZoneId.of("GMT"))
     val aspectPairs: List<Aspect> = aspects(zdt)
-    val width: Double = 720.0
+    val width = 720.0
     val proportions = NatalChartProportions()
     Box(modifier = Modifier
         .size(320.dp)
     ) {
-        DrawNatalChart(zdt=zdt, significantAspectPairs =  aspectPairs, outerRadius = width/2.0, proportions,  modifier = Modifier.align(Alignment.Center))
+        DrawNatalChart(zdt=zdt, significantAspectPairs =  aspectPairs, outerRadius = width/2.0, proportions = proportions,  modifier = Modifier.align(Alignment.Center))
 
     }
 }

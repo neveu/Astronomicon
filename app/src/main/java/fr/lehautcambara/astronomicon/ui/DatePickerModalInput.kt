@@ -5,6 +5,7 @@
 package fr.lehautcambara.astronomicon.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -24,6 +25,7 @@ import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateSelectedEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import fr.lehautcambara.astronomicon.ui.theme.AstronomiconTheme
 import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 
@@ -40,7 +42,8 @@ fun DatePickerModalInput(uiState: StateFlow<OrreryUIState>) {
             onDismiss = {
                 Kbus.post(DateInputEvent(false))
 
-            }
+            },
+            darkMode = isSystemInDarkTheme()
         )
 
     }
@@ -52,7 +55,8 @@ fun DatePickerModalInput(uiState: StateFlow<OrreryUIState>) {
 fun DatePickerModalInput(
     date: ZonedDateTime,
     onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    darkMode: Boolean = false
 ) {
     val datePickerState: DatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = date.toEpochSecond() * 1000,
@@ -78,16 +82,16 @@ fun DatePickerModalInput(
         DatePicker(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
-                titleContentColor = Color.Black,
-                headlineContentColor = Color.Black,
-                weekdayContentColor = Color.Black,
-                subheadContentColor = Color.Black,
-                navigationContentColor = Color.Black,
-                yearContentColor =Color(0xFFdd8d29),
-                currentYearContentColor = Color.Black,
-                selectedYearContentColor = Color.Black,
-                dayContentColor = Color.Black,
-                todayContentColor = Color.Black,
+                titleContentColor = if (darkMode) Color.White else Color.Black,
+                headlineContentColor = if (darkMode) Color.White else Color.Black,
+                weekdayContentColor =if (darkMode) Color.White else Color.Black,
+                subheadContentColor = if (darkMode) Color.White else Color.Black,
+                navigationContentColor = if (darkMode) Color.White else Color.Black,
+                yearContentColor = Color(0xFFdd8d29),
+                currentYearContentColor = if (darkMode) Color.White else Color.Black,
+                selectedYearContentColor = if (darkMode) Color.White else Color.Black,
+                dayContentColor =if (darkMode) Color.White else Color.Black,
+                todayContentColor = if (darkMode) Color.White else Color.Black,
                 selectedDayContainerColor = Color(0xFFdd8d29),
                 selectedYearContainerColor = Color(0xFFdd8d29),
             ),
@@ -99,8 +103,13 @@ fun DatePickerModalInput(
 @Preview
 @Composable
 fun PreviewDatePickerModalInput() {
-    DatePickerModalInput(date = ZonedDateTime.now(),
-        onDateSelected = {},
-        onDismiss = {}
+    val dark = true
+
+    AstronomiconTheme(darkTheme = dark, dynamicColor = false) {
+        DatePickerModalInput(date = ZonedDateTime.now(),
+            onDateSelected = {},
+            onDismiss = {},
+           darkMode = dark
         )
+    }
 }

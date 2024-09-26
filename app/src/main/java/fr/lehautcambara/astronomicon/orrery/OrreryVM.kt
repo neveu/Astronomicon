@@ -3,10 +3,13 @@ package fr.lehautcambara.astronomicon.orrery
 import androidx.lifecycle.ViewModel
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.events.ClockControlEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateSelectedEvent
+import fr.lehautcambara.astronomicon.kbus.events.LocationEvent
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
+import fr.lehautcambara.astronomicon.kbus.events.TimeTickEvent
 import fr.lehautcambara.astronomicon.kbus.events.ZDTEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +25,7 @@ class OrreryVM : ViewModel() {
     init {
         Kbus.register(this)
     }
+
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _uiState = MutableStateFlow(OrreryUIState(zonedDateTime))
     val uiState: StateFlow<OrreryUIState> = _uiState.asStateFlow()
@@ -29,6 +33,7 @@ class OrreryVM : ViewModel() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: RadialScrollEvent) {
+        Kbus.post(ClockControlEvent(false))
         val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
         Kbus.post(ZDTEvent(zonedDateTime.plusMinutes(scrollAmount)))
     }
@@ -67,6 +72,27 @@ class OrreryVM : ViewModel() {
         event.zdt?.let { zdt ->
             Kbus.post(ZDTEvent(zdt))
             Kbus.post(DateInputEvent(false))
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: TimeTickEvent) {
+        if (uiState.value.updateTime) Kbus.post(ZDTEvent(ZonedDateTime.now()))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: ClockControlEvent) {
+        _uiState.update { uistate ->
+            uistate.copy(updateTime = event.startClockTicks)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: LocationEvent) {
+        with(event.location) {
+            _uiState.update { uiState ->
+                uiState.copy(longitude = longitude, latitude = latitude )
+            }
         }
     }
 }

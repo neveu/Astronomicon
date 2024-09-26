@@ -1,5 +1,7 @@
 package fr.lehautcambara.astronomicon
 
+import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.HapticFeedbackConstants
@@ -9,12 +11,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -23,6 +28,7 @@ import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.events.LocationEvent
 import fr.lehautcambara.astronomicon.kbus.events.ZDTEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import fr.lehautcambara.astronomicon.ui.OrreryScreen
@@ -33,10 +39,22 @@ import org.greenrobot.eventbus.ThreadMode
 class NavActivity : ComponentActivity() {
     private var orreryVM = OrreryVM()
     private var view: View? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkForUpdate()
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        val locationPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) {granted: Boolean ->
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location : Location? ->
+                        location?.let {
+                            Kbus.post(LocationEvent(it))
+                        }
+                    }
+        }
+        locationPermissionRequest.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
         setContent {
             view = LocalView.current
             AstronomiconTheme {
@@ -44,7 +62,7 @@ class NavActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, orreryVM)
+                    OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, orreryVM.uiState)
                 }
             }
         }
@@ -60,15 +78,17 @@ class NavActivity : ComponentActivity() {
         Kbus.unregister(this)
     }
 
+
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: ZDTEvent) {
         view?.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
     }
 
+
     private fun checkForUpdate() {
         val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(this)
         val updateLauncherIntent: ActivityResultLauncher<IntentSenderRequest> =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            registerForActivityResult(StartIntentSenderForResult()) { result ->
                 // handle callback
                 if (result.resultCode != RESULT_OK) {
                     Log.d(
@@ -104,7 +124,7 @@ class NavActivity : ComponentActivity() {
 @Composable
 fun ScreenPreview() {
     AstronomiconTheme {
-        OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, OrreryVM())
+        OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, OrreryVM().uiState)
     }
 }
 

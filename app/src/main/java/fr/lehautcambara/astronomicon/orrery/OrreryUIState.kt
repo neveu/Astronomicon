@@ -35,10 +35,13 @@ enum class DisplayMode {
 
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.Geocentric,
+    val displayMode: DisplayMode = DisplayMode.NatalChart,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
-    val proportions: NatalChartProportions = NatalChartProportions()
+    val proportions: NatalChartProportions = NatalChartProportions(),
+    val updateTime: Boolean = true,
+    val longitude: Double = 0.0,
+    val latitude: Double = 0.0,
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()
@@ -87,7 +90,7 @@ data class OrreryUIState (
         get() = _aspectDescription
 
     override fun toString(): String {
-        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG hh:mm:ss a "))
+        return zonedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy GG hh:mm a "))
     }
 
     companion object {

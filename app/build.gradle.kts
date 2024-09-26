@@ -56,6 +56,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    // implementation("androidx.activity:activity-ktx")
     implementation(libs.app.update)
     implementation(libs.play.app.update.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,6 +68,7 @@ dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.google.accompanist.drawablepainter)
     implementation(libs.androidx.animation)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
