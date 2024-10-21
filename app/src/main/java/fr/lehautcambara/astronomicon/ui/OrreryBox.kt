@@ -133,14 +133,14 @@ private fun DrawAllEcliptic(
     with(uiState) {
         DrawOrbit(radius = (size.width*proportions.eclipticRadiusScale).roundToInt(), color = Color.Red, stroke = 4F, modifier = modifier)
 
-        DrawPlanetEcliptic(body = Mercury, size, proportions, coords = fromTo(earth, mercury),  modifier = modifier)
-        DrawPlanetEcliptic(body = Venus, size, proportions, coords = fromTo(earth, venus), modifier = modifier)
-        DrawPlanetEcliptic(body = Sun, size, proportions,  coords = fromTo(earth, sun), modifier = modifier)
-        DrawPlanetEcliptic(body = Mars, size, proportions, coords = fromTo(earth, mars),   modifier = modifier)
-        DrawPlanetEcliptic(body = Jupiter, size, proportions, coords = fromTo(earth, jupiter),  modifier = modifier)
+        DrawPlanetEcliptic(body = Mercury, size, proportions, coords = fromTo(earth, mercury), planetGraphic, modifier = modifier)
+        DrawPlanetEcliptic(body = Venus, size, proportions, coords = fromTo(earth, venus), planetGraphic, modifier = modifier)
+        DrawPlanetEcliptic(body = Sun, size, proportions,  coords = fromTo(earth, sun), planetGraphic,  modifier = modifier)
+        DrawPlanetEcliptic(body = Mars, size, proportions, coords = fromTo(earth, mars),  planetGraphic,   modifier = modifier)
+        DrawPlanetEcliptic(body = Jupiter, size, proportions, coords = fromTo(earth, jupiter), planetGraphic,   modifier = modifier)
         val saturnScale = proportions.planetImageScale * 2
-        DrawPlanetEcliptic(body = Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = fromTo(earth, saturn),  modifier = modifier)
-        DrawPlanetEcliptic(body = Moon, size, proportions, coords = fromTo(earth, moon),   modifier = modifier)
+        DrawPlanetEcliptic(body = Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = fromTo(earth, saturn),  planetGraphic,  modifier = modifier)
+        DrawPlanetEcliptic(body = Moon, size, proportions, coords = fromTo(earth, moon),  planetGraphic,   modifier = modifier)
         DrawPlanet(body = Earth, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)
     }
 

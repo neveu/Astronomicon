@@ -33,6 +33,11 @@ enum class DisplayMode {
     abstract fun scale(radialScroll: Float): Double
 }
 
+enum class PlanetGraphic {
+    Symbol,
+    Planet,
+}
+
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
     val displayMode: DisplayMode = DisplayMode.NatalChart,
@@ -42,6 +47,7 @@ data class OrreryUIState (
     val updateTime: Boolean = true,
     val longitude: Double = 0.0,
     val latitude: Double = 0.0,
+    val planetGraphic: PlanetGraphic = PlanetGraphic.Symbol
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()

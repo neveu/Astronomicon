@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -81,7 +80,7 @@ class NavActivity : ComponentActivity() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: ZDTEvent) {
-        view?.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+       //  view?.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
     }
 
 

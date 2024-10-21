@@ -32,8 +32,9 @@ import androidx.core.content.ContextCompat.getDrawable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.angled
-import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Earth
+import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mars
 import fr.lehautcambara.astronomicon.astrology.planetDrawables
+import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.elevationd
 import fr.lehautcambara.astronomicon.ephemeris.Coords
@@ -41,6 +42,7 @@ import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
 import fr.lehautcambara.astronomicon.sind
 import kotlin.math.roundToInt
 
@@ -121,14 +123,49 @@ fun DrawPlanet(body: Ephemeris, x: Int, y: Int, size: Size, proportions: Orbital
 }
 
 @Composable
-fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProportions,  coords: Coords?,  modifier: Modifier) {
+fun DrawPlanetSymbol(body: Ephemeris, r: Double, a: Double, size: Size, proportions: OrbitalProportions,   modifier: Modifier) {
+    val pointerRadius = (size.width * proportions.pointerScale).toInt()
+    if (r>0.0) DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
+    val x = (r* cosd(a)).roundToInt()
+    val y = (r* sind(a)).roundToInt()
+    DrawPlanetSymbol(body, x, y, size, proportions, modifier)
+}
+
+@Composable
+fun DrawPlanetSymbol(body: Ephemeris, x: Int, y: Int, size: Size, proportions: OrbitalProportions, modifier: Modifier) {
+    // shadow
+    planetSignDrawables[body.toString()]?.let { id: Int ->
+        Image(
+            painterResource(id = id), "shadow",
+            modifier = modifier
+                .absoluteOffset { IntOffset(x + 20, -(y - 20)) }
+                .size(pixToDp(size.width * proportions.planetShadowScale))
+                .blur(2.dp)
+                .alpha(0.7F)
+        )
+        Image(
+            // painterResource(id = id),
+            painter = rememberDrawablePainter(drawable =
+            getDrawable(LocalContext.current, id)),
+            body.toString(),
+            modifier = modifier
+                .absoluteOffset { IntOffset(x, -y) }
+                .size(pixToDp(size.width * proportions.planetImageScale))
+                .clickable {
+                    Kbus.post(PlanetClickEvent(body))
+                }
+        )
+    }
+}
+@Composable
+fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProportions,  coords: Coords?, planetGraphic: PlanetGraphic, modifier: Modifier) {
     coords?.apply {
         val a = angled(x,y)
         val elevation: Double = elevationd(x,y,z)
         val r = (size.width*proportions.eclipticRadiusScale) + (elevation * proportions.elevationScale)
         val pointerRadius = (size.width * proportions.pointerScale).toInt()
         DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
-        DrawPlanet(body, r=r, a, size, proportions, modifier)
+        DrawPlanetSymbol(body, r=r, a, size = size, proportions = proportions, modifier)
     }
 }
 @Preview
@@ -145,7 +182,7 @@ private fun PreviewDrawPlanet() {
 
     ) {
         val modifier = Modifier.align(Alignment.Center)
-        DrawPlanetEcliptic(Earth, size, proportions = OrbitalProportions(), uiState.earth,   modifier)
+        DrawPlanetEcliptic(Mars, size, proportions = OrbitalProportions(), uiState.mars, uiState.planetGraphic,   modifier)
         // DrawPlanetAndOrbit(uiState.Sun, r=100, uiState.sun, R.drawable.sun2, 600, modifier)
     }
 

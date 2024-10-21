@@ -126,13 +126,20 @@ data class PlanetSignPolarCoords(
 
 @Composable
 fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
-    planetSymbolDrawable?.let { drawable ->
+    planetSymbolDrawable?.let { id ->
         planet?.let { planet ->
             val x = -rcosd(planet.radius, planet.angle)
             val y = rsind(planet.radius, planet.angle)
-            
+//            Image(
+//                painterResource(id = id), "shadow",
+//                modifier = modifier
+//                    .absoluteOffset { IntOffset(x.toInt() + 10, (y.toInt() + 10)) }
+//                    .size(sizeDp)
+//                    .blur(2.dp)
+//                    .alpha(0.7F)
+//            )
 
-            Image(painterResource(id = drawable), planet.planet,
+            Image(painterResource(id = id), planet.planet,
                 modifier = modifier
                     .absoluteOffset { IntOffset(x.toInt(), y.toInt()) }
                     .size(sizeDp)
