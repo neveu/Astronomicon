@@ -1,6 +1,8 @@
 package fr.lehautcambara.astronomicon
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
@@ -44,16 +47,7 @@ class NavActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkForUpdate()
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        val locationPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) {granted: Boolean ->
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location : Location? ->
-                        location?.let {
-                            Kbus.post(LocationEvent(it))
-                        }
-                    }
-        }
-        locationPermissionRequest.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        locationClient()
         setContent {
             view = LocalView.current
             AstronomiconTheme {
@@ -65,6 +59,25 @@ class NavActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun locationClient() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        val locationPermissionRequest =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted: Boolean ->
+                if (granted) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    )
+                    fusedLocationClient.lastLocation
+                        .addOnSuccessListener { location: Location? ->
+                            location?.let {
+                                Kbus.post(LocationEvent(it))
+                            }
+                        }
+                }
+            }
+        locationPermissionRequest.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
 
     override fun onResume() {

@@ -5,7 +5,8 @@
 package fr.lehautcambara.astronomicon.kbus.events
 
 import fr.lehautcambara.astronomicon.kbus.BusEvent
+import java.time.ZonedDateTime
 
-data class ClockControlEvent(val running: Boolean) : BusEvent() {
+data class FindNodeEvent(val body: String, val zdt: ZonedDateTime): BusEvent() {
 
 }

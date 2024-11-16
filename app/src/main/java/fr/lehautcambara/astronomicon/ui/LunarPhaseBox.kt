@@ -1,6 +1,7 @@
 package fr.lehautcambara.astronomicon.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,9 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import fr.lehautcambara.astronomicon.R
+import fr.lehautcambara.astronomicon.kbus.Kbus
+import fr.lehautcambara.astronomicon.kbus.events.FindNodeEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import kotlinx.coroutines.flow.StateFlow
+import java.time.ZonedDateTime
 
 
 @Composable
@@ -49,16 +53,18 @@ fun LunarPhaseBox(uiState: StateFlow<OrreryUIState>, modifier: Modifier = Modifi
         R.drawable.moon29,
         )}
     val orreryUIState: OrreryUIState by uiState.collectAsState()
-    LunarPhaseBox(phaseArray, orreryUIState.moonPhase(phaseArray.size ), modifier)
+    LunarPhaseBox(phaseArray, orreryUIState.moonPhase(phaseArray.size ), orreryUIState.zonedDateTime,  modifier)
 }
 
 @Composable
-fun LunarPhaseBox(phaseArray: Array<Int>, phase: Int, modifier: Modifier = Modifier) {
+fun LunarPhaseBox(phaseArray: Array<Int>, phase: Int, zdt: ZonedDateTime, modifier: Modifier = Modifier) {
 
     Image(
         painterResource(id = phaseArray[phase]),
         "Moon Phase",
-        modifier = modifier
+        modifier = modifier.clickable {
+            Kbus.post(FindNodeEvent("Moon", zdt))
+        }
     )
 }
 

@@ -26,9 +26,9 @@ enum class DisplayMode {
     Ecliptic{
         override fun scale(radialScroll: Float) = radialScroll/20.0
     },
-    Heliocentric {
-        override fun scale(radialScroll: Float) = radialScroll/20.0
-    },
+//    Heliocentric {
+//        override fun scale(radialScroll: Float) = radialScroll/20.0
+//    },
     ;
     abstract fun scale(radialScroll: Float): Double
 }

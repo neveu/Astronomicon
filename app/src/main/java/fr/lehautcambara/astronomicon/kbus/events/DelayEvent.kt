@@ -6,6 +6,4 @@ package fr.lehautcambara.astronomicon.kbus.events
 
 import fr.lehautcambara.astronomicon.kbus.BusEvent
 
-data class ClockControlEvent(val running: Boolean) : BusEvent() {
-
-}
+data class DelayEvent(val delayedEvent: BusEvent, val delayTimeInMillis: Long = 1000): BusEvent()

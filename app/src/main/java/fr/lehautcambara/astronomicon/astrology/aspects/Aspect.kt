@@ -57,7 +57,7 @@ fun aspectAngle(center: Coords?, from: Coords?, to: Coords?): Double {
     return 0.0
 }
 fun ephemerisPairToAspect(b1: Ephemeris, b2: Ephemeris, zdt: ZonedDateTime) : Aspect? {
-    val angle = aspectAngle(ephemerides["Earth"], b1,b2, zdt)
+    val angle = aspectAngle(ephemerides()["Earth"], b1,b2, zdt)
     return when(angle) {
         in aspectRange(0.0) -> Aspect(AspectType.Conjunction, zdt, b1,b2, angle)
         in aspectRange(30.0) -> Aspect(AspectType.SemiSextile, zdt, b1,b2, angle)

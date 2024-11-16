@@ -37,6 +37,7 @@ import fr.lehautcambara.astronomicon.orrery.DisplayMode
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState.Companion.fromTo
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
+import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
 import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
@@ -61,10 +62,11 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
     ) {
         val modifier = Modifier.align(Alignment.Center)
         when(orreryUIState.displayMode) {
-            DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, size, modifier = modifier)
+            //DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, size, modifier = modifier)
             DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, size, modifier = modifier)
             DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState, size, modifier = modifier)
             DisplayMode.NatalChart -> DrawNatalChart(uiState = orreryUIState, size, modifier = modifier)
+            else -> {}
         }
     }
 }
@@ -131,14 +133,14 @@ private fun DrawAllEcliptic(
     modifier: Modifier
 ) {
     with(uiState) {
-        DrawOrbit(radius = (size.width*proportions.eclipticRadiusScale).roundToInt(), color = Color.Red, stroke = 4F, modifier = modifier)
+        DrawOrbit(radius = (size.width * proportions.eclipticRadiusScale).roundToInt(), color = Color.Red, stroke = 4F, modifier = modifier)
 
         DrawPlanetEcliptic(body = Mercury, size, proportions, coords = fromTo(earth, mercury), planetGraphic, modifier = modifier)
         DrawPlanetEcliptic(body = Venus, size, proportions, coords = fromTo(earth, venus), planetGraphic, modifier = modifier)
         DrawPlanetEcliptic(body = Sun, size, proportions,  coords = fromTo(earth, sun), planetGraphic,  modifier = modifier)
         DrawPlanetEcliptic(body = Mars, size, proportions, coords = fromTo(earth, mars),  planetGraphic,   modifier = modifier)
         DrawPlanetEcliptic(body = Jupiter, size, proportions, coords = fromTo(earth, jupiter), planetGraphic,   modifier = modifier)
-        val saturnScale = proportions.planetImageScale * 2
+        val saturnScale = if (uiState.planetGraphic == PlanetGraphic.Planet)  proportions.planetImageScale * 2 else proportions.planetImageScale
         DrawPlanetEcliptic(body = Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = fromTo(earth, saturn),  planetGraphic,  modifier = modifier)
         DrawPlanetEcliptic(body = Moon, size, proportions, coords = fromTo(earth, moon),  planetGraphic,   modifier = modifier)
         DrawPlanet(body = Earth, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)

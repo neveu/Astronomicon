@@ -320,7 +320,7 @@ fun DrawNatalChart(
     significantAspectPairs: List<Aspect>? = null,
     latitude: Double = 0.0,
     longitude: Double = 0.0,
-    ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides,
+    ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides(),
 ) {
     val aspectSignImages: MutableMap<AspectType, ImageBitmap?> = mutableMapOf()
     AspectType.values().forEach { aspectType ->
@@ -383,7 +383,7 @@ fun DrawNatalChart(
             significantAspectPairs = significantAspectPairs,
             latitude = latitude,
             longitude = longitude,
-            ephemerides = fr.lehautcambara.astronomicon.astrology.ephemerides,
+            ephemerides = fr.lehautcambara.astronomicon.astrology.ephemerides(),
         )
     }
 }

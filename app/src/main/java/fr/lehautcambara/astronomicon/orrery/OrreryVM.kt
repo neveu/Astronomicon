@@ -83,7 +83,7 @@ class OrreryVM : ViewModel() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: ClockControlEvent) {
         _uiState.update { uistate ->
-            uistate.copy(updateTime = event.startClockTicks)
+            uistate.copy(updateTime = event.running)
         }
     }
 
@@ -95,5 +95,6 @@ class OrreryVM : ViewModel() {
             }
         }
     }
+
 }
 

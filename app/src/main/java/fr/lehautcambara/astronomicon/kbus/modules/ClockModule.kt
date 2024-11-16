@@ -15,13 +15,13 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class ClockModule(context: Context) : BusModule() {
+    var running: Boolean = true
     var receiver: BroadcastReceiver
     init {
         receiver = object:  BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent?.action?.compareTo(Intent.ACTION_TIME_TICK)==0) {
-
-                    Kbus.post(TimeTickEvent())
+                    if (running) Kbus.post(TimeTickEvent())
                 }
             }
         }
@@ -30,7 +30,7 @@ class ClockModule(context: Context) : BusModule() {
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     fun onEvent(event: ClockControlEvent) {
-
+        running = event.running
     }
 
 }

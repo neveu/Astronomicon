@@ -135,7 +135,8 @@ fun DrawPlanetSymbol(body: Ephemeris, r: Double, a: Double, size: Size, proporti
 fun DrawPlanetSymbol(body: Ephemeris, x: Int, y: Int, size: Size, proportions: OrbitalProportions, modifier: Modifier) {
     // shadow
     planetSignDrawables[body.toString()]?.let { id: Int ->
-        Image(
+        // draw shadow
+        Image (
             painterResource(id = id), "shadow",
             modifier = modifier
                 .absoluteOffset { IntOffset(x + 20, -(y - 20)) }
@@ -143,7 +144,7 @@ fun DrawPlanetSymbol(body: Ephemeris, x: Int, y: Int, size: Size, proportions: O
                 .blur(2.dp)
                 .alpha(0.7F)
         )
-        Image(
+        Image (
             // painterResource(id = id),
             painter = rememberDrawablePainter(drawable =
             getDrawable(LocalContext.current, id)),
