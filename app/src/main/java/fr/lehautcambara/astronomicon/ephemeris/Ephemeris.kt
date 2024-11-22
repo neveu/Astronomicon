@@ -38,7 +38,7 @@ abstract class Ephemeris {
         var oldTime = startTime
         var newTime = oldTime.plusHours(1L)
         while (sign(eclipticCoords(oldTime).z) == sign(eclipticCoords(newTime).z)
-        //    || sign(eclipticCoords(newTime).z) < 0
+            || sign(eclipticCoords(newTime).z) < 0
         ) {
             oldTime = newTime
             newTime = oldTime.plusHours(1L)

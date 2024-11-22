@@ -1,17 +1,18 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "fr.lehautcambara.astronomicon"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
-        targetSdk = 34
-        versionCode = 14
+        targetSdk = 35
+        versionCode = 15
         versionName = "LunarNode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

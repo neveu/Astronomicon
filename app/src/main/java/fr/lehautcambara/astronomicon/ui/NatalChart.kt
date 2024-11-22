@@ -398,7 +398,7 @@ fun DrawNatalChart(uiState: OrreryUIState, size: Size, modifier: Modifier = Modi
     DrawNatalChart(
         zdt = zdt,
         significantAspectPairs = aspectPairs,
-        outerRadius = size.width.toDouble()/2.0,
+        outerRadius = 0.975 * size.width.toDouble()/2.0,
         proportions = uiState.proportions,
         latitude = uiState.latitude,
         longitude = uiState.longitude,

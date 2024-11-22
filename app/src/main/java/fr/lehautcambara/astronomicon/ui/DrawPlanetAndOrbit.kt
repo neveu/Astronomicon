@@ -36,13 +36,11 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Mars
 import fr.lehautcambara.astronomicon.astrology.planetDrawables
 import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.cosd
-import fr.lehautcambara.astronomicon.elevationd
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
-import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
 import fr.lehautcambara.astronomicon.sind
 import kotlin.math.roundToInt
 
@@ -145,30 +143,19 @@ fun DrawPlanetSymbol(body: Ephemeris, x: Int, y: Int, size: Size, proportions: O
                 .alpha(0.7F)
         )
         Image (
-            // painterResource(id = id),
             painter = rememberDrawablePainter(drawable =
             getDrawable(LocalContext.current, id)),
             body.toString(),
             modifier = modifier
                 .absoluteOffset { IntOffset(x, -y) }
-                .size(pixToDp(size.width * proportions.planetImageScale))
+                .size(pixToDp(size.width * proportions.planetSymbolScale))
                 .clickable {
                     Kbus.post(PlanetClickEvent(body))
                 }
         )
     }
 }
-@Composable
-fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProportions,  coords: Coords?, planetGraphic: PlanetGraphic, modifier: Modifier) {
-    coords?.apply {
-        val a = angled(x,y)
-        val elevation: Double = elevationd(x,y,z)
-        val r = (size.width*proportions.eclipticRadiusScale) + (elevation * proportions.elevationScale)
-        val pointerRadius = (size.width * proportions.pointerScale).toInt()
-        DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
-        DrawPlanetSymbol(body, r=r, a, size = size, proportions = proportions, modifier)
-    }
-}
+
 @Preview
 @Composable
 private fun PreviewDrawPlanet() {
