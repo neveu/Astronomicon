@@ -23,12 +23,15 @@ enum class DisplayMode {
     Geocentric {
         override fun scale(radialScroll: Float) = radialScroll/20.0
     },
-    Ecliptic{
+    Ecliptic {
         override fun scale(radialScroll: Float) = radialScroll/20.0
     },
-//    Heliocentric {
-//        override fun scale(radialScroll: Float) = radialScroll/20.0
-//    },
+    LunarNodes {
+        override fun scale(radialScroll: Float): Double = radialScroll/20.0
+    },
+    Heliocentric {
+        override fun scale(radialScroll: Float) = radialScroll/20.0
+    },
     ;
     abstract fun scale(radialScroll: Float): Double
 }
@@ -40,7 +43,7 @@ enum class PlanetGraphic {
 
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.Ecliptic,
+    val displayMode: DisplayMode = DisplayMode.LunarNodes,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
     val proportions: NatalChartProportions = NatalChartProportions(),

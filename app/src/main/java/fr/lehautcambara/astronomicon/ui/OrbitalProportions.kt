@@ -13,7 +13,7 @@ data class OrbitalProportions(
     val eclipticRadiusScale: Double = 0.18,
     val elevationScale: Double = 20.0,
     val planetShadowScale: Double = 0.02,
-) {
+    val lunarNodesOrbitRadiusScale: Double = 0.26,
+    val lunarNodesElevationScale: Double = 25.0,
 
-
-}
+    )
