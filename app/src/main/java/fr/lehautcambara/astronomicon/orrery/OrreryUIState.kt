@@ -43,7 +43,7 @@ enum class PlanetGraphic {
 
 data class OrreryUIState (
     val zonedDateTime: ZonedDateTime = ZonedDateTime.now(),
-    val displayMode: DisplayMode = DisplayMode.LunarNodes,
+    val displayMode: DisplayMode = DisplayMode.NatalChart,
     val aspects: List<Aspect> = aspects(zonedDateTime),
     val showDateInput: Boolean = false,
     val proportions: NatalChartProportions = NatalChartProportions(),

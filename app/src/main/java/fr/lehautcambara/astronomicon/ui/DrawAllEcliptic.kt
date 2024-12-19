@@ -61,38 +61,124 @@ fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProporti
 @Composable
 fun DrawAllEcliptic(
     uiState: OrreryUIState,
-    size: Size,
+    background: Int = R.drawable.acsquare4,
     proportions: OrbitalProportions = OrbitalProportions(),
     modifier: Modifier
 ) {
-    with(uiState) {
-        val dpValue = pixToDp(360.0 * 0.95 )
-        val lunarNodeZdt: ZonedDateTime = AstrologicalPoints.Moon.nextNode(uiState.zonedDateTime) {}
-        val earthCoords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
-        val angle: Double = earthCoords.angleTo(AstrologicalPoints.Moon.eclipticCoords(lunarNodeZdt))
-        Log.d("DrawAllEcliptic Earth - Moon Angle: ", angle.toString())
-        Image(
-            painterResource(id = R.drawable.draconis_1k_sat_center),
-            contentDescription = "",
-            modifier = modifier
-                .size(dpValue)
-                .rotate(-angle.toFloat())
-                .alpha(0.5F)
-                .clickable { Kbus.post(PlanetClickEvent()) })
+    var size: Size by remember { mutableStateOf(Size.Zero) }
 
-        DrawOrbit(radius = (size.width * proportions.eclipticRadiusScale).roundToInt(), color = Color.Red, stroke = 5F, modifier = modifier)
+    Box(modifier = Modifier
+        .paint(
+            painterResource(id = background),
+            contentScale = ContentScale.FillWidth
+        )
+        .onGloballyPositioned { coordinates ->
+            size = coordinates.size.toSize()
+        }
+        .pointerInput(Unit) {
+            detectDragGestures { change: PointerInputChange, dragAmount: Offset ->
+                Kbus.post(RadialScrollEvent(size, change.position, dragAmount))
+            }
+        }
+    ) {
 
-        DrawPlanetEcliptic(body = AstrologicalPoints.Mercury, size, proportions, coords = OrreryUIState.fromTo(earth, mercury), planetGraphic, modifier = modifier)
-        DrawPlanetEcliptic(body = AstrologicalPoints.Venus, size, proportions, coords = OrreryUIState.fromTo(earth, venus), planetGraphic, modifier = modifier)
-        DrawPlanetEcliptic(body = AstrologicalPoints.Sun, size, proportions,  coords = OrreryUIState.fromTo(earth, sun), planetGraphic,  modifier = modifier)
-        DrawPlanetEcliptic(body = AstrologicalPoints.Mars, size, proportions, coords = OrreryUIState.fromTo(earth, mars),  planetGraphic,   modifier = modifier)
-        DrawPlanetEcliptic(body = AstrologicalPoints.Jupiter, size, proportions, coords = OrreryUIState.fromTo(earth, jupiter), planetGraphic,   modifier = modifier)
-        val saturnScale = if (uiState.planetGraphic == PlanetGraphic.Planet)  proportions.planetImageScale * 2 else proportions.planetImageScale
-        DrawPlanetEcliptic(body = AstrologicalPoints.Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = OrreryUIState.fromTo(earth, saturn),  planetGraphic,  modifier = modifier)
-        DrawPlanetEcliptic(body = AstrologicalPoints.Moon, size, proportions, coords = OrreryUIState.fromTo(earth, moon),  planetGraphic,   modifier = modifier)
-        DrawPlanet(body = AstrologicalPoints.Earth, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)
+        with(uiState) {
+            val dpValue = pixToDp(360.0 * 0.95)
+            val lunarNodeZdt: ZonedDateTime =
+                AstrologicalPoints.Moon.nextNode(uiState.zonedDateTime) {}
+            val earthCoords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
+            val angle: Double =
+                earthCoords.angleTo(AstrologicalPoints.Moon.eclipticCoords(lunarNodeZdt))
+            Log.d("DrawAllEcliptic Earth - Moon Angle: ", angle.toString())
+            Image(
+                painterResource(id = R.drawable.draconis_1k_sat_center),
+                contentDescription = "",
+                modifier = modifier
+                    .size(dpValue)
+                    .align(Alignment.Center)
+                    .rotate(-angle.toFloat())
+                    .alpha(0.5F)
+                    .clickable { Kbus.post(PlanetClickEvent()) })
+
+            DrawOrbit(
+                radius = (size.width * proportions.eclipticRadiusScale).roundToInt(),
+                color = Color.Red,
+                stroke = 5F,
+                modifier = modifier.align(Alignment.Center)
+            )
+
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Mercury,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, mercury),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Venus,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, venus),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Sun,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, sun),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Mars,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, mars),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Jupiter,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, jupiter),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+            )
+            val saturnScale =
+                if (uiState.planetGraphic == PlanetGraphic.Planet) proportions.planetImageScale * 2 else proportions.planetImageScale
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Saturn,
+                size,
+                proportions.copy(planetImageScale = saturnScale),
+                coords = OrreryUIState.fromTo(earth, saturn),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Moon,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, moon),
+                planetGraphic,
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanet(
+                body = AstrologicalPoints.Earth,
+                r = 0.0,
+                a = 0.0,
+                size,
+                proportions,
+                modifier = modifier.align(Alignment.Center)
+            )
+        }
     }
 }
+
 @Composable
 private fun pixToDp(
     pixels: Double,
@@ -105,22 +191,6 @@ private fun pixToDp(
 @Preview
 @Composable
 fun PreviewDrawEcliptic() {
-    var size: Size by remember { mutableStateOf(Size.Zero) }
-    Box(modifier = Modifier
-        .paint(
-            painterResource(id = R.drawable.acsquare4),
-            contentScale = ContentScale.FillWidth
-        )
-        .onGloballyPositioned { coordinates ->
-            size = coordinates.size.toSize()
-        }
-        .pointerInput(Unit) {
-            detectDragGestures { change: PointerInputChange, dragAmount: Offset ->
-                Kbus.post(RadialScrollEvent(size, change.position, dragAmount))
-            }
-        }
-    ) {
-        val modifier = Modifier.align(Alignment.Center)
-        DrawAllEcliptic(uiState = OrreryVM().uiState.value, size = size, modifier = Modifier.align(Alignment.Center))
-    }
+    DrawAllEcliptic(uiState = OrreryVM().uiState.value,  modifier = Modifier)
+
 }

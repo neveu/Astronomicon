@@ -4,9 +4,8 @@
 
 package fr.lehautcambara.astronomicon.kbus.events
 
-import android.location.Location
 import fr.lehautcambara.astronomicon.kbus.BusEvent
 
-data class LocationEvent(val location: Location) : BusEvent() {
+data class LocationEvent(val latitude: Double? = null, val longitude: Double? = null) : BusEvent() {
 
 }

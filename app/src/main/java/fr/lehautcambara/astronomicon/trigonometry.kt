@@ -62,3 +62,8 @@ fun elevationd(x: Double, y: Double, z: Double): Double {
 fun r(x: Double, y: Double): Double {
     return sqrt(x * x + y * y)
 }
+
+fun angle360to180(a: Double) : Double {
+    val angle = ((a % 360) + 360) % 360
+    return if (angle > 180) angle - 360 else angle
+}

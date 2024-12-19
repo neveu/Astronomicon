@@ -1,12 +1,15 @@
 package fr.lehautcambara.astronomicon.orrery
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import fr.lehautcambara.astronomicon.angle360to180
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.ClockControlEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateSelectedEvent
 import fr.lehautcambara.astronomicon.kbus.events.LocationEvent
+import fr.lehautcambara.astronomicon.kbus.events.LongitudeScrollEvent
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.kbus.events.TimeTickEvent
@@ -31,12 +34,6 @@ class OrreryVM : ViewModel() {
     val uiState: StateFlow<OrreryUIState> = _uiState.asStateFlow()
     private val displayModes: Array<DisplayMode> = DisplayMode.values()
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    fun onEvent(event: RadialScrollEvent) {
-        Kbus.post(ClockControlEvent(false))
-        val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
-        Kbus.post(ZDTEvent(zonedDateTime.plusMinutes(scrollAmount)))
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: ZDTEvent) {
@@ -89,12 +86,27 @@ class OrreryVM : ViewModel() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: LocationEvent) {
-        with(event.location) {
-            _uiState.update { uiState ->
-                uiState.copy(longitude = longitude, latitude = latitude )
-            }
+        _uiState.update { uiState ->
+            val state = uiState.copy(latitude = event.latitude?:uiState.latitude, longitude = event.longitude?:uiState.longitude)
+            Log.d("onEvent LocationEvent", "")
+            state
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: RadialScrollEvent) {
+        Kbus.post(ClockControlEvent(false))
+        val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
+        Kbus.post(ZDTEvent(zonedDateTime.plusMinutes(scrollAmount)))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    fun onEvent(event: LongitudeScrollEvent) {
+            val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
+            val nl = angle360to180((uiState.value.longitude + scrollAmount/2))
+            _uiState.update { uiState: OrreryUIState ->
+                uiState.copy( longitude = nl )
+            }
+    }
 }
 

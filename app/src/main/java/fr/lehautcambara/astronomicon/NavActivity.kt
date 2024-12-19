@@ -68,13 +68,14 @@ class NavActivity : ComponentActivity() {
                 if (granted) {
                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                         || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    )
-                    fusedLocationClient.lastLocation
-                        .addOnSuccessListener { location: Location? ->
-                            location?.let {
-                                Kbus.post(LocationEvent(it))
+                    ) {
+                        fusedLocationClient.lastLocation
+                            .addOnSuccessListener { location: Location? ->
+                                location?.let {
+                                    Kbus.post(LocationEvent(it.latitude, it.longitude))
+                                }
                             }
-                        }
+                    }
                 }
             }
         locationPermissionRequest.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
