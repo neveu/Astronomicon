@@ -7,6 +7,7 @@ package fr.lehautcambara.astronomicon.ui
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,15 +32,17 @@ import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
+import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 
 @Composable
 fun DrawAllGeocentric(
-    uiState: OrreryUIState,
+    uiState: StateFlow<OrreryUIState>,
     backgroundID: Int = R.drawable.acsquare4,
     proportions: OrbitalProportions = OrbitalProportions(),
     modifier: Modifier
 ) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = modifier
         .paint(
@@ -55,7 +58,7 @@ fun DrawAllGeocentric(
             }
         }
     ) {
-        with(uiState) {
+        with(orreryUIState) {
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Moon,
                 1,
@@ -155,5 +158,5 @@ fun orbitColor(fromPlanet: Ephemeris, planet: Ephemeris, zdt: ZonedDateTime) : C
 @Preview
 @Composable
 fun PreviewGeocentric() {
-    DrawAllGeocentric(uiState = OrreryVM().uiState.value, modifier = Modifier)
+    DrawAllGeocentric(uiState = OrreryVM().uiState, modifier = Modifier)
 }

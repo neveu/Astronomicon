@@ -41,8 +41,8 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, uiState: StateFlow<OrreryUIStat
                 .verticalScroll(rememberScrollState())
 
         ) {
-            OrreryDate(orreryUIState)
-            OrreryBox(orreryUIState, orreryBackground)
+            OrreryDate(uiState)
+            OrreryBox(uiState, orreryBackground)
             if (orreryUIState.displayMode != DisplayMode.NatalChart) {
                 LunarPhaseBox(
                     uiState,
@@ -51,7 +51,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, uiState: StateFlow<OrreryUIStat
                         .padding(vertical = 32.dp)
                 )
             } else {
-                LatitudeLongitude(orreryUIState.latitude, orreryUIState.longitude)
+                LatitudeLongitude(uiState)
                 PolarMap(orreryUIState.longitude.toFloat())
             }
         }

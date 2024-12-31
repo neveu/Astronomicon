@@ -1,6 +1,5 @@
 package fr.lehautcambara.astronomicon.orrery
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import fr.lehautcambara.astronomicon.angle360to180
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
@@ -87,9 +86,7 @@ class OrreryVM : ViewModel() {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: LocationEvent) {
         _uiState.update { uiState ->
-            val state = uiState.copy(latitude = event.latitude?:uiState.latitude, longitude = event.longitude?:uiState.longitude)
-            Log.d("onEvent LocationEvent", "")
-            state
+            uiState.copy(latitude = event.latitude?:uiState.latitude, longitude = event.longitude?:uiState.longitude)
         }
     }
 

@@ -3,6 +3,7 @@ package fr.lehautcambara.astronomicon.ui
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,9 +26,11 @@ import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.DisplayMode
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun OrreryBox(orreryUIState: OrreryUIState, orreryBackground: Int) {
+fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = Modifier
         .paint(
@@ -45,12 +48,11 @@ fun OrreryBox(orreryUIState: OrreryUIState, orreryBackground: Int) {
     ) {
         val modifier = Modifier.align(Alignment.Center)
         when(orreryUIState.displayMode) {
-            DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = orreryUIState, R.drawable.acsquare4, modifier = modifier)
-            DisplayMode.Geocentric -> DrawAllGeocentric(uiState = orreryUIState, R.drawable.acsquare4, modifier = modifier)
-            DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = orreryUIState, R.drawable.acsquare4,  modifier = modifier)
-            DisplayMode.LunarNodes -> DrawAllLunarNodes(uiState = orreryUIState,  modifier = modifier)
-            DisplayMode.NatalChart -> DrawNatalChart(uiState = orreryUIState, size, modifier = modifier)
-            else -> {}
+            DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = uiState, R.drawable.acsquare4, modifier = modifier)
+            DisplayMode.Geocentric -> DrawAllGeocentric(uiState = uiState, R.drawable.acsquare4, modifier = modifier)
+            DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = uiState, R.drawable.acsquare4,  modifier = modifier)
+            DisplayMode.LunarNodes -> DrawAllLunarNodes(uiState = uiState, size, modifier = modifier)
+            DisplayMode.NatalChart -> DrawNatalChart(uiState = uiState, size, modifier = modifier)
         }
     }
 }
@@ -61,5 +63,5 @@ fun OrreryBox(orreryUIState: OrreryUIState, orreryBackground: Int) {
 @Composable
 
 fun PreviewOrreryBox() {
-    OrreryBox(OrreryVM().uiState.value, orreryBackground = R.drawable.acsquare4)
+    OrreryBox(OrreryVM().uiState, orreryBackground = R.drawable.acsquare4)
 }

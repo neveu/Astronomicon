@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
+import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 @Composable
 fun DrawPlanetLunarNode(body: Ephemeris, size: Size, proportions: OrbitalProportions, coords: Coords?, planetGraphic: PlanetGraphic, modifier: Modifier) {
@@ -57,15 +59,16 @@ fun DrawPlanetLunarNode(body: Ephemeris, size: Size, proportions: OrbitalProport
     }
 }
 @Composable
-fun DrawAllLunarNode(
-    uiState: OrreryUIState,
+fun DrawAllLunarNodes(
+    uiState: StateFlow<OrreryUIState>,
     size: Size,
     proportions: OrbitalProportions = OrbitalProportions(),
     modifier: Modifier
 ) {
-    with(uiState) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
+    with(orreryUIState) {
         val dpValue = pixToDp(280.0 )
-        val lunarNodeZdt: ZonedDateTime = AstrologicalPoints.Moon.nextNode(uiState.zonedDateTime) {}
+        val lunarNodeZdt: ZonedDateTime = AstrologicalPoints.Moon.nextNode(zonedDateTime) {}
         val earthCoords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
         val angle: Double = earthCoords.angleTo(AstrologicalPoints.Moon.eclipticCoords(lunarNodeZdt))
         Log.d("DrawAllEcliptic Earth - Moon Angle: ", angle.toString())
@@ -80,13 +83,6 @@ fun DrawAllLunarNode(
                 .clickable { Kbus.post(PlanetClickEvent()) })
 
 
-//        DrawPlanetEcliptic(body = AstrologicalPoints.Mercury, size, proportions, coords = OrreryUIState.fromTo(earth, mercury), planetGraphic, modifier = modifier)
-//        DrawPlanetEcliptic(body = AstrologicalPoints.Venus, size, proportions, coords = OrreryUIState.fromTo(earth, venus), planetGraphic, modifier = modifier)
-//        DrawPlanetEcliptic(body = AstrologicalPoints.Mars, size, proportions, coords = OrreryUIState.fromTo(earth, mars),  planetGraphic,   modifier = modifier)
-//        DrawPlanetEcliptic(body = AstrologicalPoints.Jupiter, size, proportions, coords = OrreryUIState.fromTo(earth, jupiter), planetGraphic,   modifier = modifier)
-//        val saturnScale = if (uiState.planetGraphic == PlanetGraphic.Planet)  proportions.planetImageScale * 2 else proportions.planetImageScale
-//        DrawPlanetEcliptic(body = AstrologicalPoints.Saturn, size, proportions.copy(planetImageScale = saturnScale), coords = OrreryUIState.fromTo(earth, saturn),  planetGraphic,  modifier = modifier)
-        //DrawOrbit(radius = (size.width * proportions.lunarNodesOrbitRadiusScale).roundToInt(), color = Color.Red, stroke = 5F, modifier = modifier)
         DrawPlanetLunarNode(body = AstrologicalPoints.Sun, size, proportions,  coords = OrreryUIState.fromTo(earth, sun), planetGraphic,  modifier = modifier)
         DrawPlanetLunarNode(body = AstrologicalPoints.Moon, size, proportions, coords = OrreryUIState.fromTo(earth, moon),  planetGraphic,   modifier = modifier)
         DrawPlanet(body = AstrologicalPoints.Earth, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)
@@ -103,7 +99,7 @@ private fun pixToDp(
 
 @Preview
 @Composable
-fun DrawAllLunarNodes(uiState: OrreryUIState = OrreryVM().uiState.value, backgroundID: Int = R.drawable.draconis_1k_annulus, modifier: Modifier = Modifier) {
+fun PreviewDrawAllLunarNodes( backgroundID: Int = R.drawable.draconis_1k_annulus, modifier: Modifier = Modifier) {
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = modifier
         .paint(
@@ -119,6 +115,6 @@ fun DrawAllLunarNodes(uiState: OrreryUIState = OrreryVM().uiState.value, backgro
             }
         }
     ) {
-        DrawAllLunarNode(uiState = uiState, size = size, modifier = Modifier.align(Alignment.Center))
+        DrawAllLunarNodes(uiState = OrreryVM().uiState, size = size, modifier = Modifier.align(Alignment.Center))
     }
 }

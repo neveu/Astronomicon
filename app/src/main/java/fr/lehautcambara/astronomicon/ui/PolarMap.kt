@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.LongitudeScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 private fun pixToDp(pixels: Double): Dp {
@@ -79,8 +81,9 @@ fun PolarMap(angle: Float = 0F) {
 }
 
 @Composable
-fun PolarMap(uiState: OrreryUIState) {
-    PolarMap(uiState.longitude.toFloat())
+fun PolarMap(uiState: StateFlow<OrreryUIState>) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
+    PolarMap(orreryUIState.longitude.toFloat())
 }
 
 @Preview

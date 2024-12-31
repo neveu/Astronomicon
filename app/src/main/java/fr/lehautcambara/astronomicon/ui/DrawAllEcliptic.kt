@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
+import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
 @Composable
@@ -60,11 +62,12 @@ fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProporti
 }
 @Composable
 fun DrawAllEcliptic(
-    uiState: OrreryUIState,
+    uiState: StateFlow<OrreryUIState>,
     background: Int = R.drawable.acsquare4,
     proportions: OrbitalProportions = OrbitalProportions(),
     modifier: Modifier
 ) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
     var size: Size by remember { mutableStateOf(Size.Zero) }
 
     Box(modifier = Modifier
@@ -82,10 +85,10 @@ fun DrawAllEcliptic(
         }
     ) {
 
-        with(uiState) {
+        with(orreryUIState) {
             val dpValue = pixToDp(360.0 * 0.95)
             val lunarNodeZdt: ZonedDateTime =
-                AstrologicalPoints.Moon.nextNode(uiState.zonedDateTime) {}
+                AstrologicalPoints.Moon.nextNode(orreryUIState.zonedDateTime) {}
             val earthCoords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
             val angle: Double =
                 earthCoords.angleTo(AstrologicalPoints.Moon.eclipticCoords(lunarNodeZdt))
@@ -149,7 +152,7 @@ fun DrawAllEcliptic(
                 modifier = modifier.align(Alignment.Center)
             )
             val saturnScale =
-                if (uiState.planetGraphic == PlanetGraphic.Planet) proportions.planetImageScale * 2 else proportions.planetImageScale
+                if (orreryUIState.planetGraphic == PlanetGraphic.Planet) proportions.planetImageScale * 2 else proportions.planetImageScale
             DrawPlanetEcliptic(
                 body = AstrologicalPoints.Saturn,
                 size,
@@ -191,6 +194,6 @@ private fun pixToDp(
 @Preview
 @Composable
 fun PreviewDrawEcliptic() {
-    DrawAllEcliptic(uiState = OrreryVM().uiState.value,  modifier = Modifier)
+    DrawAllEcliptic(uiState = OrreryVM().uiState,  modifier = Modifier)
 
 }

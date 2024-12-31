@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,9 +17,11 @@ import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import fr.lehautcambara.astronomicon.ui.theme.AstronomiconTheme
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun OrreryDate(orreryUIState: OrreryUIState) {
+fun OrreryDate(uiState: StateFlow<OrreryUIState>) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
     Text(
         text = orreryUIState.toString(),
         color = Color.White,
@@ -33,6 +37,6 @@ fun OrreryDate(orreryUIState: OrreryUIState) {
 fun PreviewOrreryDate()
 {
     AstronomiconTheme {
-        OrreryDate(OrreryVM().uiState.value)
+        OrreryDate(OrreryVM().uiState)
     }
 }

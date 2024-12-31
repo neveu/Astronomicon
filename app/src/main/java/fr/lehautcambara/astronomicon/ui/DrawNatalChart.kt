@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -44,6 +46,7 @@ import fr.lehautcambara.astronomicon.kbus.events.PlanetSignClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.rcosd
 import fr.lehautcambara.astronomicon.rsind
+import kotlinx.coroutines.flow.StateFlow
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
@@ -130,14 +133,6 @@ fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable:
         planet?.let { planet ->
             val x = -rcosd(planet.radius, planet.angle)
             val y = rsind(planet.radius, planet.angle)
-//            Image(
-//                painterResource(id = id), "shadow",
-//                modifier = modifier
-//                    .absoluteOffset { IntOffset(x.toInt() + 10, (y.toInt() + 10)) }
-//                    .size(sizeDp)
-//                    .blur(2.dp)
-//                    .alpha(0.7F)
-//            )
 
             Image(painterResource(id = id), planet.planet,
                 modifier = modifier
@@ -243,26 +238,26 @@ fun DrawAspect(
             val start = Offset(-rcosd(r, angle1).toFloat(), rsind(r, angle1).toFloat())
             val end = Offset(-rcosd(r, angle2).toFloat(), rsind(r, angle2).toFloat())
 
-            drawAspectLine(aspect, start, end, modifier, )
-            drawGlyphs(aspect,  start, end, sizeDp, modifier,)
+            DrawAspectLine(aspect, start, end, modifier, )
+            DrawGlyphs(aspect,  start, end, sizeDp, modifier,)
         }
     }
 }
 
 @Composable
-private fun drawGlyphs(
+private fun DrawGlyphs(
     aspect: Aspect,
     offset1: Offset,
     offset2: Offset,
     sizeDp: Dp,
     modifier: Modifier,
     ) {
-        drawAspectGlyph(aspect, offset1, sizeDp, modifier, )
-        drawAspectGlyph(aspect, offset2, sizeDp, modifier)
+        DrawAspectGlyph(aspect, offset1, sizeDp, modifier, )
+        DrawAspectGlyph(aspect, offset2, sizeDp, modifier)
 }
 
 @Composable
-private fun drawAspectGlyph(
+private fun DrawAspectGlyph(
     aspect: Aspect,
     offset: Offset,
     sizeDp: Dp,
@@ -284,7 +279,7 @@ private fun drawAspectGlyph(
 }
 
 @Composable
-private fun drawAspectLine(
+private fun DrawAspectLine(
     aspect: Aspect,
     offset1: Offset,
     offset2: Offset,
@@ -391,20 +386,23 @@ fun DrawNatalChart(
 
 
 @Composable
-fun DrawNatalChart(uiState: OrreryUIState, size: Size, modifier: Modifier = Modifier) {
-    val zdt = uiState.zonedDateTime
-    val aspectPairs: List<Aspect> = uiState.aspects
+fun DrawNatalChart(uiState: StateFlow<OrreryUIState>, size: Size, modifier: Modifier = Modifier) {
+    val orreryUIState: OrreryUIState by uiState.collectAsState()
+    with(orreryUIState) {
+        val zdt = zonedDateTime
+        val aspectPairs: List<Aspect> = aspects
 
-    DrawNatalChart(
-        zdt = zdt,
-        significantAspectPairs = aspectPairs,
-        outerRadius = 0.975 * size.width.toDouble()/2.0,
-        proportions = uiState.proportions,
-        latitude = uiState.latitude,
-        longitude = uiState.longitude,
-        modifier = modifier,
+        DrawNatalChart(
+            zdt = zdt,
+            significantAspectPairs = aspectPairs,
+            outerRadius = 0.975 * size.width.toDouble() / 2.0,
+            proportions = proportions,
+            latitude = latitude,
+            longitude = longitude,
+            modifier = modifier,
 
-    )
+            )
+    }
 }
 
 @Preview
