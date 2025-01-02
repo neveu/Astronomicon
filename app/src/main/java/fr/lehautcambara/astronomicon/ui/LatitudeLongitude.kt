@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +33,7 @@ import fr.lehautcambara.astronomicon.kbus.events.LocationEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import kotlinx.coroutines.flow.StateFlow
-import java.util.Locale
+import java.util.Locale.getDefault
 
 @Composable
 fun LatitudeLongitude(uiState: StateFlow<OrreryUIState>) {
@@ -53,23 +54,34 @@ fun LatitudeLongitude(uiState: StateFlow<OrreryUIState>) {
 }
 
 @Composable
-private fun GeoCoord(angle: Double, label: String, modifier: Modifier ) {
-    var geocoord: String by remember{ mutableStateOf("0.0") }
-    geocoord = String.format(Locale.getDefault(), "%+.2f", angle)
+private fun NumberField(number: Double?, label: String, modifier: Modifier, onNumberChange: (Double?) -> Unit,
+) {
+    var a: Double? by remember{ mutableStateOf(number)}
+    var text: String by remember(a != number){
+        a = number
+        mutableStateOf(a?.let{
+            String.format(getDefault(), "%+.2f", it)
+        } ?: "")
+    }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     TextField(
-        value = geocoord,
+        value = text,
         label = { Text(text = label) },
         onValueChange = {
-            geocoord = it
+            if (it.toDoubleOrNull() != null) {
+                text = it
+            }
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = {
-                // update uiState
-
-                Kbus.post(LocationEvent(longitude = geocoord.toDouble()))
+                keyboardController?.hide()
+                text.toDoubleOrNull()?.let {n ->
+                    onNumberChange(n)
+                }
             }
         ),
         colors = TextFieldDefaults.colors(
@@ -83,22 +95,25 @@ private fun GeoCoord(angle: Double, label: String, modifier: Modifier ) {
             unfocusedIndicatorColor = Color.Transparent
         ),
         modifier = modifier.wrapContentWidth()
-
     )
 }
 
 
 @Composable
 private fun Longitude(angle: Double, modifier: Modifier) {
-   GeoCoord(angle = angle, label = "Longitude", modifier)
+   NumberField(number = angle, label = "Longitude", modifier){n ->
+       Kbus.post(LocationEvent(longitude = n))
+   }
 }
 
 
 @Composable
 private fun Latitude(angle: Double, modifier: Modifier) {
-    GeoCoord(angle = angle, label = "Latitude", modifier)
-
+    NumberField(number = angle, label = "Latitude", modifier){n ->
+        Kbus.post(LocationEvent(latitude = n))
+    }
 }
+
 
 @Preview
 @Composable
