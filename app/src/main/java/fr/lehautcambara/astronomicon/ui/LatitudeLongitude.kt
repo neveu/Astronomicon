@@ -22,7 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,7 +67,9 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, onNu
         } ?: "")
     }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
+    val textField = FocusRequester()
     TextField(
         value = text,
         label = { Text(text = label) },
@@ -79,6 +84,7 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, onNu
         keyboardActions = KeyboardActions(
             onDone = {
                 keyboardController?.hide()
+                focusManager.clearFocus()
                 text.toDoubleOrNull()?.let {n ->
                     onNumberChange(n)
                 }
@@ -94,8 +100,11 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, onNu
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        modifier = modifier.wrapContentWidth()
+        modifier = modifier
+            .wrapContentWidth()
+            .focusRequester(textField)
     )
+
 }
 
 
