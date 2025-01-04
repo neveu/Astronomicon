@@ -57,13 +57,13 @@ fun LatitudeLongitude(uiState: StateFlow<OrreryUIState>) {
 }
 
 @Composable
-private fun NumberField(number: Double?, label: String, modifier: Modifier, onNumberChange: (Double?) -> Unit,
+private fun NumberField(number: Double?, label: String, modifier: Modifier, format: (Double)->String, onNumberChange: (Double?) -> Unit,
 ) {
     var a: Double? by remember{ mutableStateOf(number)}
-    var text: String by remember(a != number){
+    var text: String by remember(number){
         a = number
-        mutableStateOf(a?.let{
-            String.format(getDefault(), "%+.2f", it)
+        mutableStateOf(a?.let{ num: Double ->
+            format(num)
         } ?: "")
     }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -104,13 +104,24 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, onNu
             .wrapContentWidth()
             .focusRequester(textField)
     )
-
 }
 
+private fun coordFormat(num: Double, plus: String, minus: String): String {
+    val direction = if (num < 0) minus else plus
+    return String.format(getDefault(), "%.2f%s", Math.abs(num), direction)
+}
+
+private fun longitudeFormat(num: Double): String {
+    return coordFormat(num, "E", "W")
+}
+
+private fun latitudeFormat(num: Double): String {
+    return coordFormat(num, "N", "S")
+}
 
 @Composable
 private fun Longitude(angle: Double, modifier: Modifier) {
-   NumberField(number = angle, label = "Longitude", modifier){n ->
+   NumberField(number = angle, label = "Longitude",  modifier, format = ::longitudeFormat){ n ->
        Kbus.post(LocationEvent(longitude = n))
    }
 }
@@ -118,7 +129,7 @@ private fun Longitude(angle: Double, modifier: Modifier) {
 
 @Composable
 private fun Latitude(angle: Double, modifier: Modifier) {
-    NumberField(number = angle, label = "Latitude", modifier){n ->
+    NumberField(number = angle, label = "Latitude", modifier, format = ::latitudeFormat){n ->
         Kbus.post(LocationEvent(latitude = n))
     }
 }

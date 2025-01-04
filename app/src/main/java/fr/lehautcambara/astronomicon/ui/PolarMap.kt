@@ -65,7 +65,7 @@ fun PolarMap(angle: Float = 0F) {
             modifier = Modifier
                 .size(dpValue)
                 .align(Alignment.Center)
-                .rotate(-angle)
+                .rotate(angle)
         )
 
         Canvas(modifier = Modifier ) {

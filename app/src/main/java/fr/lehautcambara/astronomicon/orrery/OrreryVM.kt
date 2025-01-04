@@ -99,7 +99,7 @@ class OrreryVM : ViewModel() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun onEvent(event: LongitudeScrollEvent) {
-            val scrollAmount = uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
+            val scrollAmount = -uiState.value.displayMode.scale(event.radialScroll()).roundToLong()
             val nl = angle360to180((uiState.value.longitude + scrollAmount/2))
             _uiState.update { uiState: OrreryUIState ->
                 uiState.copy( longitude = nl )
