@@ -51,13 +51,13 @@ fun LatitudeLongitude(uiState: StateFlow<OrreryUIState>) {
     {
         with(orreryUIState) {
             Longitude(longitude, modifier = Modifier.weight(1f))
-            Latitude(latitude, modifier = Modifier.weight(1f))
+            Latitude(latitude,  modifier = Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun NumberField(number: Double?, label: String, modifier: Modifier, format: (Double)->String, onNumberChange: (Double?) -> Unit,
+private fun NumberField(number: Double?, label: String, enabled: Boolean = true, modifier: Modifier, format: (Double)->String, onNumberChange: (Double?) -> Unit,
 ) {
     var a: Double? by remember{ mutableStateOf(number)}
     var text: String by remember(number){
@@ -73,11 +73,10 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, form
     TextField(
         value = text,
         label = { Text(text = label) },
-        onValueChange = {
-            if (it.toDoubleOrNull() != null) {
-                text = it
-            }
+        onValueChange = { value: String ->
+            text = if (isNum(value)) { value } else {""}
         },
+        enabled = enabled,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done),
@@ -98,7 +97,11 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, form
             focusedTextColor = Color.White,
             unfocusedTextColor = Color.White,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledTextColor = Color.White,
+            disabledContainerColor = Color.Transparent,
+            disabledLabelColor = Color.White,
+
         ),
         modifier = modifier
             .wrapContentWidth()
@@ -106,6 +109,10 @@ private fun NumberField(number: Double?, label: String, modifier: Modifier, form
     )
 }
 
+private val  numRegex = "-?[0-9]*(\\.[0-9]*)?".toRegex()
+private fun isNum(s: String): Boolean {
+    return s.matches(numRegex)
+}
 private fun coordFormat(num: Double, plus: String, minus: String): String {
     val direction = if (num < 0) minus else plus
     return String.format(getDefault(), "%.2f%s", Math.abs(num), direction)
@@ -121,7 +128,7 @@ private fun latitudeFormat(num: Double): String {
 
 @Composable
 private fun Longitude(angle: Double, modifier: Modifier) {
-   NumberField(number = angle, label = "Longitude",  modifier, format = ::longitudeFormat){ n ->
+   NumberField(number = angle, label = "Longitude", enabled = true, modifier, format = ::longitudeFormat){ n ->
        Kbus.post(LocationEvent(longitude = n))
    }
 }
@@ -129,7 +136,7 @@ private fun Longitude(angle: Double, modifier: Modifier) {
 
 @Composable
 private fun Latitude(angle: Double, modifier: Modifier) {
-    NumberField(number = angle, label = "Latitude", modifier, format = ::latitudeFormat){n ->
+    NumberField(number = angle, label = "Latitude", enabled = false,  modifier, format = ::latitudeFormat){n ->
         Kbus.post(LocationEvent(latitude = n))
     }
 }
