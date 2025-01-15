@@ -125,18 +125,22 @@ data class PlanetSignPolarCoords(
     val coords: Coords,
     val planetBitmap: ImageBitmap? = null, 
     val radius: Double,
-    val angle: Double )
+    val angle: Double ) {
+
+    fun offset() : IntOffset {
+        val x = -rcosd(radius, angle).toInt()
+        val y = rsind(radius, angle).toInt()
+        return IntOffset(x,y)
+    }
+}
 
 @Composable
 fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
     planetSymbolDrawable?.let { id ->
         planet?.let { planet ->
-            val x = -rcosd(planet.radius, planet.angle)
-            val y = rsind(planet.radius, planet.angle)
-
             Image(painterResource(id = id), planet.planet,
                 modifier = modifier
-                    .absoluteOffset { IntOffset(x.toInt(), y.toInt()) }
+                    .absoluteOffset {planet.offset() }
                     .size(sizeDp)
                     .clickable {
                         Kbus.post(PlanetSignClickEvent(planet))
@@ -196,6 +200,7 @@ fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
                         if (isRetro) {
                             planetSignRetroDrawables[p]?.let { drawable ->
                                 DrawPlanet(planet, sizeDp, drawable, modifier)
+                                DrawRetroSubscript(planet, modifier, sizeDp)
                             }
                         } else {
                             planetSignDrawables[p]?.let { drawable ->
@@ -208,6 +213,22 @@ fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
             DrawAspects(planets, significantAspectPairs, outerRadius * proportions.aspectGlyphRadius, pixToDp(outerRadius * proportions.aspectGlyphScale ), modifier)
         }
     }
+}
+
+@Composable
+private fun DrawRetroSubscript(
+    planet: PlanetSignPolarCoords,
+    modifier: Modifier,
+    sizeDp: Dp
+) {
+    val x = -rcosd(planet.radius, planet.angle)
+    val y = rsind(planet.radius, planet.angle)
+    Image(painterResource(id = R.drawable.retrograde_red), planet.planet,
+        modifier = modifier
+            .absoluteOffset { IntOffset(x.toInt() + 20, y.toInt() + 20) }
+            .size((sizeDp.value / 3).dp)
+
+    )
 }
 
 @Composable

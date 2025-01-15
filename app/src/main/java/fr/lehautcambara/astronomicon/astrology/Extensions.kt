@@ -67,7 +67,7 @@ val planetDrawables = hashMapOf<String, Int>(
     )
 
 val planetSignDrawables = hashMapOf<String, Int> (
-    "Sun" to R.drawable.sun_symbol,
+    "Sun" to R.drawable.sun_symbol2,
     "Earth" to R.drawable.earth_symbol,
     "Mercury" to R.drawable.mercury_symbol,
     "Moon" to  R.drawable.moon_symbol,
@@ -90,7 +90,7 @@ val planetSignShadowDrawables = hashMapOf<String, Int> (
 
 
 val planetSignRetroDrawables = hashMapOf<String, Int> (
-    "Sun" to R.drawable.sun_symbol,
+    "Sun" to R.drawable.sun_symbol2,
     "Earth" to R.drawable.earth_symbol,
     "Mercury" to R.drawable.mercury_retro_symbol,
     "Moon" to  R.drawable.moon_symbol,
