@@ -12,8 +12,8 @@ android {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
         targetSdk = 34
-        versionCode = 15
-        versionName = "LunarNode"
+        versionCode = 16
+        versionName = "Longitude"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
