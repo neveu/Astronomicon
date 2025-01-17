@@ -39,7 +39,7 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
             omega = ft(omega0, domegadt, t)
             w = wbar - omega
             // mean anomaly
-            M = plusOrMinus180(L - wbar)
+            M = plusOrMinus180(L - wbar + b*t*t + c*cosd(f*t) + s*sind(f*t))
             val estar = 57.29578 * e
             val E0: Double = M + estar * sind(M)
             val tol = 1e-3

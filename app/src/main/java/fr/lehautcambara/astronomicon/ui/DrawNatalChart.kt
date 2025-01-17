@@ -273,8 +273,9 @@ private fun DrawGlyphs(
     sizeDp: Dp,
     modifier: Modifier,
     ) {
-        DrawAspectGlyph(aspect, offset1, sizeDp, modifier, )
-        DrawAspectGlyph(aspect, offset2, sizeDp, modifier)
+        val offset = (offset1 + offset2)/2F
+        DrawAspectGlyph(aspect, offset, sizeDp, modifier, )
+        // DrawAspectGlyph(aspect, offset2, sizeDp, modifier)
 }
 
 @Composable
@@ -339,7 +340,7 @@ fun DrawNatalChart(
     ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides(),
 ) {
     val aspectSignImages: MutableMap<AspectType, ImageBitmap?> = mutableMapOf()
-    AspectType.values().forEach { aspectType ->
+    AspectType.entries.forEach { aspectType ->
         aspectType.glyph?.let { glyph ->
             aspectSignImages[aspectType]= ImageBitmap.imageResource(glyph)
         }

@@ -75,18 +75,11 @@ val planetSignDrawables = hashMapOf<String, Int> (
     "Mars" to R.drawable.mars_symbol_shadow,
     "Jupiter" to R.drawable.jupiter_symbol,
     "Saturn" to R.drawable.saturn_symbol,
-)
+    "Uranus" to R.drawable.uranus_symbol,
+    "Neptune" to R.drawable.neptune_symbol,
 
-val planetSignShadowDrawables = hashMapOf<String, Int> (
-    "Sun" to R.drawable.sun_symbol,
-    "Earth" to R.drawable.earth_symbol_shadow,
-    "Mercury" to R.drawable.mercury_symbol,
-    "Moon" to  R.drawable.moon_symbol,
-    "Venus" to R.drawable.venus_symbol,
-    "Mars" to R.drawable.mars_symbol_shadow,
-    "Jupiter" to R.drawable.jupiter_symbol,
-    "Saturn" to R.drawable.saturn_symbol,
-)
+    )
+
 
 
 val planetSignRetroDrawables = hashMapOf<String, Int> (
@@ -98,7 +91,9 @@ val planetSignRetroDrawables = hashMapOf<String, Int> (
     "Mars" to R.drawable.mars_retro_symbol,
     "Jupiter" to R.drawable.jupiter_retrograde_symbol,
     "Saturn" to R.drawable.saturn_retro_symbol,
-)
+    "Uranus" to R.drawable.uranus_retro_symbol,
+    "Neptune" to R.drawable.neptune_retro_symbol,
+    )
 
 
 fun ephemerides(): HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
@@ -111,8 +106,10 @@ fun ephemerides(): HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
     "Mars" to SolarEphemeris( KeplerianElements.Mars()),
     "Jupiter" to SolarEphemeris( KeplerianElements.Jupiter()),
     "Saturn" to SolarEphemeris( KeplerianElements.Saturn()),
+    "Uranus" to SolarEphemeris( KeplerianElements.Uranus()),
+    "Neptune" to SolarEphemeris( KeplerianElements.Neptune()),
 
-)
+    )
 
 class Zenith {
     companion object {

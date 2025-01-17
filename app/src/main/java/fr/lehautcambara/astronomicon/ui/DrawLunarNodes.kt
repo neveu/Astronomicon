@@ -99,7 +99,7 @@ private fun pixToDp(
 
 @Preview
 @Composable
-fun PreviewDrawAllLunarNodes( backgroundID: Int = R.drawable.draconis_1k_annulus, modifier: Modifier = Modifier) {
+fun PreviewDrawAllLunarNodes(backgroundID: Int = R.drawable.draconis_1k_annulus, modifier: Modifier = Modifier) {
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = modifier
         .paint(
