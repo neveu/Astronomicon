@@ -11,7 +11,7 @@ data class NatalChartProportions(
     val planetGlyphRadius: Double = 0.725,
     val planetGlyphScale: Double = 0.06,
     val innerHouseRadius: Double = 0.6,
-    val aspectGlyphRadius: Double = 0.5,
+    val aspectGlyphRadius: Double = 0.55,
     val aspectGlyphScale: Double = 0.05,
 
     )

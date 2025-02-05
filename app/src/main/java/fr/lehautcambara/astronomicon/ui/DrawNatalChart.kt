@@ -132,22 +132,6 @@ data class PlanetSignPolarCoords(
     }
 }
 
-//@Composable
-//private fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
-//    planetSymbolDrawable?.let { id ->
-//        planet?.let { planet ->
-//            Image(painterResource(id = id), planet.planet,
-//                modifier = modifier
-//                    .absoluteOffset {planet.offset() }
-//                    .size(sizeDp)
-//                    .clickable {
-//                        Kbus.post(PlanetSignClickEvent(planet))
-//                    }
-//            )
-//        }
-//    }
-//}
-
 fun planetSignPolarCoords(
     planetSignEclipticCoords: Map<String, Coords?>,
     earthCoords: Coords,

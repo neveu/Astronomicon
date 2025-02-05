@@ -24,7 +24,7 @@ class AstrologicalPoints {
 
         val Sun = SolarEphemeris( KeplerianElements.Sun())
         val Moon  = LunarEphemeris()
-        val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)
+        val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto,  Moon)
 
 
     }
