@@ -28,11 +28,8 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.angled
@@ -49,17 +46,6 @@ import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
 import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 import kotlin.math.roundToInt
-@Composable
-fun DrawPlanetEcliptic(body: Ephemeris, size: Size, proportions: OrbitalProportions, coords: Coords?, planetGraphic: PlanetGraphic, modifier: Modifier) {
-    coords?.apply {
-        val a = angled(x,y)
-        val elevation: Double = elevationd(x,y,z)
-        val r = (size.width*proportions.eclipticRadiusScale) + (elevation * proportions.elevationScale)
-        val pointerRadius = (size.width * proportions.pointerScale).toInt()
-        DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
-        DrawPlanetSymbol(body, r=r, a, size = size, proportions = proportions, modifier)
-    }
-}
 @Composable
 fun DrawAllEcliptic(
     uiState: StateFlow<OrreryUIState>,
@@ -89,7 +75,7 @@ fun DrawAllEcliptic(
             val dpValue = pixToDp(360.0 * 0.95)
             val lunarNodeZdt: ZonedDateTime =
                 AstrologicalPoints.Moon.nextNode(orreryUIState.zonedDateTime) {}
-            val earthCoords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
+            val earthCoords: Coords = AstrologicalPoints.Earth.eclipticCoords(lunarNodeZdt)
             val angle: Double =
                 earthCoords.angleTo(AstrologicalPoints.Moon.eclipticCoords(lunarNodeZdt))
             Log.d("DrawAllEcliptic Earth - Moon Angle: ", angle.toString())
@@ -115,7 +101,6 @@ fun DrawAllEcliptic(
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, mercury),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
 
             )
@@ -124,7 +109,6 @@ fun DrawAllEcliptic(
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, venus),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
             )
             DrawPlanetEcliptic(
@@ -132,7 +116,6 @@ fun DrawAllEcliptic(
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, sun),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
             )
             DrawPlanetEcliptic(
@@ -140,7 +123,6 @@ fun DrawAllEcliptic(
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, mars),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
             )
             DrawPlanetEcliptic(
@@ -148,30 +130,51 @@ fun DrawAllEcliptic(
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, jupiter),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
             )
             val saturnScale =
-                if (orreryUIState.planetGraphic == PlanetGraphic.Planet) proportions.planetImageScale * 2 else proportions.planetImageScale
+                if (currentDrawable["Saturn"] == drawableMaps[PlanetGraphic.Planet]?.getOrDefault("Saturn", R.drawable.sun_symbol2)) proportions.planetImageScale * 2 else proportions.planetImageScale
             DrawPlanetEcliptic(
                 body = AstrologicalPoints.Saturn,
                 size,
                 proportions.copy(planetImageScale = saturnScale),
                 coords = OrreryUIState.fromTo(earth, saturn),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
-
             )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Uranus,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, uranus),
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Neptune,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, neptune),
+                modifier = modifier.align(Alignment.Center)
+            )
+            DrawPlanetEcliptic(
+                body = AstrologicalPoints.Pluto,
+                size,
+                proportions,
+                coords = OrreryUIState.fromTo(earth, pluto)   ,
+                modifier = modifier.align(Alignment.Center)
+            )
+
+
+
             DrawPlanetEcliptic(
                 body = AstrologicalPoints.Moon,
                 size,
                 proportions,
                 coords = OrreryUIState.fromTo(earth, moon),
-                planetGraphic,
                 modifier = modifier.align(Alignment.Center)
             )
             DrawPlanet(
                 body = AstrologicalPoints.Earth,
+                uiState,
                 r = 0.0,
                 a = 0.0,
                 size,
@@ -182,14 +185,20 @@ fun DrawAllEcliptic(
     }
 }
 
+
 @Composable
-private fun pixToDp(
-    pixels: Double,
-): Dp {
-    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = ((pixels * 2.0) / screenPixelDensity).dp
-    return dpValue
+fun DrawPlanetEcliptic(body: Ephemeris,
+                       size: Size, proportions: OrbitalProportions, coords: Coords?, modifier: Modifier) {
+    coords?.apply {
+        val a = angled(x,y)
+        val elevation: Double = elevationd(x,y,z)
+        val r = (size.width*proportions.eclipticRadiusScale) + (elevation * proportions.elevationScale)
+        val pointerRadius = (size.width * proportions.pointerScale).toInt()
+        DrawZodiacPointer(radius = pointerRadius, a = a, width = 1F, modifier = modifier)
+        DrawPlanetSymbol(body, r=r, a, size = size, proportions = proportions, modifier)
+    }
 }
+
 
 @Preview
 @Composable

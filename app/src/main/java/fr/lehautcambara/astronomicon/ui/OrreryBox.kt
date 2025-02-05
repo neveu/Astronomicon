@@ -49,7 +49,7 @@ fun OrreryBox(uiState: StateFlow<OrreryUIState>, orreryBackground: Int) {
         val modifier = Modifier.align(Alignment.Center)
         when(orreryUIState.displayMode) {
             DisplayMode.Heliocentric -> DrawAllHeliocentric(uiState = uiState, R.drawable.acsquare4, modifier = modifier)
-            DisplayMode.Geocentric -> DrawAllGeocentric(uiState = uiState, R.drawable.acsquare4, modifier = modifier)
+            DisplayMode.Geocentric -> DrawAllGeocentric(uiState = uiState, R.drawable.acsquare4metalic, modifier = modifier)
             DisplayMode.Ecliptic -> DrawAllEcliptic(uiState = uiState, R.drawable.acsquare4,  modifier = modifier)
             DisplayMode.LunarNodes -> DrawAllLunarNodes(uiState = uiState, size, modifier = modifier)
             DisplayMode.NatalChart -> DrawNatalChart(uiState = uiState, size, modifier = modifier)

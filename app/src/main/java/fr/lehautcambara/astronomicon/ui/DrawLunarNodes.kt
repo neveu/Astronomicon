@@ -27,11 +27,8 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.angled
@@ -44,11 +41,11 @@ import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.RadialScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.orrery.OrreryVM
-import fr.lehautcambara.astronomicon.orrery.PlanetGraphic
 import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
+
 @Composable
-fun DrawPlanetLunarNode(body: Ephemeris, size: Size, proportions: OrbitalProportions, coords: Coords?, planetGraphic: PlanetGraphic, modifier: Modifier) {
+fun DrawPlanetLunarNode(body: Ephemeris, size: Size, proportions: OrbitalProportions, coords: Coords?, modifier: Modifier) {
     coords?.apply {
         val a = angled(x,y)
         val elevation: Double = elevationd(x,y,z)
@@ -83,18 +80,10 @@ fun DrawAllLunarNodes(
                 .clickable { Kbus.post(PlanetClickEvent()) })
 
 
-        DrawPlanetLunarNode(body = AstrologicalPoints.Sun, size, proportions,  coords = OrreryUIState.fromTo(earth, sun), planetGraphic,  modifier = modifier)
-        DrawPlanetLunarNode(body = AstrologicalPoints.Moon, size, proportions, coords = OrreryUIState.fromTo(earth, moon),  planetGraphic,   modifier = modifier)
-        DrawPlanet(body = AstrologicalPoints.Earth, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)
+        DrawPlanetLunarNode(body = AstrologicalPoints.Sun, size, proportions,  coords = OrreryUIState.fromTo(earth, sun),  modifier = modifier)
+        DrawPlanetLunarNode(body = AstrologicalPoints.Moon, size, proportions, coords = OrreryUIState.fromTo(earth, moon),    modifier = modifier)
+        DrawPlanet(body = AstrologicalPoints.Earth, uiState, r = 0.0, a = 0.0, size, proportions,  modifier = modifier)
     }
-}
-@Composable
-private fun pixToDp(
-    pixels: Double,
-): Dp {
-    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = ((pixels * 2.0) / screenPixelDensity).dp
-    return dpValue
 }
 
 @Preview

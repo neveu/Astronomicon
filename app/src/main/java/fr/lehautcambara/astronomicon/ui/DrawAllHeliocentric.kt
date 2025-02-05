@@ -60,6 +60,7 @@ fun DrawAllHeliocentric(
         with(orreryUIState) {
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Mercury,
+                uiState,
                 1,
                 size,
                 proportions,
@@ -68,6 +69,7 @@ fun DrawAllHeliocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Venus,
+                uiState,
                 2,
                 size,
                 proportions,
@@ -76,6 +78,7 @@ fun DrawAllHeliocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Earth,
+                uiState,
                 3,
                 size,
                 proportions,
@@ -84,6 +87,7 @@ fun DrawAllHeliocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Mars,
+                uiState,
                 4,
                 size,
                 proportions,
@@ -92,6 +96,7 @@ fun DrawAllHeliocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Jupiter,
+                uiState,
                 5,
                 size,
                 proportions,
@@ -101,6 +106,7 @@ fun DrawAllHeliocentric(
             val saturnScale = proportions.planetImageScale * 2
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Saturn,
+                uiState,
                 6,
                 size,
                 proportions.copy(planetImageScale = saturnScale),
@@ -109,6 +115,7 @@ fun DrawAllHeliocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Sun,
+                uiState,
                 0,
                 size,
                 proportions,

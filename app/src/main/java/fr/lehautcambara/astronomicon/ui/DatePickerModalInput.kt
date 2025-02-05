@@ -41,7 +41,6 @@ fun DatePickerModalInput(uiState: StateFlow<OrreryUIState>) {
             },
             onDismiss = {
                 Kbus.post(DateInputEvent(false))
-
             },
             darkMode = isSystemInDarkTheme()
         )

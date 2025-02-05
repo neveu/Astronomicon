@@ -61,6 +61,7 @@ fun DrawAllGeocentric(
         with(orreryUIState) {
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Moon,
+                uiState,
                 1,
                 size,
                 proportions,
@@ -74,6 +75,7 @@ fun DrawAllGeocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Mercury,
+                uiState,
                 2,
                 size,
                 proportions,
@@ -84,8 +86,10 @@ fun DrawAllGeocentric(
 
             orbitColor =
                 orbitColor(AstrologicalPoints.Earth, AstrologicalPoints.Venus, zonedDateTime)
+
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Venus,
+                uiState,
                 3,
                 size,
                 proportions,
@@ -95,6 +99,7 @@ fun DrawAllGeocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Sun,
+                uiState,
                 4,
                 size,
                 proportions,
@@ -106,6 +111,7 @@ fun DrawAllGeocentric(
                 orbitColor(AstrologicalPoints.Earth, AstrologicalPoints.Mars, zonedDateTime)
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Mars,
+                uiState,
                 5,
                 size,
                 proportions,
@@ -118,6 +124,7 @@ fun DrawAllGeocentric(
                 orbitColor(AstrologicalPoints.Earth, AstrologicalPoints.Jupiter, zonedDateTime)
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Jupiter,
+                uiState,
                 6,
                 size,
                 proportions,
@@ -131,6 +138,7 @@ fun DrawAllGeocentric(
             val saturnScale = proportions.planetImageScale * 2
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Saturn,
+                uiState,
                 7,
                 size,
                 proportions.copy(planetImageScale = saturnScale),
@@ -140,6 +148,7 @@ fun DrawAllGeocentric(
             )
             DrawPlanetAndOrbit(
                 AstrologicalPoints.Earth,
+                uiState,
                 0,
                 size,
                 proportions,

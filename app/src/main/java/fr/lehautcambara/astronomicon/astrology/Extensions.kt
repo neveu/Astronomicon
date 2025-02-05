@@ -77,12 +77,12 @@ val planetSignDrawables = hashMapOf<String, Int> (
     "Saturn" to R.drawable.saturn_symbol,
     "Uranus" to R.drawable.uranus_symbol,
     "Neptune" to R.drawable.neptune_symbol,
-
+    "Pluto" to R.drawable.pluto_symbol
     )
 
 
 
-val planetSignRetroDrawables = hashMapOf<String, Int> (
+val planetSignRetroSymbols = hashMapOf<String, Int> (
     "Sun" to R.drawable.sun_symbol2,
     "Earth" to R.drawable.earth_symbol,
     "Mercury" to R.drawable.mercury_retro_symbol,
@@ -108,6 +108,7 @@ fun ephemerides(): HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
     "Saturn" to SolarEphemeris( KeplerianElements.Saturn()),
     "Uranus" to SolarEphemeris( KeplerianElements.Uranus()),
     "Neptune" to SolarEphemeris( KeplerianElements.Neptune()),
+    "Pluto" to SolarEphemeris( KeplerianElements.Pluto()),
 
     )
 

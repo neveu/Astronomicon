@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +33,7 @@ import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.aspects.AspectType
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
-import fr.lehautcambara.astronomicon.astrology.planetSignRetroDrawables
+import fr.lehautcambara.astronomicon.astrology.planetSignRetroSymbols
 import fr.lehautcambara.astronomicon.astrology.zodiacSignDrawables
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
@@ -42,7 +41,6 @@ import fr.lehautcambara.astronomicon.ephemeris.PolarCoords
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.AspectClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
-import fr.lehautcambara.astronomicon.kbus.events.PlanetSignClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import fr.lehautcambara.astronomicon.rcosd
 import fr.lehautcambara.astronomicon.rsind
@@ -134,21 +132,21 @@ data class PlanetSignPolarCoords(
     }
 }
 
-@Composable
-fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
-    planetSymbolDrawable?.let { id ->
-        planet?.let { planet ->
-            Image(painterResource(id = id), planet.planet,
-                modifier = modifier
-                    .absoluteOffset {planet.offset() }
-                    .size(sizeDp)
-                    .clickable {
-                        Kbus.post(PlanetSignClickEvent(planet))
-                    }
-            )
-        }
-    }
-}
+//@Composable
+//private fun DrawPlanet(planet: PlanetSignPolarCoords?, sizeDp: Dp, planetSymbolDrawable: Int?, modifier: Modifier = Modifier) {
+//    planetSymbolDrawable?.let { id ->
+//        planet?.let { planet ->
+//            Image(painterResource(id = id), planet.planet,
+//                modifier = modifier
+//                    .absoluteOffset {planet.offset() }
+//                    .size(sizeDp)
+//                    .clickable {
+//                        Kbus.post(PlanetSignClickEvent(planet))
+//                    }
+//            )
+//        }
+//    }
+//}
 
 fun planetSignPolarCoords(
     planetSignEclipticCoords: Map<String, Coords?>,
@@ -186,7 +184,7 @@ fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
     modifier: Modifier
 ) {
     val sizeDp = pixToDp(outerRadius * proportions.planetGlyphScale )
-    planetSignCoords?.let {planetCoords ->
+    planetSignCoords?.let {planetCoords: Map<String, Coords?> ->
         planetSignCoords["Earth"]?.let { earthCoords ->
             val planets: Map<String?, PlanetSignPolarCoords?> = planetSignPolarCoords(
                 planetCoords,
@@ -198,7 +196,7 @@ fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
                 planets[p]?.let { planet ->
                     retrogradeMap[p]?.let { isRetro ->
                         if (isRetro) {
-                            planetSignRetroDrawables[p]?.let { drawable ->
+                            planetSignRetroSymbols[p]?.let { drawable ->
                                 DrawPlanet(planet, sizeDp, drawable, modifier)
                                 DrawRetroSubscript(planet, modifier, sizeDp)
                             }
@@ -346,7 +344,7 @@ fun DrawNatalChart(
         }
     }
 
-    val planetSignEclipticCoords: Map<String, Coords?> = ephemerides.mapValues { entry ->
+    val planetSignEclipticCoords: Map<String, Coords?> = ephemerides.mapValues { entry: Map.Entry<String, Ephemeris> ->
         entry.value.eclipticCoords(zdt)
     }
 
@@ -366,14 +364,7 @@ fun DrawNatalChart(
     DrawPlanetsAndAspects(outerRadius, proportions,  planetSignEclipticCoords, retrogradeMap, significantAspectPairs, zodiacAngleOffset, modifier = modifier)
 }
 
-@Composable
-private fun pixToDp(
-    pixels: Double,
-): Dp {
-    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = ((pixels * 2.0) / screenPixelDensity).dp
-    return dpValue
-}
+
 
 @Composable
 fun DrawNatalChart(

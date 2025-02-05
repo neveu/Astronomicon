@@ -37,12 +37,6 @@ import fr.lehautcambara.astronomicon.kbus.events.LongitudeScrollEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
 import kotlinx.coroutines.flow.StateFlow
 
-@Composable
-private fun pixToDp(pixels: Double): Dp {
-    val screenPixelDensity = LocalContext.current.resources.displayMetrics.density
-    val dpValue = ((pixels * 2.0) / screenPixelDensity).dp
-    return dpValue
-}
 
 @Composable
 fun PolarMap(angle: Float = 0F) {

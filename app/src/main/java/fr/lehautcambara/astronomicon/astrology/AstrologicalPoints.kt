@@ -18,6 +18,10 @@ class AstrologicalPoints {
         val Mars = SolarEphemeris( KeplerianElements.Mars())
         val Jupiter = SolarEphemeris( KeplerianElements.Jupiter())
         val Saturn  = SolarEphemeris( KeplerianElements.Saturn())
+        val Uranus  = SolarEphemeris( KeplerianElements.Uranus())
+        val Neptune  = SolarEphemeris( KeplerianElements.Neptune())
+        val Pluto  = SolarEphemeris( KeplerianElements.Pluto())
+
         val Sun = SolarEphemeris( KeplerianElements.Sun())
         val Moon  = LunarEphemeris()
         val geocentricPlanets: ArrayList<Ephemeris> = arrayListOf(Sun, Mercury, Venus, Mars, Jupiter, Saturn, Moon)

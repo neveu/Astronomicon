@@ -24,8 +24,9 @@ data class Coords( val x: Double, val y: Double, val z: Double, val name: String
         )
     }
 
-
-
+    fun mag(): Double {
+        return sqrt(x*x + y*y + z*z)
+    }
 
     fun fromTo( to: Coords?): Coords {
         return if (to == null) -this

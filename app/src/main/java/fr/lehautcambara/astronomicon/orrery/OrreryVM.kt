@@ -31,7 +31,7 @@ class OrreryVM : ViewModel() {
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()
     private var _uiState = MutableStateFlow(OrreryUIState(zonedDateTime))
     val uiState: StateFlow<OrreryUIState> = _uiState.asStateFlow()
-    private val displayModes: Array<DisplayMode> = DisplayMode.values()
+    private val displayModes: Array<DisplayMode> = DisplayMode.entries.toTypedArray()
 
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
