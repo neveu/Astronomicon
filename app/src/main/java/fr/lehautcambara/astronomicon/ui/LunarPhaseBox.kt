@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import fr.lehautcambara.astronomicon.R
@@ -17,10 +17,9 @@ import fr.lehautcambara.astronomicon.orrery.OrreryVM
 import kotlinx.coroutines.flow.StateFlow
 import java.time.ZonedDateTime
 
-
 @Composable
 fun LunarPhaseBox(uiState: StateFlow<OrreryUIState>, modifier: Modifier = Modifier) {
-    val phaseArray: Array<Int> = remember{ arrayOf(
+    val phaseArray: Array<Int> = remember { arrayOf(
         R.drawable.moon00,
         R.drawable.moon01,
         R.drawable.moon02,
@@ -51,20 +50,25 @@ fun LunarPhaseBox(uiState: StateFlow<OrreryUIState>, modifier: Modifier = Modifi
         R.drawable.moon27,
         R.drawable.moon28,
         R.drawable.moon29,
-        )}
-    val orreryUIState: OrreryUIState by uiState.collectAsState()
-    LunarPhaseBox(phaseArray, orreryUIState.moonPhase(phaseArray.size ), orreryUIState.zonedDateTime,  modifier)
+        )
+    }
+    with(uiState.collectAsState().value){
+        val earthToMoon = earth.fromTo(moon)
+        val scale: Double = (earthToMoon.mag()/384400F)*0.7
+        LunarPhaseBox(phaseArray, moonPhase(phaseArray.size ), scale.toFloat(), zonedDateTime)
+    }
 }
 
 @Composable
-fun LunarPhaseBox(phaseArray: Array<Int>, phase: Int, zdt: ZonedDateTime, modifier: Modifier = Modifier) {
-
+fun LunarPhaseBox(phaseArray: Array<Int>, phase: Int, scale: Float = 0.5f,  zdt: ZonedDateTime) {
     Image(
         painterResource(id = phaseArray[phase]),
         "Moon Phase",
-        modifier = modifier.clickable {
-            Kbus.post(FindNodeEvent("Moon", zdt))
-        }
+        modifier = Modifier
+            .scale(scale)
+            .clickable {
+                Kbus.post(FindNodeEvent("Moon", zdt))
+            }
     )
 }
 
