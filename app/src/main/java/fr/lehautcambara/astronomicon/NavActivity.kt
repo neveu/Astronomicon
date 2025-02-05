@@ -55,7 +55,7 @@ class NavActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, orreryVM.uiState)
+                    OrreryScreen(orreryVM.uiState)
                 }
             }
         }
@@ -137,7 +137,7 @@ class NavActivity : ComponentActivity() {
 @Composable
 fun ScreenPreview() {
     AstronomiconTheme {
-        OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, OrreryVM().uiState)
+        OrreryScreen(OrreryVM().uiState)
     }
 }
 

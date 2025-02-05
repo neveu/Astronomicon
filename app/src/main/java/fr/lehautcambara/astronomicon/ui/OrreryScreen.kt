@@ -25,8 +25,9 @@ import fr.lehautcambara.astronomicon.ui.theme.AstronomiconTheme
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun OrreryScreen(bg: Int, orreryBackground: Int, uiState: StateFlow<OrreryUIState>) {
+fun OrreryScreen(uiState: StateFlow<OrreryUIState>) {
     val orreryUIState: OrreryUIState by uiState.collectAsState()
+    val bg = orreryUIState.background
     Box( modifier = Modifier
         .fillMaxSize()
         .paint(
@@ -42,7 +43,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, uiState: StateFlow<OrreryUIStat
 
         ) {
             OrreryDate(uiState)
-            OrreryBox(uiState, orreryBackground)
+            OrreryBox(uiState, R.drawable.acsquare4)
             if (orreryUIState.displayMode != DisplayMode.NatalChart) {
                 LunarPhaseBox(
                     uiState,
@@ -65,7 +66,7 @@ fun OrreryScreen(bg: Int, orreryBackground: Int, uiState: StateFlow<OrreryUIStat
 @Composable
 fun PreviewOrreryScreen() {
     AstronomiconTheme(darkTheme = false, dynamicColor = false) {
-        OrreryScreen(R.drawable.milkyway, R.drawable.acsquare4, OrreryVM().uiState)
+        OrreryScreen(OrreryVM().uiState)
 
     }
 }
