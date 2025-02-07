@@ -72,9 +72,7 @@ class NavActivity : ComponentActivity() {
                     ) {
                         fusedLocationClient.lastLocation
                             .addOnSuccessListener { location: Location? ->
-                                location?.let {
-                                    Kbus.post(LocationEvent(it.latitude, it.longitude))
-                                }
+                                location?.let { Kbus.post(LocationEvent(it.latitude, it.longitude))}
                             }
                     }
                 }

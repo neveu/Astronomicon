@@ -11,9 +11,9 @@ android {
     defaultConfig {
         applicationId = "fr.lehautcambara.astronomicon"
         minSdk = 33
-        targetSdk = 34
-        versionCode = 16
-        versionName = "Longitude"
+        targetSdk = 35
+        versionCode = 17
+        versionName = "Outer Planets"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
