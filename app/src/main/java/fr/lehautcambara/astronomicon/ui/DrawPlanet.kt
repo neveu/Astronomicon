@@ -45,23 +45,10 @@ fun DrawPlanet(body: Ephemeris, uiState: StateFlow<OrreryUIState>, r: Double, a:
 fun DrawPlanet(body: Ephemeris, uiState: StateFlow<OrreryUIState>, x: Int, y: Int, size: Size, proportions: OrbitalProportions, modifier: Modifier) {
     val orreryUIState: OrreryUIState by uiState.collectAsState()
     val id: Int? = orreryUIState.getDrawableByEphemeris(body)
-    // shadow
-//    Image(
-//        painterResource(id = R.drawable.shadow30x30), "shadow",
-//        modifier= modifier
-//            .absoluteOffset { IntOffset(x + 20, -(y - 20)) }
-//            .size(
-//                pixToDp(2 * size.width * proportions.planetShadowScale)
-//            )
-//            .blur(3.dp)
-//            .alpha(0.7F)
-//    )
-    // Planet
 
     id?.let {
         Image (
             painter = rememberDrawablePainter(drawable = getDrawable(LocalContext.current, it)),
-//            painterResource(id = getDrawable(LocalContext.current, it).),
             "shadow",
             modifier = modifier
                 .absoluteOffset { IntOffset(x + 20, -(y - 20)) }

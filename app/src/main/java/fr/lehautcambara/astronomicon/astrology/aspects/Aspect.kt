@@ -5,9 +5,9 @@
 package fr.lehautcambara.astronomicon.astrology.aspects
 
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints
-import fr.lehautcambara.astronomicon.astrology.ephemerides
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.ephemeris.Ephemeris.Companion.ephemerides
 import java.time.ZonedDateTime
 import kotlin.math.abs
 

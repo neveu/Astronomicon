@@ -18,11 +18,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getDrawable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
 import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetSignDrawables
 import fr.lehautcambara.astronomicon.sind
 import kotlin.math.roundToInt
 
@@ -38,7 +38,7 @@ fun DrawPlanetSymbol(body: Ephemeris, r: Double, a: Double, size: Size, proporti
 @Composable
 fun DrawPlanetSymbol(body: Ephemeris, x: Int, y: Int, size: Size, proportions: OrbitalProportions, modifier: Modifier) {
     // shadow
-    planetSignDrawables[body.toString()]?.let { id: Int ->
+    defaultPlanetSignDrawables[body.toString()]?.let { id: Int ->
         // draw shadow
         Image (
             painter = rememberDrawablePainter(drawable =

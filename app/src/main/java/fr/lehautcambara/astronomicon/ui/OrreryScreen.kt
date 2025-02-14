@@ -67,7 +67,6 @@ fun OrreryScreen(uiState: StateFlow<OrreryUIState>) {
 fun PreviewOrreryScreen() {
     AstronomiconTheme(darkTheme = false, dynamicColor = false) {
         OrreryScreen(OrreryVM().uiState)
-
     }
 }
 

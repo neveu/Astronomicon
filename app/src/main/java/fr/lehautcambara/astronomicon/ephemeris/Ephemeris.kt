@@ -1,6 +1,7 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.util.Calendar
 import kotlin.math.sign
@@ -45,5 +46,22 @@ abstract class Ephemeris {
             onChange(newTime)
         }
         return oldTime
+    }
+
+    companion object {
+        fun ephemerides(): HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
+            "Sun" to SolarEphemeris( KeplerianElements.Sun()),
+            "Earth" to SolarEphemeris( KeplerianElements.EmBary()),
+            "Mercury" to SolarEphemeris( KeplerianElements.Mercury()),
+            "Moon" to  LunarEphemeris(),
+            "Venus" to SolarEphemeris( KeplerianElements.Venus()),
+            "Mars" to SolarEphemeris( KeplerianElements.Mars()),
+            "Jupiter" to SolarEphemeris( KeplerianElements.Jupiter()),
+            "Saturn" to SolarEphemeris( KeplerianElements.Saturn()),
+            "Uranus" to SolarEphemeris( KeplerianElements.Uranus()),
+            "Neptune" to SolarEphemeris( KeplerianElements.Neptune()),
+            "Pluto" to SolarEphemeris( KeplerianElements.Pluto()),
+
+            )
     }
 }

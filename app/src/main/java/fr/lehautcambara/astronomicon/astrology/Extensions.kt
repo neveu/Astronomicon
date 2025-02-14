@@ -1,6 +1,7 @@
 package fr.lehautcambara.astronomicon.astrology
 
 import android.util.Log
+import androidx.compose.runtime.remember
 import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.acosd
 import fr.lehautcambara.astronomicon.asind
@@ -10,6 +11,7 @@ import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetDrawables
 import fr.lehautcambara.astronomicon.sind
 import fr.lehautcambara.astronomicon.tand
 import java.lang.Math.atan2
@@ -39,78 +41,6 @@ val zodiacNames = arrayOf(
     "Pisces"
     )
 
-val zodiacSignDrawables = arrayOf(
-    R.drawable.aries,
-    R.drawable.taurus,
-    R.drawable.gemini,
-    R.drawable.cancer,
-    R.drawable.leo,
-    R.drawable.virgo,
-    R.drawable.libra,
-    R.drawable.scorpio,
-    R.drawable.sagitarius,
-    R.drawable.capricorn,
-    R.drawable.aquarius,
-    R.drawable.pisces,
-    )
-
-val planetDrawables = hashMapOf<String, Int>(
-    "Sun" to R.drawable.sun_anim40,
-    "Earth" to R.drawable.earthcloudanimation,
-    "Mercury" to R.drawable.mercuryanim141x141,
-    "Moon" to  R.drawable.moon2,
-    "Venus" to R.drawable.venusanim183x183,
-    "Mars" to R.drawable.marsanim,
-    "Jupiter" to R.drawable.jupiteranim225x225,
-    "Saturn" to R.drawable.saturnanimprecess,
-
-    )
-
-val planetSignDrawables = hashMapOf<String, Int> (
-    "Sun" to R.drawable.sun_symbol2,
-    "Earth" to R.drawable.earth_symbol,
-    "Mercury" to R.drawable.mercury_symbol,
-    "Moon" to  R.drawable.moon_symbol,
-    "Venus" to R.drawable.venus_symbol,
-    "Mars" to R.drawable.mars_symbol_shadow,
-    "Jupiter" to R.drawable.jupiter_symbol,
-    "Saturn" to R.drawable.saturn_symbol,
-    "Uranus" to R.drawable.uranus_symbol,
-    "Neptune" to R.drawable.neptune_symbol,
-    "Pluto" to R.drawable.pluto_symbol
-    )
-
-
-
-val planetSignRetroSymbols = hashMapOf<String, Int> (
-    "Sun" to R.drawable.sun_symbol2,
-    "Earth" to R.drawable.earth_symbol,
-    "Mercury" to R.drawable.mercury_retro_symbol,
-    "Moon" to  R.drawable.moon_symbol,
-    "Venus" to R.drawable.venus_retro_symbol,
-    "Mars" to R.drawable.mars_retro_symbol,
-    "Jupiter" to R.drawable.jupiter_retrograde_symbol,
-    "Saturn" to R.drawable.saturn_retro_symbol,
-    "Uranus" to R.drawable.uranus_retro_symbol,
-    "Neptune" to R.drawable.neptune_retro_symbol,
-    )
-
-
-fun ephemerides(): HashMap<String, Ephemeris> = hashMapOf<String, Ephemeris>(
-
-    "Sun" to SolarEphemeris( KeplerianElements.Sun()),
-    "Earth" to SolarEphemeris( KeplerianElements.EmBary()),
-    "Mercury" to SolarEphemeris( KeplerianElements.Mercury()),
-    "Moon" to  LunarEphemeris(),
-    "Venus" to SolarEphemeris( KeplerianElements.Venus()),
-    "Mars" to SolarEphemeris( KeplerianElements.Mars()),
-    "Jupiter" to SolarEphemeris( KeplerianElements.Jupiter()),
-    "Saturn" to SolarEphemeris( KeplerianElements.Saturn()),
-    "Uranus" to SolarEphemeris( KeplerianElements.Uranus()),
-    "Neptune" to SolarEphemeris( KeplerianElements.Neptune()),
-    "Pluto" to SolarEphemeris( KeplerianElements.Pluto()),
-
-    )
 
 class Zenith {
     companion object {

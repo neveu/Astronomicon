@@ -32,9 +32,6 @@ import fr.lehautcambara.astronomicon.astrology.ascendant
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.aspects.AspectType
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
-import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
-import fr.lehautcambara.astronomicon.astrology.planetSignRetroSymbols
-import fr.lehautcambara.astronomicon.astrology.zodiacSignDrawables
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.ephemeris.PolarCoords
@@ -42,6 +39,9 @@ import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.AspectClickEvent
 import fr.lehautcambara.astronomicon.kbus.events.PlanetClickEvent
 import fr.lehautcambara.astronomicon.orrery.OrreryUIState
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetSignDrawables
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetSignRetroSymbols
+import fr.lehautcambara.astronomicon.orrery.graphics.zodiacSignDrawables
 import fr.lehautcambara.astronomicon.rcosd
 import fr.lehautcambara.astronomicon.rsind
 import kotlinx.coroutines.flow.StateFlow
@@ -180,12 +180,12 @@ fun DrawPlanetsAndAspects( // Compose Images instead of DrawScope imagebitmaps
                 planets[p]?.let { planet ->
                     retrogradeMap[p]?.let { isRetro ->
                         if (isRetro) {
-                            planetSignRetroSymbols[p]?.let { drawable ->
+                            defaultPlanetSignRetroSymbols[p]?.let { drawable ->
                                 DrawPlanet(planet, sizeDp, drawable, modifier)
                                 DrawRetroSubscript(planet, modifier, sizeDp)
                             }
                         } else {
-                            planetSignDrawables[p]?.let { drawable ->
+                            defaultPlanetSignDrawables[p]?.let { drawable ->
                                 DrawPlanet(planet, sizeDp, drawable, modifier)
                             }
                         }
@@ -319,7 +319,7 @@ fun DrawNatalChart(
     significantAspectPairs: List<Aspect>? = null,
     latitude: Double = 0.0,
     longitude: Double = 0.0,
-    ephemerides: Map<String, Ephemeris> = fr.lehautcambara.astronomicon.astrology.ephemerides(),
+    ephemerides: Map<String, Ephemeris> = Ephemeris.ephemerides(),
 ) {
     val aspectSignImages: MutableMap<AspectType, ImageBitmap?> = mutableMapOf()
     AspectType.entries.forEach { aspectType ->
@@ -375,7 +375,7 @@ fun DrawNatalChart(
             significantAspectPairs = significantAspectPairs,
             latitude = latitude,
             longitude = longitude,
-            ephemerides = fr.lehautcambara.astronomicon.astrology.ephemerides(),
+            ephemerides = Ephemeris.ephemerides(),
         )
     }
 }

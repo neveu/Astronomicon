@@ -15,11 +15,12 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venu
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
 import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
-import fr.lehautcambara.astronomicon.astrology.planetDrawables
-import fr.lehautcambara.astronomicon.astrology.planetSignDrawables
-import fr.lehautcambara.astronomicon.astrology.planetSignRetroSymbols
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultLunarPhaseArray
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetDrawables
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetSignDrawables
+import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetSignRetroSymbols
 import fr.lehautcambara.astronomicon.ui.NatalChartProportions
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -63,11 +64,12 @@ data class OrreryUIState (
     val latitude: Double = 0.0,
     val background: Int = R.drawable.milkyway,
     val drawableMaps: Map<PlanetGraphic, PlanetMap> = hashMapOf(
-        PlanetGraphic.Planet to planetSignDrawables,
-        PlanetGraphic.Symbol to planetDrawables,
-        PlanetGraphic.SymbolRetro to planetSignRetroSymbols,
+        PlanetGraphic.Planet to defaultPlanetDrawables,
+        PlanetGraphic.Symbol to defaultPlanetSignDrawables,
+        PlanetGraphic.SymbolRetro to defaultPlanetSignRetroSymbols,
     ),
-    val currentDrawable: Map<String, Int> = HashMap(planetSignDrawables)
+    val lunarPhaseArray: List<Int> = defaultLunarPhaseArray,
+    val currentDrawable: Map<String, Int> = HashMap(defaultPlanetSignDrawables)
 ) {
 
     private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()
@@ -136,13 +138,32 @@ data class OrreryUIState (
         val name = body.toString()
         val retrograde: Boolean = body.inRetrograde(Earth, zonedDateTime)
         return when(displayMode) {
-            DisplayMode.NatalChart -> if (retrograde) planetSignRetroSymbols[name] else planetSignDrawables[name]
-            DisplayMode.Geocentric -> planetDrawables[name]
-            DisplayMode.Ecliptic -> if (retrograde) planetSignRetroSymbols[name] else planetSignDrawables[name]
-            DisplayMode.LunarNodes -> if (retrograde) planetSignRetroSymbols[name] else planetSignDrawables[name]
-            DisplayMode.Heliocentric -> planetDrawables[name]
+            DisplayMode.NatalChart -> if (retrograde) defaultPlanetSignRetroSymbols[name] else defaultPlanetSignDrawables[name]
+            DisplayMode.Geocentric -> getPlanetDrawables("Moon")[name]
+            DisplayMode.Ecliptic -> if (retrograde) defaultPlanetSignRetroSymbols[name] else defaultPlanetSignDrawables[name]
+            DisplayMode.LunarNodes -> if (retrograde) defaultPlanetSignRetroSymbols[name] else defaultPlanetSignDrawables[name]
+            DisplayMode.Heliocentric -> getPlanetDrawables()[name]
         }
     }
+
+    fun getPlanetDrawables(key: String? = null ) : Map<String, Int> {
+        return  when(key) {
+            null -> defaultPlanetDrawables
+            "Moon" -> useMoonPhase()
+            else -> defaultPlanetDrawables
+        }
+    }
+
+    fun useMoonPhase(): Map<String, Int> {
+        val planetmap = HashMap<String, Int>(defaultPlanetDrawables)
+        planetmap["Moon"] = lunarPhaseImage()
+        return planetmap
+    }
+
+    fun lunarPhaseImage() : Int {
+        return defaultLunarPhaseArray[moonPhase((defaultLunarPhaseArray.size))]
+    }
+
 
     companion object {
         fun fromTo(from: Coords?, to: Coords?): Coords? {
