@@ -55,7 +55,7 @@ fun DrawOrbit(radius: Int, color: Color = Color.Black, stroke: Float = 2F, modif
 
 @Preview
 @Composable
-private fun PreviewDrawPlanet() {
+private fun PreviewDrawPlanetEcliptic() {
     val orreryUIState: OrreryUIState by OrreryVM().uiState.collectAsState()
     var size: Size by remember { mutableStateOf(Size.Zero) }
     Box(modifier = Modifier

@@ -1,17 +1,10 @@
 package fr.lehautcambara.astronomicon.astrology
 
 import android.util.Log
-import androidx.compose.runtime.remember
-import fr.lehautcambara.astronomicon.R
 import fr.lehautcambara.astronomicon.acosd
 import fr.lehautcambara.astronomicon.asind
 import fr.lehautcambara.astronomicon.atand
 import fr.lehautcambara.astronomicon.cosd
-import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
-import fr.lehautcambara.astronomicon.ephemeris.LunarEphemeris
-import fr.lehautcambara.astronomicon.ephemeris.SolarEphemeris
-import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
-import fr.lehautcambara.astronomicon.orrery.graphics.defaultPlanetDrawables
 import fr.lehautcambara.astronomicon.sind
 import fr.lehautcambara.astronomicon.tand
 import java.lang.Math.atan2
