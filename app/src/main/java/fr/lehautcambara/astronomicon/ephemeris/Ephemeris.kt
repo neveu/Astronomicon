@@ -1,6 +1,6 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.convertToJ2000Century
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import java.time.ZonedDateTime
 import java.util.Calendar
@@ -8,24 +8,24 @@ import kotlin.math.sign
 
 
 abstract class Ephemeris {
-    abstract fun eclipticCoords(dateTime: Calendar): Coords
-    abstract fun eclipticCoords(zdt: ZonedDateTime): Coords
-
-    abstract fun equatorialCoords(dateTime: Calendar): Coords
+    abstract fun eclipticCoords(dateTime: Calendar, name: String? = null): Coords
+    abstract fun eclipticCoords(zdt: ZonedDateTime, name: String? = null): Coords
 
 
-    abstract fun eclipticCoords(julianCentury: Double): Coords
-    abstract fun equatorialCoords(julianCentury: Double): Coords
+
+    abstract fun eclipticCoords(julianCentury: Double, name: String? = null): Coords
+    abstract fun equatorialCoords(julianCentury: Double, name: String? = null): Coords
+    abstract fun equatorialCoords(dateTime: Calendar, name: String? = null): Coords
 
 
     abstract override fun toString(): String
 
     fun apparentAngularVelocity(toPlanet: Ephemeris, zdt: ZonedDateTime): Double {
-        val planetCoords = toPlanet.eclipticCoords(zdt.convertToJulianCentury())
-        val fromCoords = this.eclipticCoords(zdt.convertToJulianCentury())
+        val planetCoords = toPlanet.eclipticCoords(zdt.convertToJ2000Century())
+        val fromCoords = this.eclipticCoords(zdt.convertToJ2000Century())
         val deltaT = zdt.plusHours(1)
         val currentAngle = fromCoords.angleTo(planetCoords)
-        val deltaJ = deltaT.convertToJulianCentury()
+        val deltaJ = deltaT.convertToJ2000Century()
         val deltaEarth = this.eclipticCoords(deltaJ)
         val deltaPlanet = toPlanet.eclipticCoords(deltaJ)
         val deltaAngle = deltaEarth.angleTo(deltaPlanet)
@@ -61,7 +61,7 @@ abstract class Ephemeris {
             "Uranus" to SolarEphemeris( KeplerianElements.Uranus()),
             "Neptune" to SolarEphemeris( KeplerianElements.Neptune()),
             "Pluto" to SolarEphemeris( KeplerianElements.Pluto()),
-
             )
+        val obliquityJ2000 = 23.43928
     }
 }

@@ -8,24 +8,24 @@ import java.time.ZonedDateTime
 import java.util.Calendar
 
 class Node(val body: Ephemeris): Ephemeris() {
-    override fun eclipticCoords(dateTime: Calendar): Coords {
-        return body.eclipticCoords(dateTime)
+    override fun eclipticCoords(dateTime: Calendar, name: String?): Coords {
+        return body.eclipticCoords(dateTime, name)
     }
 
-    override fun eclipticCoords(zdt: ZonedDateTime): Coords {
-        return body.eclipticCoords(zdt)
+    override fun eclipticCoords(zdt: ZonedDateTime, name: String?): Coords {
+        return body.eclipticCoords(zdt, name)
     }
 
-    override fun eclipticCoords(julianCentury: Double): Coords {
-        return body.eclipticCoords(julianCentury)
+    override fun eclipticCoords(julianCentury: Double, name: String?): Coords {
+        return body.eclipticCoords(julianCentury, name)
     }
 
-    override fun equatorialCoords(dateTime: Calendar): Coords {
-        return body.equatorialCoords(dateTime)
+    override fun equatorialCoords(dateTime: Calendar, name: String?): Coords {
+        return body.equatorialCoords(dateTime, name)
     }
 
-    override fun equatorialCoords(julianCentury: Double): Coords {
-        return body.equatorialCoords(julianCentury)
+    override fun equatorialCoords(julianCentury: Double, name: String?): Coords {
+        return body.equatorialCoords(julianCentury, name)
     }
 
     override fun toString(): String {

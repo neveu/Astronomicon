@@ -1,6 +1,6 @@
 package fr.lehautcambara.astronomicon.ephemeris
 
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.convertToJ2000Century
 import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.sind
 import fr.lehautcambara.astronomicon.tand
@@ -11,26 +11,26 @@ import java.util.GregorianCalendar
 import kotlin.math.roundToInt
 
 class LunarEphemeris : Ephemeris() {
-    override fun eclipticCoords(dateTime: Calendar): Coords {
-        return eclipticCoords(dateTime.convertToJulianCentury())
+    override fun eclipticCoords(dateTime: Calendar, name: String?): Coords {
+        return eclipticCoords(dateTime.convertToJ2000Century(), name)
     }
 
-    override fun eclipticCoords(zdt: ZonedDateTime): Coords {
-        return eclipticCoords( zdt.convertToJulianCentury())
+    override fun eclipticCoords(zdt: ZonedDateTime, name: String?): Coords {
+        return eclipticCoords( zdt.convertToJ2000Century(), name)
     }
 
-    override fun eclipticCoords(julianCentury: Double): Coords {
+    override fun eclipticCoords(julianCentury: Double, name: String?): Coords {
         calculateOrbit(julianCentury)
-        return Coords(xecl(), yecl(), zecl())
+        return Coords(xecl(), yecl(), zecl(), name)
     }
 
-    override fun equatorialCoords(dateTime: Calendar): Coords {
-       return equatorialCoords(dateTime.convertToJulianCentury())
+    override fun equatorialCoords(dateTime: Calendar, name: String?): Coords {
+       return equatorialCoords(dateTime.convertToJ2000Century(), name)
     }
 
-    override fun equatorialCoords(julianCentury: Double): Coords {
+    override fun equatorialCoords(julianCentury: Double, name: String?): Coords {
         calculateOrbit(julianCentury)
-        return Coords( xeq(), yeq(), zeq())
+        return Coords( xeq(), yeq(), zeq(), name)
     }
 
     override fun toString(): String {
@@ -41,7 +41,6 @@ class LunarEphemeris : Ephemeris() {
     private var t:Double = 0.0
     private var beta0 = 0.0
     private var lambda0 = 0.0
-    private val obliquityJ2000 = 23.43928
 
 
     private fun calculateOrbit(julianCentury: Double) {

@@ -13,14 +13,15 @@ data class Coords( val x: Double, val y: Double, val z: Double, val name: String
     }
 
     operator fun unaryMinus(): Coords {
-        return Coords(-x, -y, -z)
+        return Coords(-x, -y, -z, name)
     }
 
     operator fun minus(eclipticCoords: Coords): Coords {
         return Coords(
             x - eclipticCoords.x,
             y - eclipticCoords.y,
-            z - eclipticCoords.z
+            z - eclipticCoords.z,
+            eclipticCoords.name
         )
     }
 
@@ -43,4 +44,8 @@ data class Coords( val x: Double, val y: Double, val z: Double, val name: String
     }
 }
 
-data class PolarCoords (val r: Double, val a: Double, val name: String? = null)
+data class PolarCoords (val r: Double, val a: Double, val name: String? = null) {
+    override fun toString(): String {
+        return "$name: ($r, $a)"
+    }
+}

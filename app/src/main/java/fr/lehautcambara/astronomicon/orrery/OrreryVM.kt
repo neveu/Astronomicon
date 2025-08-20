@@ -3,6 +3,7 @@ package fr.lehautcambara.astronomicon.orrery
 import androidx.lifecycle.ViewModel
 import fr.lehautcambara.astronomicon.angle360to180
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
+import fr.lehautcambara.astronomicon.astrology.localSiderealTimeHourMinute
 import fr.lehautcambara.astronomicon.kbus.Kbus
 import fr.lehautcambara.astronomicon.kbus.events.ClockControlEvent
 import fr.lehautcambara.astronomicon.kbus.events.DateInputEvent
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.roundToLong
 
@@ -26,6 +28,8 @@ class OrreryVM : ViewModel() {
 
     init {
         Kbus.register(this)
+        val time = ZonedDateTime.of(2016,11, 2, 21, 17, 30,0,ZoneId.of("GMT"))
+        val st = time.localSiderealTimeHourMinute(6.9)
     }
 
     private var zonedDateTime: ZonedDateTime = ZonedDateTime.now()

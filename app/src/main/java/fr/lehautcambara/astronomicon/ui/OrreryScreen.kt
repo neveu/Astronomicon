@@ -55,6 +55,8 @@ fun OrreryScreen(uiState: StateFlow<OrreryUIState>) {
                 LatitudeLongitude(uiState)
                 PolarMap(orreryUIState.longitude.toFloat())
             }
+            CelestialLongitude(uiState)
+
         }
     }
     DatePickerModalInput(uiState = uiState)

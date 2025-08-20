@@ -4,7 +4,7 @@
 
 package fr.lehautcambara.astronomicon.ephemeris
 
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.convertToJ2000Century
 import fr.lehautcambara.astronomicon.cosd
 import fr.lehautcambara.astronomicon.ephemeris.keplerianElements.KeplerianElements
 import fr.lehautcambara.astronomicon.sind
@@ -93,25 +93,25 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
         return sind(obliquityJ2000) * yecl() + cosd(obliquityJ2000) * zecl()
     }
 
-    override fun eclipticCoords(dateTime: Calendar): Coords {
-        return  eclipticCoords(dateTime.convertToJulianCentury())
+    override fun eclipticCoords(dateTime: Calendar, name: String?) : Coords {
+        return  eclipticCoords(dateTime.convertToJ2000Century(), name)
     }
 
-    override fun eclipticCoords(zdt: ZonedDateTime): Coords {
-        return eclipticCoords( zdt.convertToJulianCentury())
+    override fun eclipticCoords(zdt: ZonedDateTime, name: String?): Coords {
+        return eclipticCoords( zdt.convertToJ2000Century(), name)
     }
 
-    override fun eclipticCoords(julianCentury: Double) : Coords{
+    override fun eclipticCoords(julianCentury: Double, name: String?) : Coords{
         calculateOrbit(julianCentury)
-        return Coords( xecl(), yecl(), zecl())
+        return Coords( xecl(), yecl(), zecl(), name)
     }
 
-    override fun equatorialCoords(dateTime: Calendar): Coords {
-        return equatorialCoords(dateTime.convertToJulianCentury())
+    override fun equatorialCoords(dateTime: Calendar, name: String?): Coords {
+        return equatorialCoords(dateTime.convertToJ2000Century(), name)
     }
-    override fun equatorialCoords(julianCentury: Double): Coords {
+    override fun equatorialCoords(julianCentury: Double, name: String?): Coords {
         calculateOrbit(julianCentury)
-        return Coords(xeq(), yeq(), zeq())
+        return Coords(xeq(), yeq(), zeq(), name)
     }
 
 
@@ -120,7 +120,6 @@ class SolarEphemeris(private val keplerianElements: KeplerianElements): Ephemeri
     }
 
     companion object {
-        private val obliquityJ2000 = 23.43928
 
         fun ft(x0: Double, dxdt: Double, t: Double): Double = x0 + (t * dxdt)
         fun plusOrMinus180(v: Double): Double = v.IEEErem(360.0)

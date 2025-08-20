@@ -14,7 +14,7 @@ import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Uran
 import fr.lehautcambara.astronomicon.astrology.AstrologicalPoints.Companion.Venus
 import fr.lehautcambara.astronomicon.astrology.aspects.Aspect
 import fr.lehautcambara.astronomicon.astrology.aspects.aspects
-import fr.lehautcambara.astronomicon.astrology.convertToJulianCentury
+import fr.lehautcambara.astronomicon.astrology.convertToJ2000Century
 import fr.lehautcambara.astronomicon.ephemeris.Coords
 import fr.lehautcambara.astronomicon.ephemeris.Ephemeris
 import fr.lehautcambara.astronomicon.orrery.graphics.defaultLunarPhaseArray
@@ -72,28 +72,28 @@ data class OrreryUIState (
     val currentDrawable: Map<String, Int> = HashMap(defaultPlanetSignDrawables)
 ) {
 
-    private var _julianCentury: Double = zonedDateTime.convertToJulianCentury()
+    private var _julianCentury: Double = zonedDateTime.convertToJ2000Century()
     val julianCentury : Double
         get() = _julianCentury
 
 
-    private var _sun = Sun.eclipticCoords(julianCentury)
+    private var _sun = Sun.eclipticCoords(julianCentury, "Sun")
     val sun: Coords
         get() = _sun
 
-    private var _mercury = Mercury.eclipticCoords(julianCentury)
+    private var _mercury = Mercury.eclipticCoords(julianCentury, "Mercury")
     val mercury: Coords
         get() = _mercury
 
-    private var _venus = Venus.eclipticCoords(julianCentury)
+    private var _venus = Venus.eclipticCoords(julianCentury, "Venus")
      val venus: Coords
         get() = _venus
 
-    private var _earth = Earth.eclipticCoords(julianCentury)
+    private var _earth = Earth.eclipticCoords(julianCentury, "Earth")
      val earth: Coords
         get() = _earth
 
-    private var _moon = Moon.eclipticCoords(julianCentury)
+    private var _moon = Moon.eclipticCoords(julianCentury, "Moon")
      val moon: Coords
         get() = _moon
 
@@ -101,27 +101,27 @@ data class OrreryUIState (
         return Moon.phaseImageIndex(zonedDateTime, numImages)
     }
 
-    private var _mars = Mars.eclipticCoords(julianCentury)
+    private var _mars = Mars.eclipticCoords(julianCentury, "Mars")
     val mars: Coords
         get() = _mars
 
-    private var _jupiter = Jupiter.eclipticCoords(julianCentury)
+    private var _jupiter = Jupiter.eclipticCoords(julianCentury, "Jupiter")
     val jupiter: Coords
         get() = _jupiter
 
-    private var _saturn = Saturn.eclipticCoords(julianCentury)
+    private var _saturn = Saturn.eclipticCoords(julianCentury, "Saturn")
     val saturn: Coords
         get() = _saturn
 
-    private var _uranus = Uranus.eclipticCoords(julianCentury)
+    private var _uranus = Uranus.eclipticCoords(julianCentury, "Uranus")
     val uranus: Coords
         get() = _uranus
 
-    private var _neptune = Neptune.eclipticCoords(julianCentury)
+    private var _neptune = Neptune.eclipticCoords(julianCentury, "Neptune")
     val neptune: Coords
         get() = _neptune
 
-    private var _pluto = Pluto.eclipticCoords(julianCentury)
+    private var _pluto = Pluto.eclipticCoords(julianCentury, "Pluto")
     val pluto: Coords
         get() = _pluto
 

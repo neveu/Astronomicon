@@ -36,8 +36,16 @@ fun tand(degrees: Double): Double {
     return tan(degrees * Math.PI / 180.0)
 }
 
+fun cotand(degrees: Double): Double {
+    return 1.0/ tand(degrees)
+}
+
 fun atand(t: Double) : Double { // atan in degrees
     return atan(t) * 180.0 / Math.PI
+}
+
+fun acotd(t: Double) : Double {
+    return atand(1.0/t)
 }
 
 fun asind(s: Double) : Double {
@@ -55,8 +63,6 @@ fun angled(x: Double, y: Double): Double {
 fun elevationd(x: Double, y: Double, z: Double): Double {
     // [x y z] . [x y 0]/|[x y 0]||[x y z]|
     return (180.0/Math.PI) * atan2(z, sqrt(x*x + y*y))
-
-
 }
 
 fun r(x: Double, y: Double): Double {
@@ -64,6 +70,11 @@ fun r(x: Double, y: Double): Double {
 }
 
 fun angle360to180(a: Double) : Double {
-    val angle = ((a % 360) + 360) % 360
+    val angle = angle360(a)
     return if (angle > 180) angle - 360 else angle
 }
+
+fun angle360(a: Double) : Double {
+    return ((a % 360) + 360) % 360
+}
+

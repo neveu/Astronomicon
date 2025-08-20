@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AscendantCalculator(zdt: ZonedDateTime, longitude: Double? = null) {
+fun AscendantCalculator(zdt: ZonedDateTime, longitude: Double = 0.0) {
     val asc: Double = zdt.ascendant(longitude)
     Column(modifier = Modifier
         .fillMaxSize()
